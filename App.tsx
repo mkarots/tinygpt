@@ -62,7 +62,7 @@ const App: React.FC = () => {
 
   const addQuickQuestion = () => {
     if (config.quickQuestions.length < 4) {
-      setConfig(prev => ({ 
+      setConfig((prev: AgentConfig) => ({ 
         ...prev, 
         quickQuestions: [...prev.quickQuestions, { text: 'New Question', emoji: '✨' }] as (string | { text: string; emoji: string })[]
       }));
@@ -77,7 +77,7 @@ const App: React.FC = () => {
     } else {
         newQuestions[index] = { ...newQuestions[index] as { text: string; emoji: string }, text: value };
     }
-    setConfig(prev => ({ ...prev, quickQuestions: newQuestions }));
+    setConfig((prev: AgentConfig) => ({ ...prev, quickQuestions: newQuestions }));
   };
 
   const removeQuickQuestion = (index: number) => {

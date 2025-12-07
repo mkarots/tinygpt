@@ -219,6 +219,7 @@ export default function SharedChatPage() {
                config={config} 
                knowledge={knowledge} 
                onClose={() => setActiveTab('overview')} // Add back button behavior
+               showQuickQuestions={false} // Hide pills because we have the overview grid
              />
           </div>
         )}

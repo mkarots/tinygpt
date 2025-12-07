@@ -9,9 +9,10 @@ interface WidgetChatProps {
   knowledge: KnowledgeItem[];
   isOpen?: boolean; // For future real widget toggle
   onClose?: () => void;
+  showQuickQuestions?: boolean; // Control visibility of in-chat pills
 }
 
-const WidgetChat: React.FC<WidgetChatProps> = ({ config, knowledge, onClose }) => {
+const WidgetChat: React.FC<WidgetChatProps> = ({ config, knowledge, onClose, showQuickQuestions = true }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -168,7 +169,7 @@ const WidgetChat: React.FC<WidgetChatProps> = ({ config, knowledge, onClose }) =
         ))}
         
         {/* Quick Questions (Show immediately or after bot messages) */}
-        {messages.length > 0 && !isTyping && config.quickQuestions.length > 0 && (
+        {showQuickQuestions && messages.length > 0 && !isTyping && config.quickQuestions.length > 0 && (
            <div className="flex flex-wrap gap-2 justify-end mt-2 px-4 animate-fade-in">
               {config.quickQuestions.map((q, i) => {
                 const isObject = typeof q === 'object';
