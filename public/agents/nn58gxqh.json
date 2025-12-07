@@ -1,0 +1,35 @@
+{
+  "id": "nn58gxqh",
+  "config": {
+    "name": "C Assistant",
+    "description": "A helpful assistant for our customers.",
+    "primaryColor": "#7c3aed",
+    "greeting": "Hi there! How can I help you today?",
+    "tone": "friendly",
+    "quickQuestions": [
+      {
+        "text": "Do you offer a free trial/version?",
+        "emoji": "🚀"
+      },
+      {
+        "text": "How secure is your platform?",
+        "emoji": "🔒"
+      },
+      {
+        "text": "How do I use your product?",
+        "emoji": "💻"
+      }
+    ]
+  },
+  "knowledge": [
+    {
+      "id": "cyaesrtma",
+      "type": "url",
+      "name": "codii",
+      "content": "# The 24/7 Software Engineer\nfor your Codebase\n\nAutomated code reviews that catch bugs, enforce standards, and help you ship faster. Set up in under 2 minutes.\n\nSign Up for Free | Read the Docs\n\nZero Data Retention\nNo Config Required\n\n## How It Works\n\nGet started in under 2 minutes. No configuration files required.\n\n1.  ### Connect Your Repo\n\n    Sign in with GitHub and select the repositories you want Codii to monitor.\n\n2.  ### Open a Pull Request\n\n    Codii automatically detects new PRs and scans them. You can also trigger a review manually by commenting `codii review`.\n\n3.  ### Review & Merge\n\n    Get AI-powered comments on bugs and style issues directly in your PR timeline.\n\n## More Than Just a Code Reviewer\n\nCodii gives you a complete dashboard to manage your PRs, track code quality, and customize your review standards.\n\n*   **Centralized Dashboard**\n    View all your open PRs across multiple repositories in one place. Track review status, merge times, and recent activity at a glance.\n*   **Productivity Metrics**\n    Gain insights into your team's velocity with metrics like Average Merge Time, PR Size, and Daily Activity stats.\n*   **Custom Review Rules**\n    Define custom instructions (e.g., \"Always use TDD\" or \"Prefer functional patterns\") that Codii will enforce during reviews.\n*   **Repository Control**\n    Easily toggle reviews on/off for specific repositories. Configure scan frequency (per PR or per commit) to suit your workflow.\n*   **Smart Summaries**\n    Get high-level summaries of changes in every PR, helping reviewers understand context before diving into the code.\n*   **Flexible Scheduling**\n    Choose when to run reviews: automatically on every commit, only when a PR is opened, or trigger them manually.\n\n## Get more out of your code reviews.\n\nSee how Codii catches issues that manual reviews often miss.\n\n`src/components/UserProfile.tsx`\n\n`f @foobarbaz`\n`codii review`\n\ncodiibot\nAnalysed 40 lines in 3 files in 22 seconds.\n\n*   ### Instant\n\n    Get immediate feedback on your code changes.\n    Codii assists your team by providing instant preliminary reviews.\n\n*   ### Configurable\n\n    Codii generates comprehensive PR summaries and inline comments.\n    Make your reviews understand your style, preferences and goals.\n\n*   ### Code Quality Analytics\n\n    Track code quality metrics and improvement trends.\n    Help your team identify areas for growth and development.\n\n## Powered By The Models You Trust\n\nSupported models include: OpenAI, Claude, Google Gemini\n\n## Built for Developers, by Developers\n\n*   🔒 ### Secure & Private\n\n    Your code stays private. We don't store or share your source code.\n\n*   ⚡ ### Fast Setup\n\n    Get started in under 2 minutes! No complex configuration.\n\n*   🤖 ### Multi-Model\n\n    Choose from OpenAI, Anthropic, Google. Adding more models each week!\n\n## Choose Your Plan\n\nStart free with 100 scans per month. Upgrade when you're ready to scale.\n\n### Free\n$0/ month\n\nPerfect for trying out Codii on personal projects.\n\n*   100 scans per month\n*   Standard Code Analysis\n*   Bug Detection\n*   GitHub Integration\n\nGet Started for Free\n\n### Dev\n$18/ month\n\nIdeal for individual developers and small teams.\n\n*   Everything in Free, plus:\n*   Unlimited scans\n*   In-depth Code Analysis\n*   Powered by Multiple Models\n*   Customisable Review Rules\n*   Priority Support\n\nUpgrade to Dev\n\n## Frequently Asked Questions\n\n*   ### Is my code safe?\n*   ### How does it differ from GitHub Copilot?\n*   ### Which languages are supported?\n*   ### Can I customize the review rules?\n*   ### Do I need to install anything on my server?",
+      "status": "active",
+      "dateAdded": 1765130350458
+    }
+  ],
+  "createdAt": 1765130665412
+}

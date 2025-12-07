@@ -1,10 +1,11 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, RefreshCw, X, ChevronDown } from 'lucide-react';
+import { Bot, RefreshCw, ChevronDown } from 'lucide-react';
 import { ChatMessage, AgentConfig, KnowledgeItem } from '../../types';
 import { sendMessageStream, initializeChat } from '../../services/geminiService';
-import { Button } from './core/button/Button';
-import { Input } from './core/input/Input';
+import { MessageBubble } from './core/feedback/MessageBubble';
+import { ChatInput } from './core/input/ChatInput';
+import { SuggestionChips } from './core/input/SuggestionChips';
 
 interface WidgetChatProps {
   config: AgentConfig;
@@ -88,11 +89,6 @@ const WidgetChat: React.FC<WidgetChatProps> = ({ config, knowledge, agentId, onC
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    handleSendMessage(inputValue);
-  };
-
   // Dynamic Styles
   const primaryColor = config.primaryColor || '#7c3aed';
   
@@ -121,7 +117,7 @@ const WidgetChat: React.FC<WidgetChatProps> = ({ config, knowledge, agentId, onC
                setMessages([{
                  id: 'welcome',
                  role: 'model',
-                 text: config.greeting,
+                 text: config.greeting || "Hello! How can I help you today?",
                  timestamp: Date.now(),
                }]);
             }}
@@ -145,87 +141,36 @@ const WidgetChat: React.FC<WidgetChatProps> = ({ config, knowledge, agentId, onC
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50 scrollbar-hide">
         {messages.map((msg) => (
-          <div 
-            key={msg.id} 
-            className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-          >
-            <div 
-              className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm shadow-sm
-                ${msg.role === 'user' 
-                  ? 'text-white rounded-br-none' 
-                  : 'bg-white text-neutral-700 border border-neutral-100 rounded-bl-none'
-                }
-              `}
-              style={msg.role === 'user' ? { backgroundColor: primaryColor } : {}}
-            >
-              {msg.role === 'model' && msg.isStreaming && !msg.text ? (
-                 <div className="flex gap-1 py-1 px-1">
-                    <span className="w-1.5 h-1.5 bg-neutral-400 rounded-full animate-bounce"></span>
-                    <span className="w-1.5 h-1.5 bg-neutral-400 rounded-full animate-bounce delay-75"></span>
-                    <span className="w-1.5 h-1.5 bg-neutral-400 rounded-full animate-bounce delay-150"></span>
-                 </div>
-              ) : (
-                 <div className="whitespace-pre-wrap leading-relaxed">{msg.text}</div>
-              )}
-            </div>
-          </div>
+          <MessageBubble
+            key={msg.id}
+            text={msg.text}
+            role={msg.role}
+            isStreaming={msg.isStreaming}
+            primaryColor={primaryColor}
+          />
         ))}
         
         {/* Quick Questions (Show immediately or after bot messages) */}
-        {showQuickQuestions && messages.length > 0 && !isTyping && config.quickQuestions.length > 0 && (
-           <div className="flex flex-wrap gap-2 justify-end mt-2 px-4 animate-fade-in">
-              {config.quickQuestions.map((q, i) => {
-                const isObject = typeof q === 'object';
-                const text = isObject ? q.text : q;
-                const emoji = isObject ? q.emoji : null;
-                
-                return (
-                  <button
-                    key={i}
-                    onClick={() => handleSendMessage(text)}
-                    className="text-xs bg-white border border-brand-100 text-brand-600 px-3 py-1.5 rounded-full hover:bg-brand-50 transition-colors shadow-sm flex items-center gap-1.5"
-                    style={{ color: primaryColor, borderColor: `${primaryColor}20` }}
-                  >
-                    {emoji && <span>{emoji}</span>}
-                    <span>{text}</span>
-                  </button>
-                );
-              })}
-           </div>
+        {showQuickQuestions && messages.length > 0 && !isTyping && (
+           <SuggestionChips
+             items={config.quickQuestions}
+             onSelect={handleSendMessage}
+             primaryColor={primaryColor}
+             className="mt-2 px-4"
+           />
         )}
         <div ref={messagesEndRef} />
       </div>
 
       {/* Input */}
       <div className="p-3 bg-white border-t border-neutral-100">
-        <form 
-          onSubmit={handleSubmit}
-          className="flex items-center gap-2 bg-neutral-50 rounded-xl px-3 py-2 border border-neutral-200 focus-within:ring-2 focus-within:ring-opacity-50 transition-all"
-          style={{ '--tw-ring-color': primaryColor } as React.CSSProperties}
-        >
-          <input
-            type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            placeholder="Type a message..."
-            className="flex-1 bg-transparent border-none text-sm focus:outline-none placeholder:text-neutral-400 text-slate-900"
-            disabled={isTyping}
-          />
-          <Button
-            type="submit"
-            disabled={!inputValue.trim() || isTyping}
-            variant="ghost"
-            size="icon"
-            className={`transition-all ${
-              inputValue.trim() 
-                ? 'opacity-100 transform scale-100' 
-                : 'opacity-0 transform scale-75 pointer-events-none'
-            }`}
-            style={{ color: primaryColor }}
-          >
-            <Send className="w-4 h-4" />
-          </Button>
-        </form>
+        <ChatInput
+          value={inputValue}
+          onChange={setInputValue}
+          onSubmit={() => handleSendMessage(inputValue)}
+          isTyping={isTyping}
+          primaryColor={primaryColor}
+        />
         <div className="text-center mt-2">
            <span className="text-[10px] text-neutral-400 font-medium">
              Powered by TinyGPT
