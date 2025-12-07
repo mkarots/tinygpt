@@ -423,23 +423,31 @@ const Onboarding: React.FC<OnboardingProps> = ({
               </div>
               
               <div className="space-y-4">
-                 {config.quickQuestions.map((q, i) => (
-                   <div key={i} className="flex gap-3">
-                     <div className="w-8 h-10 flex items-center justify-center text-slate-300 font-bold">{i + 1}</div>
-                     <input 
-                       value={q}
-                       onChange={(e) => {
-                         const newQ = [...config.quickQuestions];
-                         newQ[i] = e.target.value;
-                         onConfigChange('quickQuestions', newQ);
-                       }}
-                       className="flex-1 px-4 py-2 bg-white text-slate-900 placeholder:text-slate-400 border border-slate-200 rounded-lg focus:border-brand-500 outline-none"
-                     />
-                   </div>
-                 ))}
+                 {config.quickQuestions.map((q, i) => {
+                   const isObject = typeof q === 'object';
+                   const text = isObject ? q.text : q;
+                   return (
+                     <div key={i} className="flex gap-3">
+                       <div className="w-8 h-10 flex items-center justify-center text-slate-300 font-bold">{i + 1}</div>
+                       <input 
+                         value={text}
+                         onChange={(e) => {
+                           const newQ = [...config.quickQuestions];
+                           if (isObject) {
+                               newQ[i] = { ...(q as any), text: e.target.value };
+                           } else {
+                               newQ[i] = e.target.value;
+                           }
+                           onConfigChange('quickQuestions', newQ);
+                         }}
+                         className="flex-1 px-4 py-2 bg-white text-slate-900 placeholder:text-slate-400 border border-slate-200 rounded-lg focus:border-brand-500 outline-none"
+                       />
+                     </div>
+                   );
+                 })}
                  {config.quickQuestions.length < 4 && (
                    <button 
-                     onClick={() => onConfigChange('quickQuestions', [...config.quickQuestions, 'New Question'])}
+                     onClick={() => onConfigChange('quickQuestions', [...config.quickQuestions, { text: 'New Question', emoji: '✨' }])}
                      className="ml-11 text-sm text-brand-600 font-medium hover:underline"
                    >
                      + Add another question

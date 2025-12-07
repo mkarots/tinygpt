@@ -10,14 +10,18 @@ import DeployTab from './components/DeployTab';
 import LivePreview from './components/LivePreview';
 import Onboarding from './components/Onboarding';
 
-// Default Configuration
+  // Default Configuration
 const DEFAULT_CONFIG: AgentConfig = {
   name: 'Support Bot',
   description: 'A helpful assistant for our customers.',
   primaryColor: '#7c3aed', // brand-600
   greeting: 'Hi there! How can I help you today?',
   tone: 'friendly',
-  quickQuestions: ['What are your hours?', 'How do I reset my password?']
+  quickQuestions: [
+    { text: 'Do you offer a free trial/version?', emoji: '🚀' },
+    { text: 'How secure is your platform?', emoji: '🔒' },
+    { text: 'How do I use your product?', emoji: '💻' }
+  ]
 };
 
 const App: React.FC = () => {
@@ -60,14 +64,19 @@ const App: React.FC = () => {
     if (config.quickQuestions.length < 4) {
       setConfig(prev => ({ 
         ...prev, 
-        quickQuestions: [...prev.quickQuestions, 'New Question'] 
+        quickQuestions: [...prev.quickQuestions, { text: 'New Question', emoji: '✨' }] as (string | { text: string; emoji: string })[]
       }));
     }
   };
 
   const updateQuickQuestion = (index: number, value: string) => {
-    const newQuestions = [...config.quickQuestions];
-    newQuestions[index] = value;
+    const newQuestions: (string | { text: string; emoji: string })[] = [...config.quickQuestions];
+    // Handle legacy string updates if necessary, though AppearanceTab handles it mostly
+    if (typeof newQuestions[index] === 'string') {
+        newQuestions[index] = value; 
+    } else {
+        newQuestions[index] = { ...newQuestions[index] as { text: string; emoji: string }, text: value };
+    }
     setConfig(prev => ({ ...prev, quickQuestions: newQuestions }));
   };
 

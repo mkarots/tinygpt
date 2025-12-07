@@ -45,7 +45,7 @@ const DeployTab: React.FC<DeployTabProps> = ({ config, knowledge }) => {
   const handleCopyCode = () => {
     // Extract agentId from the share URL if generated
     const agentId = shareUrl ? shareUrl.split('/').pop() : 'YOUR_AGENT_ID';
-    const scriptTag = `<script src="${window.location.origin}/widget.js" data-id="${agentId}" async></script>`;
+    const scriptTag = `<script src="${window.location.origin}/tinygpt.js" data-id="${agentId}" async></script>`;
     navigator.clipboard.writeText(scriptTag);
     setCopiedCode(true);
     setTimeout(() => setCopiedCode(false), 2000);
@@ -124,7 +124,7 @@ const DeployTab: React.FC<DeployTabProps> = ({ config, knowledge }) => {
            <div className="p-6 bg-slate-900 relative group">
               <code className="text-sm font-mono text-green-400 block break-all leading-relaxed">
                 &lt;!-- TinyGPT Widget --&gt;<br/>
-                &lt;script src="{typeof window !== 'undefined' ? window.location.origin : ''}/widget.js" <br/>
+                &lt;script src="{typeof window !== 'undefined' ? window.location.origin : ''}/tinygpt.js" <br/>
                 &nbsp;&nbsp;data-id="{shareUrl ? shareUrl.split('/').pop() : 'YOUR_AGENT_ID'}" async&gt;&lt;/script&gt;
               </code>
               <button 

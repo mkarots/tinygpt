@@ -20,14 +20,17 @@ const WidgetChat: React.FC<WidgetChatProps> = ({ config, knowledge, onClose }) =
   // Initialize chat when config or knowledge changes
   useEffect(() => {
     initializeChat(knowledge, config);
-    setMessages([
-      {
-        id: 'welcome',
-        role: 'model',
-        text: config.greeting || "Hello! How can I help you today?",
-        timestamp: Date.now(),
-      }
-    ]);
+    // Only set welcome message if chat is empty (prevents reset on re-renders if lifted state)
+    if (messages.length === 0) {
+      setMessages([
+        {
+          id: 'welcome',
+          role: 'model',
+          text: config.greeting || "Hello! How can I help you today?",
+          timestamp: Date.now(),
+        }
+      ]);
+    }
   }, [config, knowledge]);
 
   const scrollToBottom = () => {
@@ -164,19 +167,26 @@ const WidgetChat: React.FC<WidgetChatProps> = ({ config, knowledge, onClose }) =
           </div>
         ))}
         
-        {/* Quick Questions (Only show if last message was from bot) */}
-        {messages.length > 0 && messages[messages.length - 1].role === 'model' && !isTyping && config.quickQuestions.length > 0 && (
-           <div className="flex flex-wrap gap-2 justify-end mt-2 animate-fade-in">
-              {config.quickQuestions.map((q, i) => (
-                <button
-                  key={i}
-                  onClick={() => handleSendMessage(q)}
-                  className="text-xs bg-white border border-brand-100 text-brand-600 px-3 py-1.5 rounded-full hover:bg-brand-50 transition-colors shadow-sm"
-                  style={{ color: primaryColor, borderColor: `${primaryColor}20` }}
-                >
-                  {q}
-                </button>
-              ))}
+        {/* Quick Questions (Show immediately or after bot messages) */}
+        {messages.length > 0 && !isTyping && config.quickQuestions.length > 0 && (
+           <div className="flex flex-wrap gap-2 justify-end mt-2 px-4 animate-fade-in">
+              {config.quickQuestions.map((q, i) => {
+                const isObject = typeof q === 'object';
+                const text = isObject ? q.text : q;
+                const emoji = isObject ? q.emoji : null;
+                
+                return (
+                  <button
+                    key={i}
+                    onClick={() => handleSendMessage(text)}
+                    className="text-xs bg-white border border-brand-100 text-brand-600 px-3 py-1.5 rounded-full hover:bg-brand-50 transition-colors shadow-sm flex items-center gap-1.5"
+                    style={{ color: primaryColor, borderColor: `${primaryColor}20` }}
+                  >
+                    {emoji && <span>{emoji}</span>}
+                    <span>{text}</span>
+                  </button>
+                );
+              })}
            </div>
         )}
         <div ref={messagesEndRef} />

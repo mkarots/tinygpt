@@ -94,22 +94,58 @@ const AppearanceTab: React.FC<AppearanceTabProps> = ({
            <div className="pt-4 border-t border-slate-100">
               <label className="block text-sm font-medium text-slate-700 mb-3">Quick Questions</label>
               <div className="space-y-3">
-                 {config.quickQuestions.map((q, idx) => (
-                   <div key={idx} className="flex gap-2">
-                      <input 
-                        type="text"
-                        value={q}
-                        onChange={(e) => onUpdateQuickQuestion(idx, e.target.value)}
-                        className="flex-1 px-3 py-2 bg-white text-slate-900 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
-                      />
-                      <button onClick={() => onRemoveQuickQuestion(idx)} className="text-slate-400 hover:text-red-500">
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                   </div>
-                 ))}
+                 {config.quickQuestions.map((q, idx) => {
+                   const isObject = typeof q === 'object';
+                   const text = isObject ? q.text : q;
+                   const emoji = isObject ? q.emoji : '💡'; // Default emoji if migrating
+
+                   return (
+                     <div key={idx} className="flex gap-2">
+                        <input 
+                          type="text"
+                          value={emoji}
+                          onChange={(e) => {
+                             // We need to upgrade the whole array if it was strings, or just this item
+                             const newQuestions: any[] = [...config.quickQuestions];
+                             if (typeof newQuestions[idx] === 'string') {
+                               newQuestions[idx] = { text: newQuestions[idx], emoji: e.target.value };
+                             } else {
+                               newQuestions[idx] = { ...newQuestions[idx], emoji: e.target.value };
+                             }
+                             onConfigChange('quickQuestions', newQuestions);
+                          }}
+                          className="w-12 text-center px-2 py-2 bg-white text-slate-900 border border-slate-200 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
+                          placeholder="Emoji"
+                        />
+                        <input 
+                          type="text"
+                          value={text}
+                          onChange={(e) => {
+                             const newQuestions: any[] = [...config.quickQuestions];
+                             if (typeof newQuestions[idx] === 'string') {
+                               newQuestions[idx] = { text: e.target.value, emoji: '💡' };
+                             } else {
+                               newQuestions[idx] = { ...newQuestions[idx], text: e.target.value };
+                             }
+                             onConfigChange('quickQuestions', newQuestions);
+                          }}
+                          className="flex-1 px-3 py-2 bg-white text-slate-900 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
+                        />
+                        <button onClick={() => onRemoveQuickQuestion(idx)} className="text-slate-400 hover:text-red-500">
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                     </div>
+                   );
+                 })}
                  {config.quickQuestions.length < 4 && (
                    <button 
-                     onClick={onAddQuickQuestion}
+                     onClick={() => {
+                        // Add new question with default emoji
+                        const newQ = { text: 'New Question', emoji: '✨' };
+                        // If current array is strings, we might need to migrate all? No, mixed is fine for now due to union type, but better to be consistent.
+                        // For simplicity, we just push the object.
+                        onConfigChange('quickQuestions', [...config.quickQuestions, newQ]);
+                     }}
                      className="text-sm text-brand-600 font-medium hover:text-brand-700 flex items-center gap-1"
                    >
                      <Plus className="w-3 h-3" /> Add Question
