@@ -1,21 +1,52 @@
 
 import React, { useState } from 'react';
-import { CheckCircle, Copy, Link, ExternalLink, Globe } from 'lucide-react';
+import { CheckCircle, Copy, Link, ExternalLink, Globe, Loader2 } from 'lucide-react';
+import { AgentConfig, KnowledgeItem } from '../types';
 
-const DeployTab: React.FC = () => {
+interface DeployTabProps {
+  config: AgentConfig;
+  knowledge: KnowledgeItem[];
+}
+
+const DeployTab: React.FC<DeployTabProps> = ({ config, knowledge }) => {
   const [copiedLink, setCopiedLink] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
-  
-  const mockShareUrl = `https://tinygpt.app/chat/p/${Math.random().toString(36).substr(2, 6)}`;
+  const [shareUrl, setShareUrl] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
 
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(mockShareUrl);
-    setCopiedLink(true);
-    setTimeout(() => setCopiedLink(false), 2000);
+  const generateLink = async () => {
+    setIsGenerating(true);
+    try {
+      const response = await fetch('/api/agent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ config, knowledge }),
+      });
+      const data = await response.json();
+      if (data.url) {
+        setShareUrl(`${window.location.origin}${data.url}`);
+      }
+    } catch (e) {
+      console.error('Failed to generate link', e);
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
+  const handleCopyLink = () => {
+    if (shareUrl) {
+      navigator.clipboard.writeText(shareUrl);
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2000);
+    }
+  };
+
+
   const handleCopyCode = () => {
-    navigator.clipboard.writeText('<script src="https://cdn.tinygpt.ai/widget.js" async></script>');
+    // Extract agentId from the share URL if generated
+    const agentId = shareUrl ? shareUrl.split('/').pop() : 'YOUR_AGENT_ID';
+    const scriptTag = `<script src="${window.location.origin}/widget.js" data-id="${agentId}" async></script>`;
+    navigator.clipboard.writeText(scriptTag);
     setCopiedCode(true);
     setTimeout(() => setCopiedCode(false), 2000);
   };
@@ -40,21 +71,39 @@ const DeployTab: React.FC = () => {
                  </p>
                  
                  <div className="mt-4 flex gap-2">
-                    <div className="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-sm text-slate-600 font-mono flex items-center justify-between">
-                       <span>{mockShareUrl}</span>
-                       <button 
-                         onClick={handleCopyLink}
-                         className="text-brand-600 hover:text-brand-700 font-medium text-xs ml-4"
-                       >
-                         {copiedLink ? 'Copied!' : 'Copy'}
-                       </button>
+                    <div className="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-sm text-slate-600 font-mono flex items-center justify-between min-h-[46px]">
+                       {shareUrl ? (
+                         <>
+                           <span className="truncate">{shareUrl}</span>
+                           <button 
+                             onClick={handleCopyLink}
+                             className="text-brand-600 hover:text-brand-700 font-medium text-xs ml-4 whitespace-nowrap"
+                           >
+                             {copiedLink ? 'Copied!' : 'Copy'}
+                           </button>
+                         </>
+                       ) : (
+                         <span className="text-slate-400 italic">Click generate to create a link</span>
+                       )}
                     </div>
-                    <button 
-                      className="px-4 py-2 bg-white border border-slate-200 text-slate-700 font-medium rounded-lg text-sm hover:bg-slate-50 flex items-center gap-2"
-                      onClick={() => window.alert('In a real app, this would open the public share page.')}
-                    >
-                      <ExternalLink className="w-4 h-4" /> Open
-                    </button>
+                    {shareUrl ? (
+                      <a 
+                        href={shareUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-4 py-2 bg-white border border-slate-200 text-slate-700 font-medium rounded-lg text-sm hover:bg-slate-50 flex items-center gap-2"
+                      >
+                        <ExternalLink className="w-4 h-4" /> Open
+                      </a>
+                    ) : (
+                      <button 
+                        onClick={generateLink}
+                        disabled={isGenerating}
+                        className="px-4 py-2 bg-brand-600 text-white font-medium rounded-lg text-sm hover:bg-brand-700 flex items-center gap-2 disabled:opacity-70"
+                      >
+                        {isGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Generate Link'}
+                      </button>
+                    )}
                  </div>
               </div>
            </div>
@@ -75,7 +124,8 @@ const DeployTab: React.FC = () => {
            <div className="p-6 bg-slate-900 relative group">
               <code className="text-sm font-mono text-green-400 block break-all leading-relaxed">
                 &lt;!-- TinyGPT Widget --&gt;<br/>
-                &lt;script src="https://cdn.tinygpt.ai/widget.js" data-id="project_{Math.random().toString(36).substr(2,7)}" async&gt;&lt;/script&gt;
+                &lt;script src="{typeof window !== 'undefined' ? window.location.origin : ''}/widget.js" <br/>
+                &nbsp;&nbsp;data-id="{shareUrl ? shareUrl.split('/').pop() : 'YOUR_AGENT_ID'}" async&gt;&lt;/script&gt;
               </code>
               <button 
                 className={`absolute top-4 right-4 px-3 py-1.5 rounded text-xs font-medium backdrop-blur-sm transition-colors flex items-center gap-2

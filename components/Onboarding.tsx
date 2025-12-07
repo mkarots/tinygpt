@@ -36,6 +36,7 @@ const Onboarding: React.FC<OnboardingProps> = ({
   const [step, setStep] = useState<OnboardingStep>(1);
   const [urlInput, setUrlInput] = useState('');
   const [isCrawling, setIsCrawling] = useState(false);
+  const [crawlProgress, setCrawlProgress] = useState(0);
 
   const performCrawl = async (url: string) => {
     try {
@@ -56,6 +57,15 @@ const Onboarding: React.FC<OnboardingProps> = ({
     
     onAddKnowledge([newItem]);
     setIsCrawling(true);
+    setCrawlProgress(0);
+
+    // Simulate progress
+    const progressInterval = setInterval(() => {
+      setCrawlProgress(prev => {
+        if (prev >= 90) return prev;
+        return prev + 10;
+      });
+    }, 500);
     
     // Start background crawl
     fetch('/api/crawl', {
@@ -65,6 +75,8 @@ const Onboarding: React.FC<OnboardingProps> = ({
     })
     .then(res => res.json())
     .then(data => {
+      clearInterval(progressInterval);
+      setCrawlProgress(100);
       if (data.error) {
         onUpdateKnowledge(tempId, { status: 'error', name: `Error: ${new URL(url).hostname}` });
       } else {
@@ -82,10 +94,14 @@ const Onboarding: React.FC<OnboardingProps> = ({
       }
     })
     .catch(() => {
+        clearInterval(progressInterval);
         onUpdateKnowledge(tempId, { status: 'error' });
     })
     .finally(() => {
-        setIsCrawling(false);
+        setTimeout(() => {
+          setIsCrawling(false);
+          setCrawlProgress(0);
+        }, 500);
     });
   };
 
@@ -283,15 +299,36 @@ const Onboarding: React.FC<OnboardingProps> = ({
                   <button 
                     onClick={handleCrawl}
                     disabled={isCrawling || !urlInput}
-                    className="bg-white border border-slate-200 text-slate-900 px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 disabled:opacity-50"
+                    className="bg-white border border-slate-200 text-slate-900 px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 disabled:opacity-50 min-w-[100px]"
                   >
-                    {isCrawling ? 'Crawling...' : 'Import'}
+                    {isCrawling ? (
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 border-2 border-slate-900 border-t-transparent rounded-full animate-spin"></div>
+                        <span>{crawlProgress}%</span>
+                      </div>
+                    ) : (
+                      'Import'
+                    )}
                   </button>
                 </div>
-                {companyInfo.email && isCrawling && (
-                   <p className="text-xs text-slate-400 mt-2 flex items-center gap-1">
-                     <CheckCircle className="w-3 h-3" /> We'll email {companyInfo.email} when crawling finishes.
-                   </p>
+                
+                {isCrawling && (
+                  <div className="mt-4 space-y-2">
+                    <div className="w-full bg-slate-100 rounded-full h-1">
+                      <div 
+                        className="bg-brand-600 h-1 rounded-full transition-all duration-500 ease-out"
+                        style={{ width: `${crawlProgress}%` }}
+                      />
+                    </div>
+                    <p className="text-xs text-slate-400 flex items-center justify-between">
+                      <span>Analyzing content structure...</span>
+                      {companyInfo.email && (
+                        <span className="flex items-center gap-1">
+                          <CheckCircle className="w-3 h-3" /> We'll email {companyInfo.email} when done.
+                        </span>
+                      )}
+                    </p>
+                  </div>
                 )}
               </div>
 

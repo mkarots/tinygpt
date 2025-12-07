@@ -141,7 +141,7 @@ const App: React.FC = () => {
           )}
 
           {activeTab === 'deploy' && (
-            <DeployTab />
+            <DeployTab config={config} knowledge={knowledge} />
           )}
           
         </div>

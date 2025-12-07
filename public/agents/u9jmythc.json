@@ -1,0 +1,25 @@
+{
+  "id": "u9jmythc",
+  "config": {
+    "name": "C Assistant",
+    "description": "A helpful assistant for our customers.",
+    "primaryColor": "#09090b",
+    "greeting": "Hi there! How can I help you today?",
+    "tone": "friendly",
+    "quickQuestions": [
+      "What are your hours?",
+      "How do I reset my password?"
+    ]
+  },
+  "knowledge": [
+    {
+      "id": "ycmpirkym",
+      "type": "url",
+      "name": "codii",
+      "content": "# The 24/7 Software Engineer\nfor your Codebase\n\nAutomated code reviews that catch bugs, enforce standards, and help you ship faster. Set up in under 2 minutes.\n\nZero Data Retention\n\nNo Config Required\n\n## How It Works\n\nGet started in under 2 minutes. No configuration files required.\n\n1\n\n### Connect Your Repo\n\nSign in with GitHub and select the repositories you want Codii to monitor.\n\n### Open a Pull Request\n\nCodii automatically detects new PRs and scans them. You can also trigger a review manually by commenting `codii review`.\n\n### Review & Merge\n\nGet AI-powered comments on bugs and style issues directly in your PR timeline.\n\n## More Than Just a Code Reviewer\n\nCodii gives you a complete dashboard to manage your PRs, track code quality, and customize your review standards.\n\nCentralized Dashboard\n\nView all your open PRs across multiple repositories in one place. Track review status, merge times, and recent activity at a glance.\n\nProductivity Metrics\n\nGain insights into your team's velocity with metrics like Average Merge Time, PR Size, and Daily Activity stats.\n\nCustom Review Rules\n\nDefine custom instructions (e.g., \"Always use TDD\" or \"Prefer functional patterns\") that Codii will enforce during reviews.\n\nRepository Control\n\nEasily toggle reviews on/off for specific repositories. Configure scan frequency (per PR or per commit) to suit your workflow.\n\nSmart Summaries\n\nGet high-level summaries of changes in every PR, helping reviewers understand context before diving into the code.\n\nFlexible Scheduling\n\nChoose when to run reviews: automatically on every commit, only when a PR is opened, or trigger them manually.\n\n## Get more out of your code reviews.\n\nSee how Codii catches issues that manual reviews often miss.\n\nsrc/components/UserProfile.tsx\n\nf\n\n@foobarbaz\n\ncodii review\n\ncodiibot\n\nAnalysed 40 lines in 3 files in 22 seconds.\n\n### Instant\n\nGet immediate feedback on your code changes.\nCodii assists your team by providing instant preliminary reviews.\n\n### Configurable\n\nCodii generates comprehensive PR summaries and inline comments.\nMake your reviews understand your style, preferences and goals.\n\n### Code Quality Analytics\n\nTrack code quality metrics and improvement trends.\nHelp your team identify areas for growth and development.\n\n## Powered By The Models You Trust\n\n(Logos for OpenAI, Claude, Google Gemini indicating partnerships)\n\n## Built for Developers, by Developers\n\n🔒\n\n### Secure & Private\n\nYour code stays private. We don't store or share your source code.\n\n⚡\n\n### Fast Setup\n\nGet started in under 2 minutes! No complex configuration.\n\n🤖\n\n### Multi-Model\n\nChoose from OpenAI, Anthropic, Google. Adding more models each week!\n\n## Choose Your Plan\n\nStart free with 100 scans per month. Upgrade when you're ready to scale.\n\nFree\n\n$0/ month\n\nPerfect for trying out Codii on personal projects.\n\n*   100 scans per month\n*   Standard Code Analysis\n*   Bug Detection\n*   GitHub Integration\n\nDev\n\n$18/ month\n\nIdeal for individual developers and small teams.\n\n*   Everything in Free, plus:\n*   Unlimited scans\n*   In-depth Code Analysis\n*   Powered by Multiple Models\n*   Customisable Review Rules\n*   Priority Support\n\n## Frequently Asked Questions\n\n### Is my code safe?\n\n### How does it differ from GitHub Copilot?\n\n### Which languages are supported?\n\n### Can I customize the review rules?\n\n### Do I need to install anything on my server?",
+      "status": "active",
+      "dateAdded": 1765072596707
+    }
+  ],
+  "createdAt": 1765072652367
+}
