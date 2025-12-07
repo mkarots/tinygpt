@@ -1,0 +1,5 @@
+{
+  "name": "tinyrag",
+  "description": "Instantly create a hosted, private GPT trained on your documents. Drag, drop, and chat.",
+  "requestFramePermissions": []
+}
