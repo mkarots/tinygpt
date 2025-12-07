@@ -3,12 +3,12 @@
 
 import React, { useState } from 'react';
 import { DashboardTab, KnowledgeItem, AgentConfig, CompanyInfo } from './types';
-import Sidebar from './components/Sidebar';
-import KnowledgeTab from './components/KnowledgeTab';
-import AppearanceTab from './components/AppearanceTab';
-import DeployTab from './components/DeployTab';
-import LivePreview from './components/LivePreview';
-import Onboarding from './components/Onboarding';
+import Sidebar from './src/components/Sidebar';
+import KnowledgeTab from './src/components/KnowledgeTab';
+import AppearanceTab from './src/components/AppearanceTab';
+import DeployTab from './src/components/DeployTab';
+import LivePreview from './src/components/LivePreview';
+import Onboarding from './src/components/Onboarding';
 
   // Default Configuration
 const DEFAULT_CONFIG: AgentConfig = {
@@ -64,19 +64,14 @@ const App: React.FC = () => {
     if (config.quickQuestions.length < 4) {
       setConfig((prev: AgentConfig) => ({ 
         ...prev, 
-        quickQuestions: [...prev.quickQuestions, { text: 'New Question', emoji: '✨' }] as (string | { text: string; emoji: string })[]
+        quickQuestions: [...prev.quickQuestions, { text: 'New Question', emoji: '✨' }]
       }));
     }
   };
 
   const updateQuickQuestion = (index: number, value: string) => {
-    const newQuestions: (string | { text: string; emoji: string })[] = [...config.quickQuestions];
-    // Handle legacy string updates if necessary, though AppearanceTab handles it mostly
-    if (typeof newQuestions[index] === 'string') {
-        newQuestions[index] = value; 
-    } else {
-        newQuestions[index] = { ...newQuestions[index] as { text: string; emoji: string }, text: value };
-    }
+    const newQuestions = [...config.quickQuestions];
+    newQuestions[index] = { ...newQuestions[index], text: value };
     setConfig((prev: AgentConfig) => ({ ...prev, quickQuestions: newQuestions }));
   };
 

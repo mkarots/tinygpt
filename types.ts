@@ -25,7 +25,7 @@ export interface AgentConfig {
   primaryColor: string;
   greeting: string;
   tone: 'professional' | 'friendly' | 'concise' | 'humorous';
-  quickQuestions: string[] | { text: string; emoji: string }[]; // Backward compatibility
+  quickQuestions: { text: string; emoji: string }[];
 }
 
 export interface ChatMessage {

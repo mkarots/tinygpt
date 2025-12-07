@@ -80,7 +80,7 @@
   // Iframe
   const iframe = document.createElement('iframe');
   iframe.id = 'tinygpt-iframe';
-  iframe.src = `${baseUrl}/chat/${agentId}`;
+  iframe.src = `${baseUrl}/embed/${agentId}`;
   container.appendChild(iframe);
 
   // Button

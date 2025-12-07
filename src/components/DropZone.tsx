@@ -1,8 +1,8 @@
 
 import React, { useCallback, useState } from 'react';
 import { Upload, Loader2, AlertCircle } from 'lucide-react';
-import { readFileContent } from '../src/utils/fileUtils';
-import { KnowledgeItem } from '../types';
+import { readFileContent } from '../utils/fileUtils';
+import { KnowledgeItem } from '../../types';
 
 interface DropZoneProps {
   onFilesAdded: (files: KnowledgeItem[]) => void;
