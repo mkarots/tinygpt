@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { ChevronRight, ChevronLeft, Check } from 'lucide-react';
+import { ChevronRight, ChevronLeft } from 'lucide-react';
 import { AgentConfig, KnowledgeItem, CompanyInfo, OnboardingStep } from '../../types';
 import { Button } from './core/button/Button';
 import { CompanyStep } from './onboarding/CompanyStep';
 import { KnowledgeStep } from './onboarding/KnowledgeStep';
 import { CustomizeStep } from './onboarding/CustomizeStep';
 import { SuccessStep } from './onboarding/SuccessStep';
+import { OnboardingHeader } from './onboarding/OnboardingHeader';
 import { QuickQuestionsEditor } from './QuickQuestionsEditor';
 import { Heading } from './core/typography/Heading';
 import { Text } from './core/typography/Text';
@@ -40,33 +41,73 @@ const Onboarding: React.FC<OnboardingProps> = ({
   onCompanyInfoChange
 }) => {
   const [step, setStep] = useState<OnboardingStep>(1);
+  const [isCrawling, setIsCrawling] = useState(false);
+  const [crawlProgress, setCrawlProgress] = useState(0);
 
   const performCrawl = async (url: string) => {
-    // This function was originally inside Onboarding but mostly used by step 1 & 2.
-    // Step 1 logic (auto-crawl on next) will be moved to handleNext.
-    // Step 2 logic (manual crawl) is now inside KnowledgeStep.
+    try {
+      new URL(url);
+    } catch {
+      return; 
+    }
+
+    const tempId = Math.random().toString(36).substr(2, 9);
+    const newItem: KnowledgeItem = {
+      id: tempId,
+      type: 'url',
+      name: new URL(url).hostname,
+      content: '',
+      status: 'pending',
+      dateAdded: Date.now()
+    };
     
-    // We can keep a simplified version here if we want to trigger a crawl from the parent,
-    // but since KnowledgeStep now handles its own crawling logic, we might not need it here
-    // unless we want to trigger it from step 1's "Next" action.
+    onAddKnowledge([newItem]);
+    setIsCrawling(true);
+    setCrawlProgress(0);
+
+    // Simulate progress
+    const progressInterval = setInterval(() => {
+      setCrawlProgress(prev => {
+        if (prev >= 90) return prev;
+        return prev + 1;
+      });
+    }, 100);
     
-    // For now, I'll replicate the core logic just for the step 1 transition if needed,
-    // or we can rely on KnowledgeStep being the place where crawling happens.
-    
-    // Actually, the original requirement was:
-    // "if (step === 1 && companyInfo.website) { performCrawl(companyInfo.website); }"
-    // This means we want to start a crawl automatically when moving from step 1 to 2.
-    // To support this, we need to pass a "start crawl" function to KnowledgeStep or call it here.
-    
-    // However, since KnowledgeStep manages its own crawling state (progress, isCrawling),
-    // calling it from here is tricky without lifting that state up.
-    // For simplicity in this refactor, I will omit the auto-crawl on step 1 exit 
-    // unless we want to move all crawling state back up to Onboarding.tsx.
-    
-    // Given the user asked to "break down", isolating logic in KnowledgeStep is cleaner.
-    // I will let the user explicitly click "Import" in step 2 for now, or 
-    // we can pass a prop to KnowledgeStep `initialUrlToCrawl` if we really want that auto-behavior.
-    return;
+    // Start background crawl
+    fetch('/api/crawl', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url }),
+    })
+    .then(res => res.json())
+    .then(data => {
+      clearInterval(progressInterval);
+      setCrawlProgress(100);
+      if (data.error) {
+        onUpdateKnowledge(tempId, { status: 'error', name: `Error: ${new URL(url).hostname}` });
+      } else {
+        onUpdateKnowledge(tempId, { 
+          status: 'active', 
+          content: data.content,
+          name: data.title || new URL(url).hostname
+        });
+        
+        // Simulate Email Trigger
+        if (companyInfo.email) {
+            console.log(`Email sent to ${companyInfo.email}`);
+        }
+      }
+    })
+    .catch(() => {
+        clearInterval(progressInterval);
+        onUpdateKnowledge(tempId, { status: 'error' });
+    })
+    .finally(() => {
+        setTimeout(() => {
+          setIsCrawling(false);
+          setCrawlProgress(0);
+        }, 500);
+    });
   };
 
   const triggerConfetti = (final = false) => {
@@ -105,9 +146,9 @@ const Onboarding: React.FC<OnboardingProps> = ({
   };
 
   const handleNext = () => {
-    // Note: The original auto-crawl on step 1 exit is removed to simplify state management
-    // as KnowledgeStep now handles crawling internally. 
-    // If needed, we can lift state up later.
+    if (step === 1 && companyInfo.website) {
+       performCrawl(companyInfo.website);
+    }
 
     if (step < 5) {
       triggerConfetti();
@@ -126,48 +167,7 @@ const Onboarding: React.FC<OnboardingProps> = ({
 
   return (
     <div className="flex flex-col h-full bg-white">
-      {/* Header / Progress */}
-      <div className="px-8 py-6 border-b border-slate-100">
-        <div className="flex justify-between items-center mb-6">
-           <h1 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-             <div className="w-8 h-8 bg-brand-600 rounded-lg text-white flex items-center justify-center">
-               <span className="font-mono font-bold">T</span>
-             </div>
-             TinyGPT Setup
-           </h1>
-           <span className="text-sm text-slate-400 font-medium">Step {step} of 5</span>
-        </div>
-        
-        {/* Progress Bar */}
-        <div className="relative">
-          <div className="absolute top-1/2 left-0 w-full h-1 bg-slate-100 -translate-y-1/2 rounded-full"></div>
-          <div 
-            className="absolute top-1/2 left-0 h-1 bg-brand-600 -translate-y-1/2 rounded-full transition-all duration-500 ease-out"
-            style={{ width: `${((step - 1) / 4) * 100}%` }}
-          ></div>
-          <div className="relative flex justify-between">
-            {STEPS.map((s) => (
-              <div key={s.id} className="flex flex-col items-center gap-2">
-                <div 
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium border-2 transition-all duration-300
-                    ${step > s.id 
-                      ? 'bg-brand-600 border-brand-600 text-white' 
-                      : step === s.id 
-                        ? 'bg-white border-brand-600 text-brand-600 scale-110 shadow-lg' 
-                        : 'bg-white border-slate-200 text-slate-300'
-                    }
-                  `}
-                >
-                  {step > s.id ? <Check className="w-4 h-4" /> : s.id}
-                </div>
-                <span className={`text-[10px] font-medium uppercase tracking-wider transition-colors duration-300 ${step === s.id ? 'text-brand-600' : 'text-slate-300'}`}>
-                  {s.title}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+      <OnboardingHeader step={step} steps={STEPS} />
 
       {/* Content Area */}
       <div className="flex-1 overflow-y-auto">
@@ -188,6 +188,9 @@ const Onboarding: React.FC<OnboardingProps> = ({
               onAddKnowledge={onAddKnowledge}
               onUpdateKnowledge={onUpdateKnowledge}
               companyInfo={companyInfo}
+              isCrawling={isCrawling}
+              crawlProgress={crawlProgress}
+              onPerformCrawl={performCrawl}
             />
           )}
 
