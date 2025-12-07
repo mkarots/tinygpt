@@ -6,7 +6,7 @@ const DeployTab: React.FC = () => {
   const [copiedLink, setCopiedLink] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
   
-  const mockShareUrl = `https://tinyrag.app/chat/p/${Math.random().toString(36).substr(2, 6)}`;
+  const mockShareUrl = `https://tinygpt.app/chat/p/${Math.random().toString(36).substr(2, 6)}`;
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(mockShareUrl);
