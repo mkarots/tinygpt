@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import { FileAgentRepository } from '../../../../infrastructure/repositories/FileAgentRepository';
+import { SupabaseAgentRepository } from '../../../../infrastructure/repositories/SupabaseAgentRepository';
+import { createClient as createServerSupabase } from '../../../../lib/supabase-server';
 
 export async function GET(
   request: Request,
@@ -12,7 +13,8 @@ export async function GET(
        return NextResponse.json({ error: 'Agent ID required' }, { status: 400 });
     }
 
-    const repo = new FileAgentRepository();
+    const supabase = await createServerSupabase();
+    const repo = new SupabaseAgentRepository(supabase);
     const agent = await repo.getById(agentId);
 
     if (!agent) {

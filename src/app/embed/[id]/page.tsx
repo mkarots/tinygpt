@@ -15,9 +15,15 @@ export default function EmbedPage() {
     knowledge: KnowledgeItem[];
   } | null>(null);
 
+  const agentId = typeof params.id === 'string' ? params.id : undefined;
+
   useEffect(() => {
-    if (params.agentId) {
-      fetch(`/api/agent/${params.agentId}`)
+    if (!agentId) {
+      setError('Agent not found');
+      setLoading(false);
+      return;
+    }
+    fetch(`/api/agent/${agentId}`)
         .then(res => {
           if (!res.ok) throw new Error('Agent not found');
           return res.json();
@@ -30,8 +36,7 @@ export default function EmbedPage() {
           setError(err.message);
           setLoading(false);
         });
-    }
-  }, [params.agentId]);
+  }, [agentId]);
 
   if (loading) {
     return (
@@ -57,8 +62,7 @@ export default function EmbedPage() {
        <WidgetChat 
          config={agentData.config} 
          knowledge={agentData.knowledge}
-         // No close button in embed mode usually, or handled by parent frame
-         // We allow Quick Questions (pills) here because it's the widget
+         agentId={agentId}
          showQuickQuestions={true} 
        />
     </div>

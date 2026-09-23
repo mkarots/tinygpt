@@ -1,8 +1,9 @@
 import React from 'react';
+import { CompanyInfo, AgentConfig } from '../../../types';
 import { Heading } from '../core/typography/Heading';
 import { Text } from '../core/typography/Text';
 import { Input } from '../core/input/Input';
-import { CompanyInfo, AgentConfig } from '../../../types';
+import { Select } from '../core/input/Select';
 
 interface CompanyStepProps {
   companyInfo: CompanyInfo;
@@ -10,6 +11,15 @@ interface CompanyStepProps {
   config: AgentConfig;
   onConfigChange: (key: keyof AgentConfig, value: any) => void;
 }
+
+const INDUSTRY_OPTIONS = [
+  { label: 'Select an industry', value: '' },
+  { label: 'SaaS / Technology', value: 'saas' },
+  { label: 'E-commerce', value: 'ecommerce' },
+  { label: 'Education', value: 'education' },
+  { label: 'Agency / Services', value: 'agency' },
+  { label: 'Other', value: 'other' },
+];
 
 export const CompanyStep: React.FC<CompanyStepProps> = ({
   companyInfo,
@@ -30,8 +40,8 @@ export const CompanyStep: React.FC<CompanyStepProps> = ({
           value={companyInfo.name}
           onChange={(e) => {
                onCompanyInfoChange({...companyInfo, name: e.target.value});
-               if (!config.name || config.name === 'Support Bot') {
-                 onConfigChange('name', `${e.target.value} Assistant`);
+               if (!config.name || config.name === 'Tiny Support Assistant') {
+                 onConfigChange('name', `Tiny ${e.target.value} Support Assistant`);
                }
           }}
         />
@@ -42,21 +52,14 @@ export const CompanyStep: React.FC<CompanyStepProps> = ({
           value={companyInfo.website}
           onChange={(e) => onCompanyInfoChange({...companyInfo, website: e.target.value})}
         />
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Industry</label>
-          <select 
-             value={companyInfo.industry}
-             onChange={(e) => onCompanyInfoChange({...companyInfo, industry: e.target.value})}
-             className="w-full px-4 py-3 bg-white text-slate-900 placeholder:text-slate-400 rounded-xl border border-slate-200 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 outline-none transition-all"
-          >
-            <option value="">Select an industry</option>
-            <option value="saas">SaaS / Technology</option>
-            <option value="ecommerce">E-commerce</option>
-            <option value="education">Education</option>
-            <option value="agency">Agency / Services</option>
-            <option value="other">Other</option>
-          </select>
-        </div>
+        
+        <Select
+          label="Industry"
+          value={companyInfo.industry}
+          onChange={(e) => onCompanyInfoChange({...companyInfo, industry: e.target.value})}
+          options={INDUSTRY_OPTIONS}
+        />
+
         <Input 
           label="Your Email (for crawl reports)"
           placeholder="you@company.com"
@@ -68,4 +71,3 @@ export const CompanyStep: React.FC<CompanyStepProps> = ({
     </div>
   );
 };
-

@@ -74,7 +74,7 @@ const WidgetChat: React.FC<WidgetChatProps> = ({ config, knowledge, agentId, onC
         setMessages(prev => prev.map(msg => 
           msg.id === botMessageId ? { ...msg, text: streamedText } : msg
         ));
-      });
+      }, messages);
     } catch (error) {
       setMessages(prev => prev.map(msg => 
         msg.id === botMessageId 

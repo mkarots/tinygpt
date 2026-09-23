@@ -6,3 +6,8 @@ export interface ChatMessage {
   isStreaming?: boolean;
 }
 
+export interface ChatTurn {
+  role: 'user' | 'model';
+  text: string;
+}
+

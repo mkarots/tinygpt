@@ -1,0 +1,32 @@
+import React from 'react';
+import { Globe, FileText } from 'lucide-react';
+import { KnowledgeItem } from '../../../types';
+
+interface KnowledgeListProps {
+  items: KnowledgeItem[];
+}
+
+export const KnowledgeList: React.FC<KnowledgeListProps> = ({ items }) => {
+  if (items.length === 0) return null;
+
+  return (
+    <div className="bg-white border border-slate-200 rounded-xl overflow-hidden mt-4">
+      <div className="bg-slate-50 px-4 py-2 text-xs font-semibold text-slate-500 border-b border-slate-200">
+        Imported ({items.length})
+      </div>
+      <ul className="divide-y divide-slate-100">
+        {items.map(k => (
+          <li key={k.id} className="px-4 py-3 flex items-center justify-between">
+             <div className="flex items-center gap-3">
+                {k.type === 'file' && <FileText className="w-4 h-4 text-orange-500" />}
+                {k.type === 'url' && <Globe className="w-4 h-4 text-blue-500" />}
+                <span className="text-sm font-medium text-slate-700">{k.name}</span>
+             </div>
+             <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Ready</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+

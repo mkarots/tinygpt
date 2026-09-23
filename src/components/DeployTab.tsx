@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { CheckCircle, Copy, Link, ExternalLink, Globe, Loader2 } from 'lucide-react';
 import { AgentConfig, KnowledgeItem } from '../../types';
+import { saveAgent } from '../lib/saveAgent';
 
 interface DeployTabProps {
   config: AgentConfig;
@@ -13,21 +14,16 @@ const DeployTab: React.FC<DeployTabProps> = ({ config, knowledge }) => {
   const [copiedCode, setCopiedCode] = useState(false);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const generateLink = async () => {
     setIsGenerating(true);
+    setError(null);
     try {
-      const response = await fetch('/api/agent', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ config, knowledge }),
-      });
-      const data = await response.json();
-      if (data.url) {
-        setShareUrl(`${window.location.origin}${data.url}`);
-      }
+      const data = await saveAgent(config, knowledge);
+      setShareUrl(`${window.location.origin}${data.url}`);
     } catch (e) {
-      console.error('Failed to generate link', e);
+      setError(e instanceof Error ? e.message : 'Failed to generate link');
     } finally {
       setIsGenerating(false);
     }
@@ -69,6 +65,9 @@ const DeployTab: React.FC<DeployTabProps> = ({ config, knowledge }) => {
                  <p className="text-slate-500 text-sm mt-1">
                    Send this public link to colleagues or customers. They can chat with your agent in a full-page interface without needing an account.
                  </p>
+                 {error && (
+                   <p className="text-sm text-red-600 mt-2">{error}</p>
+                 )}
                  
                  <div className="mt-4 flex gap-2">
                     <div className="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-sm text-slate-600 font-mono flex items-center justify-between min-h-[46px]">

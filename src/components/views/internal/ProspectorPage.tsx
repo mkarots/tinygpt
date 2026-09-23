@@ -2,7 +2,7 @@
 
 /**
  * Internal demo factory — not the product create path.
- * Official create is home onboarding (`/`). This page exists so the founder
+ * Official create is /admin (onboarding). This page exists so the founder
  * can crawl a site and send someone a playable chat link.
  */
 
@@ -10,6 +10,7 @@ import React, { useState } from 'react';
 import { Loader2, CheckCircle, Globe, Building2, Copy, ExternalLink } from 'lucide-react';
 import { AgentConfig, KnowledgeItem } from '../../../../types';
 import { QuickQuestionsEditor } from '../../QuickQuestionsEditor';
+import { saveAgent } from '../../../lib/saveAgent';
 import { PRODUCT_BUILDER_PATH } from '../../../lib/routes';
 
 export default function ProspectorPage() {
@@ -67,23 +68,15 @@ export default function ProspectorPage() {
 
       setStatus('saving');
       addLog('💾 Saving agent configuration...');
-      const saveRes = await fetch('/api/agent', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ config, knowledge }),
-      });
-      const saveData = await saveRes.json();
-
-      if (!saveData.url) throw new Error('Failed to save agent');
+      const saveData = await saveAgent(config, knowledge);
 
       setResultUrl(`${window.location.origin}${saveData.url}`);
       setStatus('done');
       addLog('✨ Demo agent created.');
 
-    } catch (error: unknown) {
+    } catch (error: any) {
       console.error(error);
-      const message = error instanceof Error ? error.message : 'Unknown error';
-      addLog(`❌ Error: ${message}`);
+      addLog(`❌ Error: ${error.message}`);
       setStatus('idle');
     }
   };
@@ -104,7 +97,7 @@ export default function ProspectorPage() {
             Founder tool: crawl a site and send someone a demo chat link.
             Not the product create flow — that is{' '}
             <a href={PRODUCT_BUILDER_PATH} className="text-slate-200 underline underline-offset-2">
-              home
+              {PRODUCT_BUILDER_PATH}
             </a>.
           </p>
         </div>
