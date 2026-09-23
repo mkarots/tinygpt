@@ -80,9 +80,10 @@ export default function ProspectorPage() {
       setStatus('done');
       addLog('✨ Demo agent created.');
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
-      addLog(`❌ Error: ${error.message}`);
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      addLog(`❌ Error: ${message}`);
       setStatus('idle');
     }
   };
@@ -146,7 +147,7 @@ export default function ProspectorPage() {
               />
 
               <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 font-mono text-xs text-slate-500 h-32 overflow-y-auto">
-                {logs.length === 0 ? <span className="opacity-50">// Logs will appear here...</span> : logs.map((l, i) => <div key={i}>{l}</div>)}
+                {logs.length === 0 ? <span className="opacity-50">{'// Logs will appear here...'}</span> : logs.map((l, i) => <div key={i}>{l}</div>)}
               </div>
 
               <button
