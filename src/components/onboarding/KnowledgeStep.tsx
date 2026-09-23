@@ -5,6 +5,7 @@ import DropZone from '../DropZone';
 import { KnowledgeItem, CompanyInfo } from '../../../types';
 import { WebsiteImport } from './WebsiteImport';
 import { KnowledgeList } from './KnowledgeList';
+import { PastedTextForm } from './PastedTextForm';
 
 interface KnowledgeStepProps {
   knowledge: KnowledgeItem[];
@@ -36,7 +37,7 @@ export const KnowledgeStep: React.FC<KnowledgeStepProps> = ({
     <div className="space-y-6 animate-fade-in">
       <div className="text-center mb-8">
         <Heading level={2}>Add your knowledge</Heading>
-        <Text variant="muted" className="mt-2">Upload docs or import your site. The more you add, the smarter it gets.</Text>
+        <Text variant="muted" className="mt-2">Upload files, import a site, or paste text. The more you add, the smarter it gets.</Text>
       </div>
       
       <WebsiteImport 
@@ -49,6 +50,8 @@ export const KnowledgeStep: React.FC<KnowledgeStepProps> = ({
       />
 
       <DropZone onFilesAdded={onAddKnowledge} compact />
+
+      <PastedTextForm onAdd={(item) => onAddKnowledge([item])} />
 
       <KnowledgeList items={knowledge} />
     </div>

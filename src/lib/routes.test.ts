@@ -4,6 +4,7 @@ import {
   INTERNAL_PROSPECTOR_PATH,
   LEGACY_ADMIN_CREATE_PATH,
   PRODUCT_BUILDER_PATH,
+  adminSharePath,
   isAuthRequiredPath,
 } from './routes';
 
@@ -24,5 +25,12 @@ describe('product vs internal routes', () => {
     assert.equal(isAuthRequiredPath('/internal/prospector'), true);
     assert.equal(isAuthRequiredPath('/chat/abc'), false);
     assert.equal(isAuthRequiredPath('/login'), false);
+  });
+
+  it('puts the post-save share view on the authenticated builder', () => {
+    const path = adminSharePath('agent-1');
+    assert.equal(path, '/admin/share/agent-1');
+    assert.equal(isAuthRequiredPath(path), true);
+    assert.equal(path.startsWith('/chat/'), false);
   });
 });
