@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { Agent } from '../../domain/entities/Agent';
 import { IAgentRepository } from '../../domain/interfaces/IAgentRepository';
-import { CreateAgentUseCase, MAX_KNOWLEDGE_CHARS } from './CreateAgentUseCase';
+import { CreateAgentUseCase, MAX_KNOWLEDGE_CHARS, isUuid } from './CreateAgentUseCase';
 
 const config = {
   name: 'Bot',
@@ -30,6 +30,24 @@ describe('CreateAgentUseCase', () => {
     const agent = await useCase.execute(config, []);
     assert.equal(agent.id, '11111111-1111-4111-8111-111111111111');
     assert.equal(repo.saved?.id, agent.id);
+  });
+
+  it('mints a UUID with the default generator', async () => {
+    const repo = new MemoryRepo();
+    const useCase = new CreateAgentUseCase(repo);
+    const agent = await useCase.execute(config, []);
+    assert.equal(isUuid(agent.id), true);
+    assert.equal(repo.saved?.id, agent.id);
+  });
+
+  it('rejects a short id that cannot be stored in agents.id', async () => {
+    const repo = new MemoryRepo();
+    const useCase = new CreateAgentUseCase(repo, () => 'should-not-run');
+    await assert.rejects(
+      () => useCase.execute(config, [], 'abcd1234'),
+      /UUID/
+    );
+    assert.equal(repo.saved, null);
   });
 
   it('reuses an existing id on update', async () => {

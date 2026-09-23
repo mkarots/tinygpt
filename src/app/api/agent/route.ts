@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { CreateAgentUseCase } from '../../../application/use-cases/CreateAgentUseCase';
+import { CreateAgentUseCase, isUuid } from '../../../application/use-cases/CreateAgentUseCase';
 import { SupabaseAgentRepository } from '../../../infrastructure/repositories/SupabaseAgentRepository';
 import { createClient as createServerSupabase } from '../../../lib/supabase-server';
 
@@ -16,6 +16,10 @@ export async function POST(request: Request) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       return NextResponse.json({ error: 'Sign in required to save an agent' }, { status: 401 });
+    }
+
+    if (agentId != null && agentId !== '' && (typeof agentId !== 'string' || !isUuid(agentId))) {
+      return NextResponse.json({ error: 'Agent id must be a UUID' }, { status: 400 });
     }
 
     const agentRepository = new SupabaseAgentRepository(supabase);
