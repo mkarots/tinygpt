@@ -4,7 +4,7 @@ import { Heading } from '../core/typography/Heading';
 import { Text } from '../core/typography/Text';
 import { Button } from '../core/button/Button';
 import DropZone from '../DropZone';
-import { KnowledgeItem, CompanyInfo } from '../../types';
+import { KnowledgeItem, CompanyInfo } from '../../../types';
 
 interface KnowledgeStepProps {
   knowledge: KnowledgeItem[];

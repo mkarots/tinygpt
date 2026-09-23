@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "npx --yes tsx --test src/lib/routes.test.ts"
+    "test": "npx --yes tsx --test src/lib/routes.test.ts src/infrastructure/services/GeminiEmbeddingService.test.ts"
   },
   "dependencies": {
     "@google/genai": "^1.30.0",

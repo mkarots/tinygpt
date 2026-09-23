@@ -2,7 +2,7 @@ import React from 'react';
 import { Heading } from '../core/typography/Heading';
 import { Text } from '../core/typography/Text';
 import { Input } from '../core/input/Input';
-import { CompanyInfo, AgentConfig } from '../../types';
+import { CompanyInfo, AgentConfig } from '../../../types';
 
 interface CompanyStepProps {
   companyInfo: CompanyInfo;
