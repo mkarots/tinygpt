@@ -2,7 +2,7 @@ import React from 'react';
 import { Heading } from '../core/typography/Heading';
 import { Text } from '../core/typography/Text';
 import { Input } from '../core/input/Input';
-import { AgentConfig } from '../../types';
+import { AgentConfig } from '../../../types';
 
 interface CustomizeStepProps {
   config: AgentConfig;
