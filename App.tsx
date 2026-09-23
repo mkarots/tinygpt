@@ -2,11 +2,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { DashboardTab, KnowledgeItem, AgentConfig, CompanyInfo } from './types';
-import Sidebar from './src/components/Sidebar';
-import KnowledgeTab from './src/components/KnowledgeTab';
-import AppearanceTab from './src/components/AppearanceTab';
-import DeployTab from './src/components/DeployTab';
+import { KnowledgeItem, AgentConfig, CompanyInfo } from './types';
 import LivePreview from './src/components/LivePreview';
 import Onboarding from './src/components/Onboarding';
 
@@ -25,8 +21,6 @@ const DEFAULT_CONFIG: AgentConfig = {
 };
 
 const App: React.FC = () => {
-  const [showOnboarding, setShowOnboarding] = useState(true);
-  const [activeTab, setActiveTab] = useState<DashboardTab>('knowledge');
   const [knowledge, setKnowledge] = useState<KnowledgeItem[]>([]);
   const [config, setConfig] = useState<AgentConfig>(DEFAULT_CONFIG);
   
@@ -50,110 +44,28 @@ const App: React.FC = () => {
     ));
   };
 
-  const handleRemoveKnowledgeItem = (id: string) => {
-    setKnowledge(prev => prev.filter(k => k.id !== id));
-  };
-
-  // --- Configuration Handlers ---
-
   const handleConfigChange = (key: keyof AgentConfig, value: any) => {
     setConfig(prev => ({ ...prev, [key]: value }));
   };
 
-  const addQuickQuestion = () => {
-    if (config.quickQuestions.length < 4) {
-      setConfig((prev: AgentConfig) => ({ 
-        ...prev, 
-        quickQuestions: [...prev.quickQuestions, { text: 'New Question', emoji: '✨' }]
-      }));
-    }
-  };
-
-  const updateQuickQuestion = (index: number, value: string) => {
-    const newQuestions = [...config.quickQuestions];
-    newQuestions[index] = { ...newQuestions[index], text: value };
-    setConfig((prev: AgentConfig) => ({ ...prev, quickQuestions: newQuestions }));
-  };
-
-  const removeQuickQuestion = (index: number) => {
-    setConfig(prev => ({
-      ...prev,
-      quickQuestions: prev.quickQuestions.filter((_, i) => i !== index)
-    }));
-  };
-
-  // --- Render ---
-
-  if (showOnboarding) {
-    return (
-      <div className="flex h-screen bg-slate-50 font-sans overflow-hidden">
-         <main className="flex-1 flex overflow-hidden">
-            <div className="flex-1">
-              <Onboarding 
-                onComplete={() => setShowOnboarding(false)}
-                config={config}
-                onConfigChange={handleConfigChange}
-                knowledge={knowledge}
-                onAddKnowledge={handleAddKnowledgeItems}
-                onUpdateKnowledge={handleUpdateKnowledgeItem}
-                companyInfo={companyInfo}
-                onCompanyInfoChange={setCompanyInfo}
-              />
-            </div>
-            {/* Show Live Preview during onboarding too, but distinct */}
-            <div className="hidden xl:flex w-[400px] border-l border-slate-200 bg-slate-50">
-               <LivePreview config={config} knowledge={knowledge} />
-            </div>
-         </main>
-      </div>
-    );
-  }
-
   return (
-    <div className="flex h-screen bg-slate-50 text-slate-900 font-sans overflow-hidden animate-fade-in">
-      
-      {/* Sidebar Navigation */}
-      <Sidebar 
-        activeTab={activeTab} 
-        onTabChange={setActiveTab} 
-        companyName={companyInfo.name || "My Workspace"}
-      />
-
-      {/* Main Content Area */}
-      <main className="flex-1 flex overflow-hidden">
-        
-        {/* Center Panel: Config/Content */}
-        <div className="flex-1 overflow-y-auto p-8 lg:p-12">
-          
-          {activeTab === 'knowledge' && (
-            <KnowledgeTab 
+    <div className="flex h-screen bg-slate-50 font-sans overflow-hidden">
+       <main className="flex-1 flex overflow-hidden">
+          <div className="flex-1">
+            <Onboarding 
+              config={config}
+              onConfigChange={handleConfigChange}
               knowledge={knowledge}
-              onAddItems={handleAddKnowledgeItems}
-              onUpdateItem={handleUpdateKnowledgeItem}
-              onRemoveItem={handleRemoveKnowledgeItem}
+              onAddKnowledge={handleAddKnowledgeItems}
+              onUpdateKnowledge={handleUpdateKnowledgeItem}
+              companyInfo={companyInfo}
+              onCompanyInfoChange={setCompanyInfo}
             />
-          )}
-
-          {activeTab === 'appearance' && (
-             <AppearanceTab 
-               config={config}
-               onConfigChange={handleConfigChange}
-               onAddQuickQuestion={addQuickQuestion}
-               onUpdateQuickQuestion={updateQuickQuestion}
-               onRemoveQuickQuestion={removeQuickQuestion}
-             />
-          )}
-
-          {activeTab === 'deploy' && (
-            <DeployTab config={config} knowledge={knowledge} />
-          )}
-          
-        </div>
-
-        {/* Right Panel: Live Preview */}
-        <LivePreview config={config} knowledge={knowledge} />
-
-      </main>
+          </div>
+          <div className="hidden xl:flex w-[400px] border-l border-slate-200 bg-slate-50">
+             <LivePreview config={config} knowledge={knowledge} />
+          </div>
+       </main>
     </div>
   );
 };

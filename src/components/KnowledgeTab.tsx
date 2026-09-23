@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Globe, Loader, FileText, Code, Trash2 } from 'lucide-react';
 import DropZone from './DropZone';
 import { KnowledgeItem } from '../../types';
+import { createTextKnowledgeItem } from '../lib/textKnowledge';
 
 interface KnowledgeTabProps {
   knowledge: KnowledgeItem[];
@@ -64,15 +65,8 @@ const KnowledgeTab: React.FC<KnowledgeTabProps> = ({ knowledge, onAddItems, onUp
   };
 
   const handleAddText = () => {
-    if (!textInputTitle || !textInputContent) return;
-    const newItem: KnowledgeItem = {
-      id: Math.random().toString(36).substr(2, 9),
-      type: 'text',
-      name: textInputTitle,
-      content: textInputContent,
-      status: 'active',
-      dateAdded: Date.now()
-    };
+    const newItem = createTextKnowledgeItem(textInputTitle, textInputContent);
+    if (!newItem) return;
     onAddItems([newItem]);
     setTextInputTitle('');
     setTextInputContent('');

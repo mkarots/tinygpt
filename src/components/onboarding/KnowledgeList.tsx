@@ -1,5 +1,5 @@
 import React from 'react';
-import { Globe, FileText } from 'lucide-react';
+import { AlignLeft, Globe, FileText } from 'lucide-react';
 import { KnowledgeItem } from '../../../types';
 
 interface KnowledgeListProps {
@@ -20,6 +20,7 @@ export const KnowledgeList: React.FC<KnowledgeListProps> = ({ items }) => {
              <div className="flex items-center gap-3">
                 {k.type === 'file' && <FileText className="w-4 h-4 text-orange-500" />}
                 {k.type === 'url' && <Globe className="w-4 h-4 text-blue-500" />}
+                {k.type === 'text' && <AlignLeft className="w-4 h-4 text-emerald-500" />}
                 <span className="text-sm font-medium text-slate-700">{k.name}</span>
              </div>
              <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Ready</span>

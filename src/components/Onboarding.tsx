@@ -14,9 +14,9 @@ import { QuickQuestionsEditor } from './QuickQuestionsEditor';
 import { Heading } from './core/typography/Heading';
 import { Text } from './core/typography/Text';
 import { saveAgent } from '../lib/saveAgent';
+import { adminSharePath } from '../lib/routes';
 
 interface OnboardingProps {
-  onComplete: () => void;
   config: AgentConfig;
   onConfigChange: (key: keyof AgentConfig, value: any) => void;
   knowledge: KnowledgeItem[];
@@ -35,7 +35,6 @@ const STEPS = [
 ];
 
 const Onboarding: React.FC<OnboardingProps> = ({ 
-  onComplete, 
   config, 
   onConfigChange,
   knowledge,
@@ -168,8 +167,7 @@ const Onboarding: React.FC<OnboardingProps> = ({
     try {
       const { agentId } = await saveAgent(config, knowledge);
       triggerConfetti(true);
-      onComplete();
-      router.push(`/chat/${agentId}`);
+      router.push(adminSharePath(agentId));
     } catch (error) {
       setSaveError(error instanceof Error ? error.message : 'Failed to save agent');
       setIsSaving(false);

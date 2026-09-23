@@ -12,7 +12,7 @@ export const SuccessStep: React.FC<{ error?: string | null }> = ({ error }) => {
         </div>
         <Heading level={2}>Save your agent</Heading>
         <Text variant="muted" className="mt-2">
-          We'll store the full knowledge you added and open a public chat link you can share.
+          This saves the agent to your account, then opens a page with the public chat link and embed snippet.
         </Text>
         {error && <p className="text-sm text-red-600 mt-4">{error}</p>}
       </div>
