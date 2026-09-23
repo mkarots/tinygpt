@@ -1,9 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  experimental: {
-    allowedDevOrigins: ['localhost:3000', '127.0.0.1:3000', '0.0.0.0:3000'],
-  },
+  // Hostnames only. localhost is already allowed. 0.0.0.0 is a bind address, not a browser origin.
+  allowedDevOrigins: ['127.0.0.1'],
 };
 
 export default nextConfig;

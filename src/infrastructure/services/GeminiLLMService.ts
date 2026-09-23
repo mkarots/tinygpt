@@ -5,6 +5,9 @@ import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
 import { ChatTurn } from '../../domain/entities/Chat';
 import { buildKnowledgeContext } from '../../utils/knowledgeContext';
 
+/** Gemini retired gemini-2.0-flash. This is the replacement named in the API error. */
+export const GEMINI_FLASH_MODEL = 'gemini-3.6-flash';
+
 export class GeminiLLMService implements ILLMService {
   private client: GoogleGenAI;
 
@@ -18,7 +21,7 @@ export class GeminiLLMService implements ILLMService {
 
     try {
         const response = await this.client.models.generateContent({
-            model: 'gemini-2.0-flash',
+            model: GEMINI_FLASH_MODEL,
             contents: [{
             role: "user",
             parts: [{
@@ -73,7 +76,7 @@ INSTRUCTIONS:
 `;
 
       const chatSession = this.client.chats.create({
-        model: 'gemini-2.0-flash',
+        model: GEMINI_FLASH_MODEL,
         config: {
           systemInstruction,
           temperature: config.tone === 'humorous' ? 0.7 : 0.2,

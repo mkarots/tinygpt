@@ -2,6 +2,7 @@ import { SupabaseClient } from '@supabase/supabase-js';
 import { IAgentRepository } from '../../domain/interfaces/IAgentRepository';
 import { Agent, AgentConfig } from '../../domain/entities/Agent';
 import { KnowledgeItem } from '../../domain/entities/KnowledgeSource';
+import { profileFromAuthUser } from '../../lib/profileFromAuthUser';
 
 export class SupabaseAgentRepository implements IAgentRepository {
   constructor(private supabase: SupabaseClient) {}
@@ -10,6 +11,15 @@ export class SupabaseAgentRepository implements IAgentRepository {
     const { data: authData, error: authError } = await this.supabase.auth.getUser();
     if (authError || !authData.user) {
       throw new Error('User not authenticated');
+    }
+
+    const user = authData.user;
+    const { error: profileError } = await this.supabase
+      .from('profiles')
+      .upsert(profileFromAuthUser(user, new Date().toISOString()), { onConflict: 'id' });
+
+    if (profileError) {
+      throw new Error(`Failed to save profile: ${profileError.message}`);
     }
 
     const { error: agentError } = await this.supabase
