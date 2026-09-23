@@ -1,4 +1,4 @@
-import { AgentConfig, KnowledgeItem } from "../types";
+import { AgentConfig, ChatMessage, KnowledgeItem } from "../types";
 
 let currentConfig: AgentConfig | null = null;
 let currentKnowledge: KnowledgeItem[] | null = null;
@@ -12,11 +12,19 @@ export const initializeChat = async (knowledge: KnowledgeItem[], config: AgentCo
 
 export const sendMessageStream = async (
   message: string,
-  onChunk: (text: string) => void
+  onChunk: (text: string) => void,
+  priorMessages: ChatMessage[] = []
 ): Promise<string> => {
   let fullResponse = "";
   
-  const body: any = { message };
+  const body: any = {
+    message,
+    history: priorMessages.map(({ role, text, isStreaming }) => ({
+      role,
+      text,
+      isStreaming,
+    })),
+  };
   
   if (currentAgentId) {
     body.agentId = currentAgentId;

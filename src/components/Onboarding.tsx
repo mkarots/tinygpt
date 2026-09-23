@@ -1,4 +1,7 @@
+'use client';
+
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
 import { AgentConfig, KnowledgeItem, CompanyInfo, OnboardingStep } from '../../types';
 import { Button } from './core/button/Button';
@@ -10,6 +13,7 @@ import { OnboardingHeader } from './onboarding/OnboardingHeader';
 import { QuickQuestionsEditor } from './QuickQuestionsEditor';
 import { Heading } from './core/typography/Heading';
 import { Text } from './core/typography/Text';
+import { saveAgent } from '../lib/saveAgent';
 
 interface OnboardingProps {
   onComplete: () => void;
@@ -27,7 +31,7 @@ const STEPS = [
   { id: 2, title: 'Add Knowledge' },
   { id: 3, title: 'Customize' },
   { id: 4, title: 'Quick Questions' },
-  { id: 5, title: 'Install' },
+  { id: 5, title: 'Save' },
 ];
 
 const Onboarding: React.FC<OnboardingProps> = ({ 
@@ -40,9 +44,12 @@ const Onboarding: React.FC<OnboardingProps> = ({
   companyInfo,
   onCompanyInfoChange
 }) => {
+  const router = useRouter();
   const [step, setStep] = useState<OnboardingStep>(1);
   const [isCrawling, setIsCrawling] = useState(false);
   const [crawlProgress, setCrawlProgress] = useState(0);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const performCrawl = async (url: string) => {
     try {
@@ -145,7 +152,7 @@ const Onboarding: React.FC<OnboardingProps> = ({
     }
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (step === 1 && companyInfo.website) {
        performCrawl(companyInfo.website);
     }
@@ -153,9 +160,19 @@ const Onboarding: React.FC<OnboardingProps> = ({
     if (step < 5) {
       triggerConfetti();
       setStep((prev) => (prev + 1) as OnboardingStep);
-    } else {
+      return;
+    }
+
+    setIsSaving(true);
+    setSaveError(null);
+    try {
+      const { agentId } = await saveAgent(config, knowledge);
       triggerConfetti(true);
-      setTimeout(onComplete, 1500);
+      onComplete();
+      router.push(`/chat/${agentId}`);
+    } catch (error) {
+      setSaveError(error instanceof Error ? error.message : 'Failed to save agent');
+      setIsSaving(false);
     }
   };
 
@@ -215,7 +232,7 @@ const Onboarding: React.FC<OnboardingProps> = ({
           )}
 
           {step === 5 && (
-            <SuccessStep />
+            <SuccessStep error={saveError} />
           )}
 
         </div>
@@ -236,10 +253,12 @@ const Onboarding: React.FC<OnboardingProps> = ({
         <Button 
           variant="primary"
           onClick={handleNext}
-          rightIcon={<ChevronRight className="w-5 h-5" />}
+          disabled={isSaving}
+          isLoading={isSaving}
+          rightIcon={isSaving ? undefined : <ChevronRight className="w-5 h-5" />}
           className="px-8 py-3 rounded-xl shadow-lg shadow-brand-500/30 transform hover:scale-105"
         >
-          {step === 5 ? 'Go to Dashboard' : 'Next Step'}
+          {step === 5 ? 'Save & Open Chat' : 'Next Step'}
         </Button>
       </div>
     </div>

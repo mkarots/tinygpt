@@ -2,6 +2,8 @@ import { ILLMService } from '../../domain/interfaces/ILLMService';
 import { AgentConfig } from '../../domain/entities/Agent';
 import { KnowledgeItem } from '../../domain/entities/KnowledgeSource';
 import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
+import { ChatTurn } from '../../domain/entities/Chat';
+import { buildKnowledgeContext } from '../../utils/knowledgeContext';
 
 export class GeminiLLMService implements ILLMService {
   private client: GoogleGenAI;
@@ -16,7 +18,7 @@ export class GeminiLLMService implements ILLMService {
 
     try {
         const response = await this.client.models.generateContent({
-            model: 'gemini-2.5-flash',
+            model: 'gemini-2.0-flash',
             contents: [{
             role: "user",
             parts: [{
@@ -46,13 +48,10 @@ export class GeminiLLMService implements ILLMService {
   async chat(
     message: string,
     knowledge: KnowledgeItem[],
-    config: AgentConfig
+    config: AgentConfig,
+    history: ChatTurn[] = []
   ): Promise<AsyncIterable<string>> {
-      // Combine knowledge
-      const fullContext = knowledge
-        .filter(k => k.status === 'active')
-        .map(k => `--- SOURCE: ${k.name} (${k.type}) ---\n${k.content}\n--- END SOURCE ---`)
-        .join('\n\n');
+      const context = buildKnowledgeContext(knowledge);
 
       const systemInstruction = `
 You are an AI assistant named "${config.name}".
@@ -62,7 +61,7 @@ Your primary goal is to help users based STRICTLY on the provided knowledge base
 
 CORE KNOWLEDGE BASE:
 <knowledge_base>
-${fullContext}
+${context || "No relevant knowledge found for this query."}
 </knowledge_base>
 
 INSTRUCTIONS:
@@ -74,11 +73,19 @@ INSTRUCTIONS:
 `;
 
       const chatSession = this.client.chats.create({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-2.0-flash',
         config: {
           systemInstruction,
           temperature: config.tone === 'humorous' ? 0.7 : 0.2,
         },
+        ...(history.length > 0
+          ? {
+              history: history.map((turn) => ({
+                role: turn.role,
+                parts: [{ text: turn.text }],
+              })),
+            }
+          : {}),
       });
 
       const resultStream = await chatSession.sendMessageStream({ message });
@@ -105,4 +112,3 @@ INSTRUCTIONS:
     }
   }
 }
-
