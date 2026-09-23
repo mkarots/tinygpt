@@ -1,7 +1,7 @@
-'use client';
+import { redirect } from 'next/navigation';
+import { INTERNAL_PROSPECTOR_PATH } from '../../../lib/routes';
 
-import CreateAgentPage from '../../../components/views/admin/CreateAgentPage';
-
-export default function Page() {
-  return <CreateAgentPage />;
+/** Old URL that looked like the product create path. */
+export default function LegacyAdminCreatePage() {
+  redirect(INTERNAL_PROSPECTOR_PATH);
 }

@@ -1,11 +1,18 @@
 'use client';
 
+/**
+ * Internal demo factory — not the product create path.
+ * Official create is home onboarding (`/`). This page exists so the founder
+ * can crawl a site and send someone a playable chat link.
+ */
+
 import React, { useState } from 'react';
 import { Loader2, CheckCircle, Globe, Building2, Copy, ExternalLink } from 'lucide-react';
 import { AgentConfig, KnowledgeItem } from '../../../../types';
 import { QuickQuestionsEditor } from '../../QuickQuestionsEditor';
+import { PRODUCT_BUILDER_PATH } from '../../../lib/routes';
 
-export default function CreateAgentPage() {
+export default function ProspectorPage() {
   const [companyName, setCompanyName] = useState('');
   const [website, setWebsite] = useState('');
   const [customQuestions, setCustomQuestions] = useState<AgentConfig['quickQuestions']>([
@@ -27,7 +34,6 @@ export default function CreateAgentPage() {
     setLogs(['Starting process...', `Target: ${companyName} (${website})`]);
 
     try {
-      // 1. Crawl Website
       addLog('🕷️ Crawling website...');
       const crawlRes = await fetch('/api/crawl', {
         method: 'POST',
@@ -35,13 +41,12 @@ export default function CreateAgentPage() {
         body: JSON.stringify({ url: website }),
       });
       const crawlData = await crawlRes.json();
-      
+
       if (!crawlRes.ok || crawlData.error) {
         throw new Error(crawlData.error || 'Crawl failed');
       }
       addLog(`✅ Crawled successfully. Length: ${crawlData.content.length} chars`);
 
-      // 2. Construct Agent Config
       const knowledge: KnowledgeItem[] = [{
         id: Math.random().toString(36).substr(2, 9),
         type: 'url',
@@ -54,13 +59,12 @@ export default function CreateAgentPage() {
       const config: AgentConfig = {
         name: `${companyName} Assistant`,
         description: `I am the AI assistant for ${companyName}. I can help you navigate our products and services.`,
-        primaryColor: '#2563eb', // Default blue, could extract from site later
+        primaryColor: '#2563eb',
         greeting: `Hello! Welcome to ${companyName}. How can I help you today?`,
         tone: 'professional',
         quickQuestions: customQuestions
       };
 
-      // 3. Save Agent
       setStatus('saving');
       addLog('💾 Saving agent configuration...');
       const saveRes = await fetch('/api/agent', {
@@ -74,7 +78,7 @@ export default function CreateAgentPage() {
 
       setResultUrl(`${window.location.origin}${saveData.url}`);
       setStatus('done');
-      addLog('✨ Agent created successfully!');
+      addLog('✨ Demo agent created.');
 
     } catch (error: any) {
       console.error(error);
@@ -87,10 +91,21 @@ export default function CreateAgentPage() {
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6 font-sans">
       <div className="w-full max-w-lg bg-white rounded-xl shadow-xl border border-slate-200 overflow-hidden">
         <div className="p-6 border-b border-slate-100 bg-slate-900 text-white">
-          <h1 className="text-xl font-bold flex items-center gap-2">
-            <span className="text-2xl">🕵️‍♂️</span> Prospector
-          </h1>
-          <p className="text-slate-400 text-sm mt-1">Auto-generate demo agents for sales.</p>
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-bold flex items-center gap-2">
+              <span className="text-2xl">🕵️‍♂️</span> Prospector
+            </h1>
+            <span className="text-[10px] uppercase tracking-wide font-semibold bg-amber-400 text-slate-900 px-2 py-0.5 rounded">
+              Internal
+            </span>
+          </div>
+          <p className="text-slate-400 text-sm mt-1">
+            Founder tool: crawl a site and send someone a demo chat link.
+            Not the product create flow — that is{' '}
+            <a href={PRODUCT_BUILDER_PATH} className="text-slate-200 underline underline-offset-2">
+              home
+            </a>.
+          </p>
         </div>
 
         <div className="p-6 space-y-6">
@@ -100,8 +115,8 @@ export default function CreateAgentPage() {
                 <label className="block text-sm font-medium text-slate-700 mb-1">Company Name</label>
                 <div className="relative">
                   <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     required
                     value={companyName}
                     onChange={e => setCompanyName(e.target.value)}
@@ -114,8 +129,8 @@ export default function CreateAgentPage() {
                 <label className="block text-sm font-medium text-slate-700 mb-1">Website URL</label>
                 <div className="relative">
                   <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <input 
-                    type="url" 
+                  <input
+                    type="url"
                     required
                     value={website}
                     onChange={e => setWebsite(e.target.value)}
@@ -124,25 +139,25 @@ export default function CreateAgentPage() {
                   />
                 </div>
               </div>
-              
-              <QuickQuestionsEditor 
-                questions={customQuestions} 
-                onChange={setCustomQuestions} 
+
+              <QuickQuestionsEditor
+                questions={customQuestions}
+                onChange={setCustomQuestions}
               />
 
               <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 font-mono text-xs text-slate-500 h-32 overflow-y-auto">
                 {logs.length === 0 ? <span className="opacity-50">// Logs will appear here...</span> : logs.map((l, i) => <div key={i}>{l}</div>)}
               </div>
 
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 disabled={status !== 'idle'}
                 className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg flex items-center justify-center gap-2 disabled:opacity-70 transition-all"
               >
                 {status === 'crawling' || status === 'saving' ? (
                   <><Loader2 className="w-4 h-4 animate-spin" /> Processing...</>
                 ) : (
-                  'Generate Demo Agent'
+                  'Generate demo for a prospect'
                 )}
               </button>
             </form>
@@ -152,17 +167,17 @@ export default function CreateAgentPage() {
                 <CheckCircle className="w-8 h-8" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-slate-900">Agent Ready!</h2>
-                <p className="text-slate-500 text-sm mt-1">Send this link to the prospect.</p>
+                <h2 className="text-xl font-bold text-slate-900">Demo ready</h2>
+                <p className="text-slate-500 text-sm mt-1">Send this link so they can try the agent.</p>
               </div>
-              
+
               <div className="flex items-center gap-2 bg-slate-50 p-2 rounded-lg border border-slate-200">
-                <input 
-                  readOnly 
-                  value={resultUrl!} 
+                <input
+                  readOnly
+                  value={resultUrl!}
                   className="flex-1 bg-transparent text-sm text-slate-600 outline-none px-2"
                 />
-                <button 
+                <button
                   onClick={() => navigator.clipboard.writeText(resultUrl!)}
                   className="p-2 hover:bg-white rounded-md text-slate-500 hover:text-blue-600 transition-colors"
                 >
@@ -171,14 +186,14 @@ export default function CreateAgentPage() {
               </div>
 
               <div className="flex gap-3 justify-center">
-                <a 
-                  href={resultUrl!} 
-                  target="_blank" 
+                <a
+                  href={resultUrl!}
+                  target="_blank"
                   className="px-4 py-2 bg-white border border-slate-200 text-slate-700 font-medium rounded-lg text-sm hover:bg-slate-50 flex items-center gap-2"
                 >
                   <ExternalLink className="w-4 h-4" /> Test It
                 </a>
-                <button 
+                <button
                   onClick={() => { setStatus('idle'); setCompanyName(''); setWebsite(''); setLogs([]); }}
                   className="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg text-sm hover:bg-blue-700"
                 >
@@ -192,4 +207,3 @@ export default function CreateAgentPage() {
     </div>
   );
 }
-
