@@ -1,5 +1,6 @@
 import React from 'react';
 import { CompanyInfo, AgentConfig } from '../../../types';
+import { assistantNameForCompany } from '../../lib/assistantName';
 import { Heading } from '../core/typography/Heading';
 import { Text } from '../core/typography/Text';
 import { Input } from '../core/input/Input';
@@ -39,9 +40,15 @@ export const CompanyStep: React.FC<CompanyStepProps> = ({
           placeholder="Acme Corp"
           value={companyInfo.name}
           onChange={(e) => {
-               onCompanyInfoChange({...companyInfo, name: e.target.value});
-               if (!config.name || config.name === 'Tiny Support Assistant') {
-                 onConfigChange('name', `Tiny ${e.target.value} Support Assistant`);
+               const nextCompanyName = e.target.value;
+               const nextAssistantName = assistantNameForCompany(
+                 nextCompanyName,
+                 config.name,
+                 companyInfo.name
+               );
+               onCompanyInfoChange({...companyInfo, name: nextCompanyName});
+               if (nextAssistantName !== config.name) {
+                 onConfigChange('name', nextAssistantName);
                }
           }}
         />

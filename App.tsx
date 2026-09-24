@@ -3,12 +3,13 @@
 
 import React, { useState } from 'react';
 import { KnowledgeItem, AgentConfig, CompanyInfo } from './types';
+import { DEFAULT_ASSISTANT_NAME } from './src/lib/assistantName';
 import LivePreview from './src/components/LivePreview';
 import Onboarding from './src/components/Onboarding';
 
   // Default Configuration
 const DEFAULT_CONFIG: AgentConfig = {
-  name: 'Support Bot',
+  name: DEFAULT_ASSISTANT_NAME,
   description: 'A helpful assistant for our customers.',
   primaryColor: '#7c3aed', // brand-600
   greeting: 'Hi there! How can I help you today?',
