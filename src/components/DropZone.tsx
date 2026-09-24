@@ -109,7 +109,7 @@ const DropZone: React.FC<DropZoneProps> = ({ onFilesAdded, compact = false }) =>
         multiple
         className="hidden"
         onChange={handleChange}
-        accept=".txt,.md,.markdown,.json,.csv,.html,.js,.ts,.tsx"
+        accept=".txt,.md,.html"
         disabled={isProcessing}
       />
       
@@ -127,7 +127,7 @@ const DropZone: React.FC<DropZoneProps> = ({ onFilesAdded, compact = false }) =>
             {isProcessing ? 'Processing files...' : 'Upload Files'}
           </h3>
           <p className="text-xs text-neutral-500">
-            PDF, TXT, MD, HTML (Max 5MB)
+            .txt, .md, HTML (Max 5MB)
           </p>
         </div>
       </div>
