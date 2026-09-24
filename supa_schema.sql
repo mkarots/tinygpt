@@ -51,6 +51,10 @@ create table chats (
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
+-- One hosted thread per visitor session and agent. Preview chats are not rows.
+create unique index chats_agent_session_idx on chats (agent_id, session_id)
+where session_id is not null;
+
 -- MESSAGES
 create table messages (
   id uuid default gen_random_uuid() primary key,
