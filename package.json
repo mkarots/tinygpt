@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "test": "npx --yes tsx --test src/utils/chatHistory.test.ts src/utils/knowledgeContext.test.ts src/application/use-cases/CreateAgentUseCase.test.ts src/application/use-cases/ChatUseCase.test.ts src/lib/saveAgent.test.ts src/lib/supabase-config.test.ts src/lib/routes.test.ts src/lib/textKnowledge.test.ts src/lib/agentShare.test.ts src/lib/profileFromAuthUser.test.ts src/infrastructure/services/GeminiEmbeddingService.test.ts src/app/layout.test.ts"
+    "test": "npx --yes tsx --test src/utils/chatHistory.test.ts src/utils/knowledgeContext.test.ts src/application/use-cases/CreateAgentUseCase.test.ts src/application/use-cases/ChatUseCase.test.ts src/lib/saveAgent.test.ts src/lib/supabase-config.test.ts src/lib/routes.test.ts src/lib/textKnowledge.test.ts src/lib/agentShare.test.ts src/lib/profileFromAuthUser.test.ts src/infrastructure/services/GeminiEmbeddingService.test.ts src/app/layout.test.ts src/app/api/serverSupabaseClient.test.ts"
   },
   "dependencies": {
     "@google/genai": "^1.30.0",
