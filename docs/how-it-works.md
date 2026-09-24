@@ -38,7 +38,7 @@ Public read and chat. The same agent id is the chat URL, the embed URL, and the 
 | `POST /api/agent` | Required | Server client reads `auth.getUser()`. Missing user is 401. Sets `agents.user_id`. |
 | `GET /api/agent/[id]` | Public | Same server client, no user check. Chat and embed both load this payload. |
 | `POST /api/chat` | Public | Loads the agent when `agentId` is set, or previews unsaved config and knowledge. |
-| `POST /api/crawl` | Public route | Puppeteer renders the page, Turndown makes markdown, Gemini strips nav and footers. |
+| `POST /api/crawl` | Public route | Fetch + Cheerio extract the page, Turndown makes markdown, Gemini strips nav and footers. No Chromium. |
 
 ## What a save writes
 

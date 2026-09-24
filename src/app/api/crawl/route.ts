@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { ProcessKnowledgeUseCase } from '../../../application/use-cases/ProcessKnowledgeUseCase';
-import { PuppeteerCrawlerService } from '../../../infrastructure/services/PuppeteerCrawlerService';
+import { FetchCrawlerService } from '../../../infrastructure/services/FetchCrawlerService';
 import { GeminiLLMService } from '../../../infrastructure/services/GeminiLLMService';
 
 export async function POST(request: Request) {
@@ -12,7 +12,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'URL is required' }, { status: 400 });
     }
 
-    const crawlerService = new PuppeteerCrawlerService();
+    const crawlerService = new FetchCrawlerService();
     // Prioritize server-side key
     const apiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
     

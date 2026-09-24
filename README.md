@@ -4,6 +4,14 @@
 
 How the current app works is in [docs/how-it-works.md](docs/how-it-works.md). The rest of this README still describes an earlier prototype.
 
+## Deploy
+
+Deploy the Next.js app on a Node host such as Vercel. Do not install Chromium.
+
+`POST /api/crawl` fetches the page (30 second timeout), extracts `main` / `article` / content with Cheerio, converts it to markdown, then asks Gemini to strip navigation and footers. An invalid URL returns `Invalid URL format`. A timeout returns `Timed out loading the page`. Pages that only render in a browser are not executed.
+
+Set `GEMINI_API_KEY` on the host, and allow the crawl route at least 30 seconds. JavaScript-only sites will come back thin or empty.
+
 tinyrag lets anyone create a hosted, personal GPT chat interface built on their own text files instantly. No setup, no infrastructure, no vector DB knowledge needed.
 
 ## 🚀 How it Works
