@@ -77,7 +77,7 @@ export default function ShareAgentPage() {
           <Heading level={1}>Agent unavailable</Heading>
           <p className="text-slate-500 mt-2">{error || 'This share link is not valid.'}</p>
           <Link href="/admin" className="inline-block mt-6 text-sm font-medium text-brand-600">
-            Back to create
+            Back to your agents
           </Link>
         </div>
       </div>

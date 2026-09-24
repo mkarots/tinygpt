@@ -4,13 +4,16 @@ import {
   INTERNAL_PROSPECTOR_PATH,
   LEGACY_ADMIN_CREATE_PATH,
   PRODUCT_BUILDER_PATH,
+  PRODUCT_CREATE_PATH,
   adminSharePath,
   isAuthRequiredPath,
 } from './routes';
 
 describe('product vs internal routes', () => {
-  it('keeps the official builder on /admin', () => {
+  it('keeps the signed-in agent list on /admin and create on /admin/new', () => {
     assert.equal(PRODUCT_BUILDER_PATH, '/admin');
+    assert.equal(PRODUCT_CREATE_PATH, '/admin/new');
+    assert.equal(isAuthRequiredPath(PRODUCT_CREATE_PATH), true);
   });
 
   it('keeps Prospector off the product create path', () => {

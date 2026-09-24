@@ -1,7 +1,15 @@
-'use client';
+import { redirect } from 'next/navigation';
+import { AgentDashboard } from '../../components/views/admin/AgentDashboard';
+import { SupabaseAgentRepository } from '../../infrastructure/repositories/SupabaseAgentRepository';
+import { createClient } from '../../lib/supabase-server';
 
-import App from '../../../App';
+export default async function AdminHomePage() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    redirect('/login');
+  }
 
-export default function AdminHomePage() {
-  return <App />;
+  const agents = await new SupabaseAgentRepository(supabase).listByUser(user.id);
+  return <AgentDashboard agents={agents} />;
 }

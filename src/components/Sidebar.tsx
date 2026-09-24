@@ -1,8 +1,10 @@
 
 import React from 'react';
+import Link from 'next/link';
 import { Database, Palette, Code, Settings, Building2 } from 'lucide-react';
 import { DashboardTab } from '../../types';
 import { Button } from './core/button/Button';
+import { PRODUCT_BUILDER_PATH } from '../lib/routes';
 
 interface SidebarProps {
   activeTab: DashboardTab;
@@ -42,6 +44,12 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, companyName }
       </div>
 
       <nav className="flex-1 p-4 space-y-1">
+        <Link
+          href={PRODUCT_BUILDER_PATH}
+          className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+        >
+          Your agents
+        </Link>
         <Button 
           variant="ghost"
           onClick={() => onTabChange('knowledge')}

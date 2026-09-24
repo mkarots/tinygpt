@@ -34,6 +34,9 @@ class MemoryRepo implements IAgentRepository {
     if (!this.agent || this.agent.id !== id) return null;
     return this.agent;
   }
+  async listByUser(): Promise<[]> {
+    return [];
+  }
 }
 
 class RecordingLLM implements ILLMService {
