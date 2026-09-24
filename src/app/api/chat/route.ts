@@ -1,11 +1,18 @@
 import { NextResponse } from 'next/server';
 import { ChatUseCase } from '../../../application/use-cases/ChatUseCase';
+import { IAgentRepository } from '../../../domain/interfaces/IAgentRepository';
+import { ILLMService } from '../../../domain/interfaces/ILLMService';
 import { SupabaseAgentRepository } from '../../../infrastructure/repositories/SupabaseAgentRepository';
 import { GeminiLLMService } from '../../../infrastructure/services/GeminiLLMService';
 import { createClient as createServerSupabase } from '../../../lib/supabase-server';
 import { selectRecentChatTurns } from '../../../utils/chatHistory';
 
-export async function POST(request: Request) {
+export type ChatRouteDeps = {
+  repository: IAgentRepository;
+  llm: ILLMService;
+};
+
+export async function handleChat(request: Request, deps?: ChatRouteDeps) {
   try {
     const { agentId, message, config, knowledge, history } = await request.json();
 
@@ -15,14 +22,20 @@ export async function POST(request: Request) {
 
     const recentHistory = selectRecentChatTurns(history, message);
 
-    const apiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
-    if (!apiKey) {
-      return NextResponse.json({ error: 'LLM API Key configuration missing' }, { status: 500 });
+    let agentRepo: IAgentRepository;
+    let llmService: ILLMService;
+    if (deps) {
+      agentRepo = deps.repository;
+      llmService = deps.llm;
+    } else {
+      const apiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+      if (!apiKey) {
+        return NextResponse.json({ error: 'LLM API Key configuration missing' }, { status: 500 });
+      }
+      const supabase = await createServerSupabase();
+      agentRepo = new SupabaseAgentRepository(supabase);
+      llmService = new GeminiLLMService(apiKey);
     }
-
-    const supabase = await createServerSupabase();
-    const agentRepo = new SupabaseAgentRepository(supabase);
-    const llmService = new GeminiLLMService(apiKey);
     const chatUseCase = new ChatUseCase(agentRepo, llmService);
 
     let stream;
@@ -63,4 +76,8 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
+}
+
+export async function POST(request: Request) {
+  return handleChat(request);
 }
