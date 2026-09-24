@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
+import { Agent } from '../../domain/entities/Agent';
+import { AGENT_STORAGE_NOT_SET_UP } from './agentStorageError';
 import { SupabaseAgentRepository } from './SupabaseAgentRepository';
 
 type AgentRow = { id: string; name: string; description: string | null };
@@ -45,6 +47,92 @@ function listingClient(options: {
 
   return client;
 }
+
+const sampleAgent: Agent = {
+  id: '11111111-1111-4111-8111-111111111111',
+  config: {
+    name: 'Support',
+    description: 'Help',
+    primaryColor: '#000',
+    greeting: 'Hi',
+    tone: 'friendly',
+    quickQuestions: [],
+  },
+  knowledge: [],
+  createdAt: 1,
+};
+
+function saveClient(options: {
+  profileError?: { message: string; code?: string } | null;
+  agentError?: { message: string; code?: string } | null;
+}) {
+  return {
+    auth: {
+      getUser: async () => ({
+        data: { user: { id: 'user-1', email: 'a@b.c' } },
+        error: null,
+      }),
+    },
+    from(table: string) {
+      const result =
+        table === 'profiles'
+          ? { error: options.profileError ?? null }
+          : { error: options.agentError ?? null };
+      return {
+        upsert() {
+          return Promise.resolve(result);
+        },
+      };
+    },
+  };
+}
+
+describe('SupabaseAgentRepository.save', () => {
+  it('reports missing agent storage instead of the schema-cache string', async () => {
+    const repo = new SupabaseAgentRepository(
+      saveClient({
+        agentError: {
+          code: 'PGRST205',
+          message: "Could not find the table 'public.agents' in the schema cache",
+        },
+      }) as never,
+    );
+
+    await assert.rejects(() => repo.save(sampleAgent), (error: unknown) => {
+      assert.ok(error instanceof Error);
+      assert.equal(error.message, AGENT_STORAGE_NOT_SET_UP);
+      assert.equal(String(error.message).includes('schema cache'), false);
+      return true;
+    });
+  });
+
+  it('reports missing profile storage the same way', async () => {
+    const repo = new SupabaseAgentRepository(
+      saveClient({
+        profileError: {
+          message: "Could not find the table 'public.profiles' in the schema cache",
+        },
+      }) as never,
+    );
+
+    await assert.rejects(
+      () => repo.save(sampleAgent),
+      (error: unknown) => {
+        assert.ok(error instanceof Error);
+        assert.equal(error.message, AGENT_STORAGE_NOT_SET_UP);
+        return true;
+      },
+    );
+  });
+
+  it('keeps other save failures', async () => {
+    const repo = new SupabaseAgentRepository(
+      saveClient({ agentError: { message: 'permission denied' } }) as never,
+    );
+
+    await assert.rejects(() => repo.save(sampleAgent), /Failed to save agent: permission denied/);
+  });
+});
 
 describe('SupabaseAgentRepository.listByUser', () => {
   it('returns only the signed-in user rows and filters on that user id', async () => {

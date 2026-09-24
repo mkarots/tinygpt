@@ -42,6 +42,8 @@ Public read and chat. The same agent id is the chat URL, the embed URL, and the 
 
 ## What a save writes
 
+Apply `supa_schema.sql` in the Supabase SQL editor before the first save. The app does not create tables. If `profiles` or `agents` is missing, save tells the operator “Agent storage is not set up” instead of the PostgREST schema-cache string.
+
 `CreateAgentUseCase` assigns `crypto.randomUUID()` unless the client already sent a UUID. Knowledge over 200,000 characters is rejected before the upsert. `SupabaseAgentRepository` then upserts `profiles` for that auth user, because `agents.user_id` references `profiles.id`.
 
 The row stores name, description, the full `AgentConfig` jsonb (color, greeting, tone, quick questions), and the knowledge array. Item types are `file`, `url`, and `text`. Short random ids on those items are not the agent primary key.

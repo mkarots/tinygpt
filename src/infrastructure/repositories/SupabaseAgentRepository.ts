@@ -3,6 +3,7 @@ import { IAgentRepository, OwnedAgentSummary } from '../../domain/interfaces/IAg
 import { Agent, AgentConfig } from '../../domain/entities/Agent';
 import { KnowledgeItem } from '../../domain/entities/KnowledgeSource';
 import { profileFromAuthUser } from '../../lib/profileFromAuthUser';
+import { agentStorageFailure } from './agentStorageError';
 
 export class SupabaseAgentRepository implements IAgentRepository {
   constructor(private supabase: SupabaseClient) {}
@@ -19,7 +20,7 @@ export class SupabaseAgentRepository implements IAgentRepository {
       .upsert(profileFromAuthUser(user, new Date().toISOString()), { onConflict: 'id' });
 
     if (profileError) {
-      throw new Error(`Failed to save profile: ${profileError.message}`);
+      throw agentStorageFailure(profileError, 'Failed to save profile');
     }
 
     const { error: agentError } = await this.supabase
@@ -34,7 +35,9 @@ export class SupabaseAgentRepository implements IAgentRepository {
         updated_at: new Date().toISOString(),
       });
 
-    if (agentError) throw new Error(`Failed to save agent: ${agentError.message}`);
+    if (agentError) {
+      throw agentStorageFailure(agentError, 'Failed to save agent');
+    }
   }
 
   async getById(id: string): Promise<Agent | null> {
@@ -72,7 +75,7 @@ export class SupabaseAgentRepository implements IAgentRepository {
       .order('updated_at', { ascending: false });
 
     if (error) {
-      throw new Error(`Failed to list agents: ${error.message}`);
+      throw agentStorageFailure(error, 'Failed to list agents');
     }
 
     return (data ?? []).map((row) => ({
