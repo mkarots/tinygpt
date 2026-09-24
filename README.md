@@ -2,6 +2,8 @@
 
 **Drag-and-drop your files and get your own mini GPT trained only on your data.**
 
+How the current app works is in [docs/how-it-works.md](docs/how-it-works.md). The rest of this README still describes an earlier prototype.
+
 tinyrag lets anyone create a hosted, personal GPT chat interface built on their own text files instantly. No setup, no infrastructure, no vector DB knowledge needed.
 
 ## 🚀 How it Works
