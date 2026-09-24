@@ -4,6 +4,7 @@
 import React, { useState } from 'react';
 import { KnowledgeItem, AgentConfig, CompanyInfo } from './types';
 import { DEFAULT_ASSISTANT_NAME } from './src/lib/assistantName';
+import { questionsForIndustry } from './src/lib/quickQuestionDefaults';
 import LivePreview from './src/components/LivePreview';
 import Onboarding from './src/components/Onboarding';
 
@@ -14,11 +15,7 @@ const DEFAULT_CONFIG: AgentConfig = {
   primaryColor: '#7c3aed', // brand-600
   greeting: 'Hi there! How can I help you today?',
   tone: 'friendly',
-  quickQuestions: [
-    { text: 'Do you offer a free trial/version?', emoji: '🚀' },
-    { text: 'How secure is your platform?', emoji: '🔒' },
-    { text: 'How do I use your product?', emoji: '💻' }
-  ]
+  quickQuestions: questionsForIndustry(''),
 };
 
 const App: React.FC = () => {
