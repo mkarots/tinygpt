@@ -31,10 +31,10 @@ lint:
 type-check:
 	$(NPX) tsc --noEmit
 
-# Run unit tests
+# Run unit tests. Same suite CI runs via npm test.
 .PHONY: test
 test:
-	$(NPX) --yes tsx --test src/utils/chatHistory.test.ts src/utils/knowledgeContext.test.ts src/application/use-cases/CreateAgentUseCase.test.ts src/application/use-cases/ChatUseCase.test.ts src/lib/saveAgent.test.ts src/lib/supabase-config.test.ts src/lib/routes.test.ts src/infrastructure/services/GeminiEmbeddingService.test.ts src/app/layout.test.ts
+	$(NPM) test
 
 # Clean build artifacts
 .PHONY: clean

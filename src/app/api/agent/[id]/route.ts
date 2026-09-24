@@ -1,10 +1,16 @@
 import { NextResponse } from 'next/server';
+import { IAgentRepository } from '../../../../domain/interfaces/IAgentRepository';
 import { SupabaseAgentRepository } from '../../../../infrastructure/repositories/SupabaseAgentRepository';
 import { createClient as createServerSupabase } from '../../../../lib/supabase-server';
 
+export type GetAgentDeps = {
+  repository: IAgentRepository;
+};
+
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
+  deps?: GetAgentDeps,
 ) {
   try {
     const { id: agentId } = await params;
@@ -13,8 +19,7 @@ export async function GET(
        return NextResponse.json({ error: 'Agent ID required' }, { status: 400 });
     }
 
-    const supabase = await createServerSupabase();
-    const repo = new SupabaseAgentRepository(supabase);
+    const repo = deps?.repository ?? new SupabaseAgentRepository(await createServerSupabase());
     const agent = await repo.getById(agentId);
 
     if (!agent) {
