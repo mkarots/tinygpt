@@ -14,6 +14,7 @@ import { QuickQuestionsEditor } from './QuickQuestionsEditor';
 import { Heading } from './core/typography/Heading';
 import { Text } from './core/typography/Text';
 import { saveAgent } from '../lib/saveAgent';
+import { blocksKnowledgeStep } from '../lib/importRecovery';
 import { adminSharePath } from '../lib/routes';
 
 interface OnboardingProps {
@@ -251,7 +252,7 @@ const Onboarding: React.FC<OnboardingProps> = ({
         <Button 
           variant="primary"
           onClick={handleNext}
-          disabled={isSaving}
+          disabled={isSaving || (step === 2 && blocksKnowledgeStep(knowledge))}
           isLoading={isSaving}
           rightIcon={isSaving ? undefined : <ChevronRight className="w-5 h-5" />}
           className="px-8 py-3 rounded-xl shadow-lg shadow-brand-500/30 transform hover:scale-105"

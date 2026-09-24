@@ -23,7 +23,15 @@ export const KnowledgeList: React.FC<KnowledgeListProps> = ({ items }) => {
                 {k.type === 'text' && <AlignLeft className="w-4 h-4 text-emerald-500" />}
                 <span className="text-sm font-medium text-slate-700">{k.name}</span>
              </div>
-             <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Ready</span>
+             <span className={`text-xs px-2 py-0.5 rounded-full ${
+               k.status === 'error'
+                 ? 'bg-red-100 text-red-700'
+                 : k.status === 'pending'
+                   ? 'bg-slate-100 text-slate-600'
+                   : 'bg-green-100 text-green-700'
+             }`}>
+               {k.status === 'error' ? 'Failed' : k.status === 'pending' ? 'Importing' : 'Ready'}
+             </span>
           </li>
         ))}
       </ul>

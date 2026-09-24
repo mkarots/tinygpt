@@ -6,6 +6,7 @@ import { KnowledgeItem, CompanyInfo } from '../../../types';
 import { WebsiteImport } from './WebsiteImport';
 import { KnowledgeList } from './KnowledgeList';
 import { PastedTextForm } from './PastedTextForm';
+import { needsImportRecovery } from '../../lib/importRecovery';
 
 interface KnowledgeStepProps {
   knowledge: KnowledgeItem[];
@@ -26,6 +27,7 @@ export const KnowledgeStep: React.FC<KnowledgeStepProps> = ({
   onPerformCrawl,
 }) => {
   const [urlInput, setUrlInput] = useState('');
+  const importFailed = needsImportRecovery(knowledge);
 
   const handleCrawl = () => {
     if (!urlInput) return;
@@ -48,6 +50,12 @@ export const KnowledgeStep: React.FC<KnowledgeStepProps> = ({
         companyInfo={companyInfo}
         onImport={handleCrawl}
       />
+
+      {importFailed && (
+        <div role="status" className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+          Website import failed. Paste text or upload a .txt or .md file instead of continuing with an empty import.
+        </div>
+      )}
 
       <DropZone onFilesAdded={onAddKnowledge} compact />
 
