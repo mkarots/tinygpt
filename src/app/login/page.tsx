@@ -4,6 +4,7 @@ import { createClient } from '../../lib/supabase'
 import { isSupabaseConfigured } from '../../lib/supabase-config'
 import { Button } from '../../components/core/button/Button'
 import { Heading } from '../../components/core/typography/Heading'
+import { SIGN_IN_CTA } from '../../lib/signInCopy'
 
 export default function LoginPage() {
   const configured = isSupabaseConfigured()
@@ -27,7 +28,7 @@ export default function LoginPage() {
         </div>
         
         <Heading level={1} className="mb-2">Welcome to TinyGPT</Heading>
-        <p className="text-slate-500 mb-8">Sign in to manage your AI agents</p>
+        <p className="text-slate-500 mb-8">{SIGN_IN_CTA}</p>
 
         {configured ? (
         <Button 
