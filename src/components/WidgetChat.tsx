@@ -2,7 +2,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Bot, RefreshCw, ChevronDown } from 'lucide-react';
 import { ChatMessage, AgentConfig, KnowledgeItem } from '../../types';
-import { sendMessageStream, initializeChat } from '../../services/geminiService';
+import { sendMessageStream, initializeChat, loadChatTranscript } from '../../services/geminiService';
+import { visibleThread } from '../lib/chatThread';
 import { MessageBubble } from './core/feedback/MessageBubble';
 import { ChatInput } from './core/input/ChatInput';
 import { SuggestionChips } from './core/input/SuggestionChips';
@@ -16,27 +17,44 @@ interface WidgetChatProps {
   showQuickQuestions?: boolean; // Control visibility of in-chat pills
 }
 
+function querySessionId(): string | undefined {
+  if (typeof window === 'undefined') return undefined;
+  const session = new URLSearchParams(window.location.search).get('session') ?? undefined;
+  return session || undefined;
+}
+
 const WidgetChat: React.FC<WidgetChatProps> = ({ config, knowledge, agentId, onClose, showQuickQuestions = true }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [sessionId, setSessionId] = useState<string | undefined>(querySessionId);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Initialize chat when config or knowledge changes
   useEffect(() => {
+    let cancelled = false;
     initializeChat(knowledge, config, agentId);
-    // Only set welcome message if chat is empty (prevents reset on re-renders if lifted state)
-    if (messages.length === 0) {
-      setMessages([
-        {
-          id: 'welcome',
-          role: 'model',
-          text: config.greeting || "Hello! How can I help you today?",
-          timestamp: Date.now(),
-        }
-      ]);
+    const initialSession = querySessionId();
+
+    async function boot() {
+      if (!agentId) {
+        if (!cancelled) setMessages(visibleThread(config.greeting, []));
+        return;
+      }
+      try {
+        const restored = await loadChatTranscript(agentId, initialSession);
+        if (cancelled) return;
+        if (restored.sessionId) setSessionId(restored.sessionId);
+        setMessages(visibleThread(config.greeting, restored.messages));
+      } catch {
+        if (!cancelled) setMessages(visibleThread(config.greeting, []));
+      }
     }
-  }, [config, knowledge]);
+
+    boot();
+    return () => {
+      cancelled = true;
+    };
+  }, [config, knowledge, agentId]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -70,12 +88,13 @@ const WidgetChat: React.FC<WidgetChatProps> = ({ config, knowledge, agentId, onC
     }]);
 
     try {
-      await sendMessageStream(text, (streamedText) => {
+      const result = await sendMessageStream(text, (streamedText) => {
         setMessages(prev => prev.map(msg => 
           msg.id === botMessageId ? { ...msg, text: streamedText } : msg
         ));
-      }, messages);
-    } catch (error) {
+      }, messages, agentId ? sessionId : undefined);
+      if (result.sessionId) setSessionId(result.sessionId);
+    } catch {
       setMessages(prev => prev.map(msg => 
         msg.id === botMessageId 
           ? { ...msg, text: "I'm having trouble connecting right now. Please try again." }
@@ -114,12 +133,10 @@ const WidgetChat: React.FC<WidgetChatProps> = ({ config, knowledge, agentId, onC
         <div className="flex items-center gap-1">
           <button 
             onClick={() => {
-               setMessages([{
-                 id: 'welcome',
-                 role: 'model',
-                 text: config.greeting || "Hello! How can I help you today?",
-                 timestamp: Date.now(),
-               }]);
+               if (agentId && typeof crypto !== 'undefined' && crypto.randomUUID) {
+                 setSessionId(crypto.randomUUID());
+               }
+               setMessages(visibleThread(config.greeting, []));
             }}
             className="p-1.5 hover:bg-white/10 rounded-full transition-colors"
             title="Restart Chat"
