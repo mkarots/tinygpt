@@ -1,5 +1,5 @@
 import { SupabaseClient } from '@supabase/supabase-js';
-import { IAgentRepository } from '../../domain/interfaces/IAgentRepository';
+import { IAgentRepository, OwnedAgentSummary } from '../../domain/interfaces/IAgentRepository';
 import { Agent, AgentConfig } from '../../domain/entities/Agent';
 import { KnowledgeItem } from '../../domain/entities/KnowledgeSource';
 import { profileFromAuthUser } from '../../lib/profileFromAuthUser';
@@ -56,5 +56,29 @@ export class SupabaseAgentRepository implements IAgentRepository {
       knowledge,
       createdAt: new Date(agentData.created_at).getTime(),
     };
+  }
+
+  async listByUser(userId: string): Promise<OwnedAgentSummary[]> {
+    const { data: authData, error: authError } = await this.supabase.auth.getUser();
+    if (authError || !authData.user || authData.user.id !== userId) {
+      return [];
+    }
+
+    // "Public can view agents" allows select of every row. Filter on the session user.
+    const { data, error } = await this.supabase
+      .from('agents')
+      .select('id, name, description')
+      .eq('user_id', authData.user.id)
+      .order('updated_at', { ascending: false });
+
+    if (error) {
+      throw new Error(`Failed to list agents: ${error.message}`);
+    }
+
+    return (data ?? []).map((row) => ({
+      id: String(row.id),
+      name: typeof row.name === 'string' && row.name.length > 0 ? row.name : 'Untitled agent',
+      description: typeof row.description === 'string' ? row.description : '',
+    }));
   }
 }

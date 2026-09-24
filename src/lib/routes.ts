@@ -1,5 +1,8 @@
-/** Signed-in product builder. Create happens here; share and embed open after save. */
+/** Signed-in home. Lists that user's agents. */
 export const PRODUCT_BUILDER_PATH = '/admin';
+
+/** Onboarding wizard for a new agent. */
+export const PRODUCT_CREATE_PATH = '/admin/new';
 
 /**
  * Founder-only demo factory. Not a product create surface.

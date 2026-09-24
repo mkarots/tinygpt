@@ -21,6 +21,9 @@ class MemoryRepo implements IAgentRepository {
   async getById(): Promise<Agent | null> {
     return this.saved;
   }
+  async listByUser(): Promise<[]> {
+    return [];
+  }
 }
 
 describe('CreateAgentUseCase', () => {

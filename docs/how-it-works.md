@@ -14,7 +14,7 @@ A Next.js app that stores one signed-in user’s knowledge on a single Supabase 
 Signed-in create. Local wizard state is not the system of record. Persistence starts at the save request.
 
 1. **Sign in.** Google OAuth writes a Supabase session into cookies. `/login` uses the browser client. Middleware then sends a signed-in user to `/admin`.
-2. **Build.** `/admin` is the only product create surface. The wizard collects files, a crawled URL, pasted text, appearance, and quick questions in React state.
+2. **Build.** `/admin` lists that user's agents. `/admin/new` is the product create surface. The wizard collects files, a crawled URL, pasted text, appearance, and quick questions in React state.
 3. **Persist.** `saveAgent` POSTs `/api/agent`. The route builds the cookie-aware server client, requires a user, and upserts a profile before the agent row.
 4. **Share.** Save returns a UUID and opens `/admin/share/[id]`. That page shows `/chat/[id]` and a script tag whose `data-id` is the same UUID.
 
@@ -33,7 +33,8 @@ Public read and chat. The same agent id is the chat URL, the embed URL, and the 
 | Surface | Auth | Server work |
 | --- | --- | --- |
 | `/login` | Public | Browser client starts Google OAuth. Callback lands on `/admin`. |
-| `/admin` | Required | Onboarding wizard. Files are read in the browser. URL crawl calls `POST /api/crawl`. |
+| `/admin` | Required | Lists agents for the signed-in user (`listByUser`). |
+| `/admin/new` | Required | Onboarding wizard. Files are read in the browser. URL crawl calls `POST /api/crawl`. |
 | `POST /api/agent` | Required | Server client reads `auth.getUser()`. Missing user is 401. Sets `agents.user_id`. |
 | `GET /api/agent/[id]` | Public | Same server client, no user check. Chat and embed both load this payload. |
 | `POST /api/chat` | Public | Loads the agent when `agentId` is set, or previews unsaved config and knowledge. |
