@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import WidgetChat from '../../../components/WidgetChat';
 import { AgentConfig, KnowledgeItem } from '../../../../types';
+import { singleRouteParam } from '../../../lib/routeParam';
 import { Loader2, AlertCircle } from 'lucide-react';
 
 export default function EmbedPage() {
@@ -15,7 +16,7 @@ export default function EmbedPage() {
     knowledge: KnowledgeItem[];
   } | null>(null);
 
-  const agentId = typeof params.id === 'string' ? params.id : undefined;
+  const agentId = singleRouteParam(params.id);
 
   useEffect(() => {
     if (!agentId) {
