@@ -4,7 +4,7 @@ import { SlidingWindowRateLimit, clientAddress } from './rateLimit';
 
 describe('SlidingWindowRateLimit', () => {
   it('allows calls inside the limit and rejects the next one', () => {
-    let time = 1_000;
+    const time = 1_000;
     const limit = new SlidingWindowRateLimit(2, 60_000, () => time);
     assert.equal(limit.allow('1.2.3.4'), true);
     assert.equal(limit.allow('1.2.3.4'), true);
