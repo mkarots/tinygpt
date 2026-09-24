@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '../components/AuthProvider';
 import { Button } from '../components/core/button/Button';
 import { Heading } from '../components/core/typography/Heading';
-import { SIGN_IN_PURPOSE } from '../lib/signInCopy';
+import { SIGN_IN_CTA } from '../lib/signInCopy';
 
 export default function Page() {
   const { user, isLoading } = useAuth();
@@ -29,12 +29,11 @@ export default function Page() {
     <div className="min-h-screen flex items-center justify-center bg-slate-50 p-6">
       <div className="max-w-md w-full bg-white rounded-2xl border border-slate-200 p-8 text-center space-y-4">
         <Heading level={1}>TinyGPT</Heading>
-        <p className="text-slate-500">{SIGN_IN_PURPOSE}</p>
         <Button
           className="w-full justify-center py-6"
           onClick={() => router.push('/login')}
         >
-          Sign in to create an agent
+          {SIGN_IN_CTA}
         </Button>
       </div>
     </div>
