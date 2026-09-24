@@ -35,19 +35,20 @@ export class ChatUseCase {
 
     const existing = await this.chatRepository.findByAgentAndSession(agentId, sessionId);
     const chat = existing ?? (await this.chatRepository.create(agentId, sessionId));
-    const stored = await this.chatRepository.listMessages(chat.id);
+    const stored = await this.chatRepository.listMessages(chat.id, sessionId);
     const prior = selectRecentChatTurns(
       stored.map((turn) => ({ role: turn.role, text: turn.text })),
       message
     );
-    await this.chatRepository.appendMessage(chat.id, 'user', message);
+    await this.chatRepository.appendMessage(chat.id, 'user', message, sessionId);
 
     const stream = await this.llmService.chat(message, agent.knowledge, agent.config, prior);
-    return this.captureModelReply(chat.id, stream);
+    return this.captureModelReply(chat.id, sessionId, stream);
   }
 
   private async *captureModelReply(
     chatId: string,
+    sessionId: string,
     stream: AsyncIterable<string>
   ): AsyncGenerator<string> {
     let full = '';
@@ -55,7 +56,7 @@ export class ChatUseCase {
       full += chunk;
       yield chunk;
     }
-    await this.chatRepository?.appendMessage(chatId, 'model', full);
+    await this.chatRepository?.appendMessage(chatId, 'model', full, sessionId);
   }
 
   async executePreview(

@@ -14,6 +14,6 @@ export interface StoredMessage {
 export interface IChatRepository {
   findByAgentAndSession(agentId: string, sessionId: string): Promise<StoredChat | null>;
   create(agentId: string, sessionId: string): Promise<StoredChat>;
-  appendMessage(chatId: string, role: 'user' | 'model', content: string): Promise<void>;
-  listMessages(chatId: string): Promise<StoredMessage[]>;
+  appendMessage(chatId: string, role: 'user' | 'model', content: string, sessionId?: string): Promise<void>;
+  listMessages(chatId: string, sessionId?: string): Promise<StoredMessage[]>;
 }

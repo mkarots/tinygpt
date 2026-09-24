@@ -2,97 +2,83 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { SupabaseChatRepository } from './SupabaseChatRepository';
 
-type Row = Record<string, unknown>;
-
-function fakeClient(options?: {
-  insertError?: { message: string; code?: string };
-  messageError?: string;
-}) {
-  const chats: Row[] = [];
-  const messages: Row[] = [];
-
-  function matches(row: Row, filters: [string, string][]) {
-    return filters.every(([column, value]) => row[column] === value);
-  }
-
+function rpcClient(handlers: Record<string, (args: Record<string, string>) => { data: unknown; error: { message: string } | null }>) {
+  const calls: { name: string; args: Record<string, string> }[] = [];
   return {
-    chats,
-    messages,
-    from(table: string) {
-      const filters: [string, string][] = [];
-      const rows = () => (table === 'chats' ? chats : messages).filter((row) => matches(row, filters));
-      const query = {
-        select() {
-          return query;
-        },
-        eq(column: string, value: string) {
-          filters.push([column, value]);
-          return query;
-        },
-        order() {
-          return query;
-        },
-        limit() {
-          return Promise.resolve({ data: rows(), error: null });
-        },
-        insert(row: Row) {
-          if (options?.insertError && table === 'chats') {
-            return {
-              select() {
-                return { single: async () => ({ data: null, error: options.insertError }) };
-              },
-            };
-          }
-          if (options?.messageError && table === 'messages') {
-            return Promise.resolve({ data: null, error: { message: options.messageError } });
-          }
-          const stored = { id: `${table}-${(table === 'chats' ? chats : messages).length + 1}`, ...row };
-          (table === 'chats' ? chats : messages).push(stored);
-          const result = Promise.resolve({ data: stored, error: null });
-          return Object.assign(result, {
-            select() {
-              return { single: async () => ({ data: stored, error: null }) };
-            },
-          });
-        },
-        then(onFulfilled: (value: { data: Row[]; error: null }) => unknown, onRejected?: (reason: unknown) => unknown) {
-          return Promise.resolve({ data: rows(), error: null }).then(onFulfilled, onRejected);
-        },
-      };
-      return query;
+    calls,
+    rpc(name: string, args: Record<string, string>) {
+      calls.push({ name, args });
+      const handler = handlers[name];
+      if (!handler) return Promise.resolve({ data: null, error: { message: `missing ${name}` } });
+      return Promise.resolve(handler(args));
     },
   };
 }
 
 describe('SupabaseChatRepository', () => {
-  it('creates a chat, stores both roles, and lists them in order', async () => {
-    const client = fakeClient();
+  it('creates a chat through the session function and lists that session only', async () => {
+    const messages = [
+      { id: 'm1', role: 'user', content: 'Hours?', created_at: '2026-01-01T00:00:00.000Z' },
+      { id: 'm2', role: 'model', content: 'Nine to five', created_at: '2026-01-01T00:00:01.000Z' },
+    ];
+    const client = rpcClient({
+      ensure_visitor_chat: () => ({ data: 'chat-1', error: null }),
+      find_visitor_chat: () => ({ data: 'chat-1', error: null }),
+      append_visitor_message: () => ({ data: null, error: null }),
+      list_visitor_messages: (args) => ({
+        data: args.p_session_id === 'session-1' ? messages : [],
+        error: null,
+      }),
+    });
     const repo = new SupabaseChatRepository(client as never);
     const chat = await repo.create('agent-1', 'session-1');
-    await repo.appendMessage(chat.id, 'user', ' Hours? ');
-    await repo.appendMessage(chat.id, 'model', 'Nine to five');
-    await repo.appendMessage(chat.id, 'model', '   ');
+    await repo.appendMessage(chat.id, 'user', ' Hours? ', 'session-1');
+    await repo.appendMessage(chat.id, 'model', '   ', 'session-1');
 
     const found = await repo.findByAgentAndSession('agent-1', 'session-1');
-    assert.equal(found?.id, chat.id);
-    const listed = await repo.listMessages(chat.id);
+    assert.equal(found?.id, 'chat-1');
+    const listed = await repo.listMessages(chat.id, 'session-1');
     assert.deepEqual(
       listed.map((message) => message.text),
       ['Hours?', 'Nine to five']
     );
+    assert.deepEqual(client.calls[1], {
+      name: 'append_visitor_message',
+      args: {
+        p_chat_id: 'chat-1',
+        p_session_id: 'session-1',
+        p_role: 'user',
+        p_content: 'Hours?',
+      },
+    });
+    assert.equal(client.calls.filter((call) => call.name === 'append_visitor_message').length, 1);
   });
 
-  it('returns the existing chat when insert hits the unique session index', async () => {
-    const client = fakeClient({ insertError: { message: 'duplicate', code: '23505' } });
-    client.chats.push({ id: 'chats-existing', agent_id: 'agent-1', session_id: 'session-1' });
+  it('returns null when the session has no chat and skips a blank message', async () => {
+    const client = rpcClient({
+      find_visitor_chat: () => ({ data: null, error: null }),
+    });
     const repo = new SupabaseChatRepository(client as never);
-    const chat = await repo.create('agent-1', 'session-1');
-    assert.equal(chat.id, 'chats-existing');
+    assert.equal(await repo.findByAgentAndSession('agent-1', 'session-1'), null);
+    await repo.appendMessage('chat-1', 'model', '   ', 'session-1');
+    assert.equal(client.calls.length, 1);
+    assert.deepEqual(await repo.listMessages('chat-1'), []);
   });
 
   it('throws when a message insert fails', async () => {
-    const client = fakeClient({ messageError: 'db down' });
+    const client = rpcClient({
+      append_visitor_message: () => ({ data: null, error: { message: 'db down' } }),
+    });
     const repo = new SupabaseChatRepository(client as never);
-    await assert.rejects(() => repo.appendMessage('chat-1', 'user', 'Hi'), /Failed to save message: db down/);
+    await assert.rejects(
+      () => repo.appendMessage('chat-1', 'user', 'Hi', 'session-1'),
+      /Failed to save message: db down/
+    );
+  });
+
+  it('requires a session when saving a message', async () => {
+    const client = rpcClient({});
+    const repo = new SupabaseChatRepository(client as never);
+    await assert.rejects(() => repo.appendMessage('chat-1', 'user', 'Hi'), /session required/);
   });
 });

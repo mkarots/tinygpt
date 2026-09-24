@@ -2,9 +2,21 @@ import { NextResponse } from 'next/server';
 import { ProcessKnowledgeUseCase } from '../../../application/use-cases/ProcessKnowledgeUseCase';
 import { FetchCrawlerService } from '../../../infrastructure/services/FetchCrawlerService';
 import { GeminiLLMService } from '../../../infrastructure/services/GeminiLLMService';
+import { createClient as createServerSupabase } from '../../../lib/supabase-server';
 
-export async function POST(request: Request) {
+export type CrawlDeps = {
+  getUser: () => Promise<{ id: string } | null>;
+};
+
+export async function handleCrawl(request: Request, deps?: CrawlDeps) {
   try {
+    const user = deps
+      ? await deps.getUser()
+      : (await createServerSupabase()).auth.getUser().then(({ data }) => data.user);
+    if (!user) {
+      return NextResponse.json({ error: 'Sign in required to import a website' }, { status: 401 });
+    }
+
     const body = await request.json();
     const { url } = body;
 
@@ -34,4 +46,8 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
+}
+
+export async function POST(request: Request) {
+  return handleCrawl(request);
 }

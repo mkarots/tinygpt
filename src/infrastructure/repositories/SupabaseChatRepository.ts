@@ -1,12 +1,6 @@
 import { SupabaseClient } from '@supabase/supabase-js';
 import { IChatRepository, StoredChat, StoredMessage } from '../../domain/interfaces/IChatRepository';
 
-interface ChatRow {
-  id: string;
-  agent_id: string;
-  session_id: string | null;
-}
-
 interface MessageRow {
   id: string;
   role: string;
@@ -18,57 +12,51 @@ export class SupabaseChatRepository implements IChatRepository {
   constructor(private supabase: SupabaseClient) {}
 
   async findByAgentAndSession(agentId: string, sessionId: string): Promise<StoredChat | null> {
-    const { data, error } = await this.supabase
-      .from('chats')
-      .select('id, agent_id, session_id')
-      .eq('agent_id', agentId)
-      .eq('session_id', sessionId)
-      .order('created_at', { ascending: true })
-      .limit(1);
-
+    const { data, error } = await this.supabase.rpc('find_visitor_chat', {
+      p_agent_id: agentId,
+      p_session_id: sessionId,
+    });
     if (error) throw new Error(`Failed to load chat: ${error.message}`);
-    const row = (data?.[0] ?? null) as ChatRow | null;
-    return row ? toChat(row) : null;
+    if (!data) return null;
+    return { id: String(data), agentId, sessionId };
   }
 
   async create(agentId: string, sessionId: string): Promise<StoredChat> {
-    const { data, error } = await this.supabase
-      .from('chats')
-      .insert({ agent_id: agentId, session_id: sessionId })
-      .select('id, agent_id, session_id')
-      .single();
-
+    const { data, error } = await this.supabase.rpc('ensure_visitor_chat', {
+      p_agent_id: agentId,
+      p_session_id: sessionId,
+    });
     if (error || !data) {
-      if (error?.code === '23505') {
-        const existing = await this.findByAgentAndSession(agentId, sessionId);
-        if (existing) return existing;
-      }
       throw new Error(`Failed to create chat: ${error?.message ?? 'no row returned'}`);
     }
-
-    return toChat(data as ChatRow);
+    return { id: String(data), agentId, sessionId };
   }
 
-  async appendMessage(chatId: string, role: 'user' | 'model', content: string): Promise<void> {
+  async appendMessage(
+    chatId: string,
+    role: 'user' | 'model',
+    content: string,
+    sessionId?: string
+  ): Promise<void> {
     const text = content.trim();
     if (!text) return;
+    if (!sessionId) throw new Error('Failed to save message: session required');
 
-    const { error } = await this.supabase.from('messages').insert({
-      chat_id: chatId,
-      role,
-      content: text,
+    const { error } = await this.supabase.rpc('append_visitor_message', {
+      p_chat_id: chatId,
+      p_session_id: sessionId,
+      p_role: role,
+      p_content: text,
     });
-
     if (error) throw new Error(`Failed to save message: ${error.message}`);
   }
 
-  async listMessages(chatId: string): Promise<StoredMessage[]> {
-    const { data, error } = await this.supabase
-      .from('messages')
-      .select('id, role, content, created_at')
-      .eq('chat_id', chatId)
-      .order('created_at', { ascending: true });
-
+  async listMessages(chatId: string, sessionId?: string): Promise<StoredMessage[]> {
+    if (!sessionId) return [];
+    const { data, error } = await this.supabase.rpc('list_visitor_messages', {
+      p_chat_id: chatId,
+      p_session_id: sessionId,
+    });
     if (error) throw new Error(`Failed to load messages: ${error.message}`);
 
     return ((data ?? []) as MessageRow[])
@@ -80,12 +68,4 @@ export class SupabaseChatRepository implements IChatRepository {
         createdAt: new Date(row.created_at).getTime(),
       }));
   }
-}
-
-function toChat(row: ChatRow): StoredChat {
-  return {
-    id: row.id,
-    agentId: row.agent_id,
-    sessionId: row.session_id ?? '',
-  };
 }

@@ -91,3 +91,43 @@ describe('SupabaseAgentRepository.listByUser', () => {
     await assert.rejects(() => repo.listByUser('user-1'), /Failed to list agents: db down/);
   });
 });
+
+describe('SupabaseAgentRepository.getById', () => {
+  it('loads one public agent when the table read is denied', async () => {
+    const client = {
+      from() {
+        const query = {
+          select() {
+            return query;
+          },
+          eq() {
+            return query;
+          },
+          maybeSingle: async () => ({ data: null, error: { message: 'permission denied' } }),
+        };
+        return query;
+      },
+      rpc(name: string, args: { agent_id: string }) {
+        assert.equal(name, 'get_public_agent');
+        assert.equal(args.agent_id, 'agent-1');
+        return Promise.resolve({
+          data: [
+            {
+              id: 'agent-1',
+              config: { name: 'Bakery' },
+              knowledge: [{ id: 'k1', name: 'FAQ', type: 'text', content: 'Open', status: 'active' }],
+              created_at: '2026-01-01T00:00:00.000Z',
+            },
+          ],
+          error: null,
+        });
+      },
+    };
+    const repo = new SupabaseAgentRepository(client as never);
+    const agent = await repo.getById('agent-1');
+    assert.equal(agent?.id, 'agent-1');
+    assert.equal(agent?.config.name, 'Bakery');
+    assert.equal(agent?.knowledge.length, 1);
+    assert.equal('embedding' in (agent?.knowledge[0] ?? {}), false);
+  });
+});
