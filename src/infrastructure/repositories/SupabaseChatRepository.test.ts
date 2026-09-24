@@ -4,7 +4,10 @@ import { SupabaseChatRepository } from './SupabaseChatRepository';
 
 type Row = Record<string, unknown>;
 
-function fakeClient(options?: { insertError?: { message: string; code?: string } }) {
+function fakeClient(options?: {
+  insertError?: { message: string; code?: string };
+  messageError?: string;
+}) {
   const chats: Row[] = [];
   const messages: Row[] = [];
 
@@ -40,7 +43,10 @@ function fakeClient(options?: { insertError?: { message: string; code?: string }
               },
             };
           }
-          const stored = { id: `${table}-${rows.length}`, ...row };
+          if (options?.messageError && table === 'messages') {
+            return Promise.resolve({ data: null, error: { message: options.messageError } });
+          }
+          const stored = { id: `${table}-${(table === 'chats' ? chats : messages).length + 1}`, ...row };
           (table === 'chats' ? chats : messages).push(stored);
           const result = Promise.resolve({ data: stored, error: null });
           return Object.assign(result, {
@@ -85,14 +91,7 @@ describe('SupabaseChatRepository', () => {
   });
 
   it('throws when a message insert fails', async () => {
-    const client = fakeClient();
-    client.from = (table: string) => {
-      const query = fakeClient().from(table);
-      if (table === 'messages') {
-        return { insert: async () => ({ error: { message: 'db down' } }) };
-      }
-      return query;
-    };
+    const client = fakeClient({ messageError: 'db down' });
     const repo = new SupabaseChatRepository(client as never);
     await assert.rejects(() => repo.appendMessage('chat-1', 'user', 'Hi'), /Failed to save message: db down/);
   });
