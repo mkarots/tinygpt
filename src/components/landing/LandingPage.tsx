@@ -1,6 +1,7 @@
 'use client';
 
 import { FormEvent, useEffect, useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../AuthProvider';
 
@@ -28,9 +29,9 @@ export function LandingPage() {
   return (
     <div className={`${sans} min-h-screen overflow-x-clip bg-[#F6F1E8] text-[#1F1B16]`}>
       <header className="flex items-center justify-between gap-3 px-6 py-6 md:px-10 lg:px-[120px] lg:py-7">
-        <a href="/" className={`${serif} shrink-0 text-2xl font-semibold tracking-tight`}>
+        <Link href="/" className={`${serif} shrink-0 text-2xl font-semibold tracking-tight`}>
           TinyGPT
-        </a>
+        </Link>
         <nav className="flex min-w-0 items-center gap-4 text-[15px] font-medium md:gap-9">
           <a href="#how" className="hidden hover:text-[#8F3E1C] sm:inline">
             How it works
