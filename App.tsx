@@ -7,6 +7,7 @@ import type { Agent } from './src/domain/entities/Agent';
 import { DEFAULT_ASSISTANT_NAME } from './src/lib/assistantName';
 import { companyInfoFromAgent } from './src/lib/agentCompany';
 import { PRODUCT_TERRACOTTA } from './src/lib/productTheme';
+import { questionsForIndustry } from './src/lib/quickQuestionDefaults';
 import LivePreview from './src/components/LivePreview';
 import Onboarding from './src/components/Onboarding';
 import { EditAgent } from './src/components/views/admin/EditAgent';
@@ -18,7 +19,7 @@ const DEFAULT_CONFIG: AgentConfig = {
   primaryColor: PRODUCT_TERRACOTTA,
   greeting: 'Hi there! How can I help you today?',
   tone: 'friendly',
-  quickQuestions: [],
+  quickQuestions: questionsForIndustry(''),
 };
 
 function configFromAgent(agent: Agent): AgentConfig {

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { questionsForIndustry, quickQuestionsForIndustry } from './quickQuestionDefaults';
+import { INDUSTRIES, industrySelectOptions, questionsForIndustry, quickQuestionsForIndustry } from './quickQuestionDefaults';
 
 describe('quick question defaults', () => {
   it('starts with generic questions when no industry is chosen', () => {
@@ -32,6 +32,13 @@ describe('quick question defaults', () => {
   it('keeps questions the user already edited', () => {
     const custom = [{ text: 'Do you have gluten-free bread?', emoji: '🍞' }];
     assert.deepEqual(quickQuestionsForIndustry('ecommerce', custom, ''), custom);
+  });
+
+  it('exposes every catalog industry in the select, plus a blank first option', () => {
+    const options = industrySelectOptions();
+    assert.deepEqual(options[0], { label: 'Select an industry', value: '' });
+    assert.equal(options.length, INDUSTRIES.length + 1);
+    assert.equal(options.find((option) => option.value === 'ecommerce')?.label, 'E-commerce');
   });
 
   it('returns generic questions again when a known industry is cleared', () => {

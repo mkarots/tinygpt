@@ -1,6 +1,7 @@
 import React from 'react';
 import { CompanyInfo, AgentConfig } from '../../../types';
 import { assistantNameForCompany } from '../../lib/assistantName';
+import { industrySelectOptions, quickQuestionsForIndustry } from '../../lib/quickQuestionDefaults';
 import { COMPANY_STEP_HELP } from '../../lib/builderCopy';
 import { Heading } from '../core/typography/Heading';
 import { Text } from '../core/typography/Text';
@@ -13,15 +14,6 @@ interface CompanyStepProps {
   config: AgentConfig;
   onConfigChange: (key: keyof AgentConfig, value: any) => void;
 }
-
-const INDUSTRY_OPTIONS = [
-  { label: 'Select an industry', value: '' },
-  { label: 'SaaS / Technology', value: 'saas' },
-  { label: 'E-commerce', value: 'ecommerce' },
-  { label: 'Education', value: 'education' },
-  { label: 'Agency / Services', value: 'agency' },
-  { label: 'Other', value: 'other' },
-];
 
 export const CompanyStep: React.FC<CompanyStepProps> = ({
   companyInfo,
@@ -65,9 +57,18 @@ export const CompanyStep: React.FC<CompanyStepProps> = ({
           label="Industry"
           value={companyInfo.industry}
           onChange={(e) => {
-            onCompanyInfoChange({...companyInfo, industry: e.target.value});
+            const nextIndustry = e.target.value;
+            const nextQuestions = quickQuestionsForIndustry(
+              nextIndustry,
+              config.quickQuestions,
+              companyInfo.industry
+            );
+            onCompanyInfoChange({...companyInfo, industry: nextIndustry});
+            if (nextQuestions !== config.quickQuestions) {
+              onConfigChange('quickQuestions', nextQuestions);
+            }
           }}
-          options={INDUSTRY_OPTIONS}
+          options={industrySelectOptions()}
         />
       </div>
     </div>
