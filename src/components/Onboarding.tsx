@@ -13,12 +13,13 @@ import { OnboardingHeader } from './onboarding/OnboardingHeader';
 import { QuickQuestionsEditor } from './QuickQuestionsEditor';
 import { Heading } from './core/typography/Heading';
 import { Text } from './core/typography/Text';
+import { configWithCompany } from '../lib/agentCompany';
 import { saveAgent } from '../lib/saveAgent';
 import { blocksKnowledgeStep } from '../lib/importRecovery';
 import { adminSharePath } from '../lib/routes';
+import { useWebsiteCrawl } from './onboarding/useWebsiteCrawl';
 
 interface OnboardingProps {
-  existingAgentId?: string;
   config: AgentConfig;
   onConfigChange: (key: keyof AgentConfig, value: any) => void;
   knowledge: KnowledgeItem[];
@@ -37,7 +38,6 @@ const STEPS = [
 ];
 
 const Onboarding: React.FC<OnboardingProps> = ({ 
-  existingAgentId,
   config, 
   onConfigChange,
   knowledge,
@@ -48,71 +48,9 @@ const Onboarding: React.FC<OnboardingProps> = ({
 }) => {
   const router = useRouter();
   const [step, setStep] = useState<OnboardingStep>(1);
-  const [isCrawling, setIsCrawling] = useState(false);
-  const [crawlProgress, setCrawlProgress] = useState(0);
+  const { isCrawling, crawlProgress, performCrawl } = useWebsiteCrawl(onAddKnowledge, onUpdateKnowledge);
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
-
-  const performCrawl = async (url: string) => {
-    try {
-      new URL(url);
-    } catch {
-      return; 
-    }
-
-    const tempId = Math.random().toString(36).substr(2, 9);
-    const newItem: KnowledgeItem = {
-      id: tempId,
-      type: 'url',
-      name: new URL(url).hostname,
-      content: '',
-      status: 'pending',
-      dateAdded: Date.now()
-    };
-    
-    onAddKnowledge([newItem]);
-    setIsCrawling(true);
-    setCrawlProgress(0);
-
-    // Simulate progress
-    const progressInterval = setInterval(() => {
-      setCrawlProgress(prev => {
-        if (prev >= 90) return prev;
-        return prev + 1;
-      });
-    }, 100);
-    
-    // Start background crawl
-    fetch('/api/crawl', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url }),
-    })
-    .then(res => res.json())
-    .then(data => {
-      clearInterval(progressInterval);
-      setCrawlProgress(100);
-      if (data.error) {
-        onUpdateKnowledge(tempId, { status: 'error', name: `Error: ${new URL(url).hostname}` });
-      } else {
-        onUpdateKnowledge(tempId, { 
-          status: 'active', 
-          content: data.content,
-          name: data.title || new URL(url).hostname
-        });
-      }
-    })
-    .catch(() => {
-        clearInterval(progressInterval);
-        onUpdateKnowledge(tempId, { status: 'error' });
-    })
-    .finally(() => {
-        setTimeout(() => {
-          setIsCrawling(false);
-          setCrawlProgress(0);
-        }, 500);
-    });
-  };
 
   const triggerConfetti = (final = false) => {
     if ((window as any).confetti) {
@@ -150,7 +88,7 @@ const Onboarding: React.FC<OnboardingProps> = ({
   };
 
   const handleNext = async () => {
-    if (step === 1 && companyInfo.website && !existingAgentId) {
+    if (step === 1 && companyInfo.website) {
        performCrawl(companyInfo.website);
     }
 
@@ -163,7 +101,7 @@ const Onboarding: React.FC<OnboardingProps> = ({
     setIsSaving(true);
     setSaveError(null);
     try {
-      const { agentId } = await saveAgent(config, knowledge, existingAgentId);
+      const { agentId } = await saveAgent(configWithCompany(config, companyInfo), knowledge);
       triggerConfetti(true);
       router.push(adminSharePath(agentId));
     } catch (error) {

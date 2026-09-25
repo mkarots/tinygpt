@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { PRODUCT_BUILDER_PATH } from '../lib/routes';
 import { createClient } from '../lib/supabase';
 import { isSupabaseConfigured } from '../lib/supabase-config';
@@ -11,8 +11,9 @@ import { signOutToLanding } from '../lib/signOutToLanding';
 
 export function SignedInShell() {
   const pathname = usePathname() ?? '/admin';
+  const searchParams = useSearchParams();
   const router = useRouter();
-  const section = signedInSection(pathname);
+  const section = signedInSection(pathname, searchParams.toString());
   const [isSigningOut, setIsSigningOut] = useState(false);
 
   useEffect(() => {

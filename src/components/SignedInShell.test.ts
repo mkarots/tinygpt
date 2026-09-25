@@ -15,6 +15,8 @@ describe('signed-in shell', () => {
     const shell = read('components/SignedInShell.tsx');
     assert.match(shell, /TinyGPT/);
     assert.match(shell, /section\.label/);
+    assert.match(shell, /useSearchParams/);
+    assert.match(shell, /signedInSection\(pathname, searchParams\.toString\(\)\)/);
     assert.match(shell, /Sign out/);
     assert.match(shell, /signOutToLanding/);
     assert.match(shell, /router\.replace\('\/'\)/);

@@ -39,11 +39,13 @@ describe('admin home', () => {
     assert.match(dashboard, /Create your first agent/);
   });
 
-  it('saves builder edits under the existing agent id', () => {
-    const onboarding = read('src/components/Onboarding.tsx');
+  it('opens a single-page editor for an existing agent', () => {
+    const editor = read('src/components/views/admin/EditAgent.tsx');
     const app = read('App.tsx');
-    assert.match(onboarding, /saveAgent\(config, knowledge, existingAgentId\)/);
-    assert.match(app, /existingAgentId=\{initialAgent\?\.id\}/);
+    assert.match(app, /<EditAgent/);
+    assert.match(editor, /existingAgentId/);
+    assert.match(editor, /configWithCompany/);
+    assert.doesNotMatch(editor, /ProgressBar|Next Step/);
   });
 
   it('includes Back to your agents on the share page', () => {

@@ -26,6 +26,11 @@ export interface AgentConfig {
   greeting: string;
   tone: 'professional' | 'friendly' | 'concise' | 'humorous';
   quickQuestions: { text: string; emoji: string }[];
+  company?: {
+    name: string;
+    website: string;
+    industry: string;
+  };
 }
 
 export interface ChatMessage {
