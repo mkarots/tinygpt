@@ -50,7 +50,7 @@ The row stores name, description, the full `AgentConfig` jsonb (color, greeting,
 
 `GeminiLLMService.chat` concatenates active knowledge into a system instruction and tells the model to answer only from that block. Recent chat turns are passed as history. The response is streamed back as plain text.
 
-`supa_schema.sql` also defines a `knowledge` table with a 768-d pgvector column, and `GeminiEmbeddingService` can call `text-embedding-004`. The chat use case does not query that table. The shipped answer path is context stuffing, not RAG.
+`supabase/migrations` also defines a `knowledge` table with a 768-d pgvector column, and `GeminiEmbeddingService` can call `text-embedding-004`. The chat use case does not query that table. The shipped answer path is context stuffing, not RAG.
 
 ## Session boundary
 
