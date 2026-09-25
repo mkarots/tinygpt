@@ -1,7 +1,11 @@
 import React from 'react';
 import type { Metadata } from 'next';
+import { Figtree, Fraunces } from 'next/font/google';
 import { AuthProvider } from '../components/AuthProvider';
 import './globals.css';
+
+const figtree = Figtree({ subsets: ['latin'], variable: '--font-landing-sans' });
+const fraunces = Fraunces({ subsets: ['latin'], variable: '--font-landing-serif' });
 
 export const metadata: Metadata = {
   title: 'tinygpt',
@@ -14,7 +18,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${figtree.variable} ${fraunces.variable}`}>
       <head>
         <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
       </head>

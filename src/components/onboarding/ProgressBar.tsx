@@ -17,11 +17,11 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({ step, steps }) => {
   return (
     <div className="relative">
       {/* Background Line */}
-      <div className="absolute top-1/2 left-0 w-full h-1 bg-slate-100 -translate-y-1/2 rounded-full"></div>
+      <div className="absolute top-1/2 left-0 w-full h-1 bg-rule -translate-y-1/2 rounded-full"></div>
       
       {/* Active Progress Line */}
       <div 
-        className="absolute top-1/2 left-0 h-1 bg-brand-600 -translate-y-1/2 rounded-full transition-all duration-500 ease-out"
+        className="absolute top-1/2 left-0 h-1 bg-terracotta -translate-y-1/2 rounded-full transition-all duration-500 ease-out"
         style={{ width: `${progressPercentage}%` }}
       ></div>
       
@@ -32,16 +32,16 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({ step, steps }) => {
             <div 
               className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium border-2 transition-all duration-300
                 ${step > s.id 
-                  ? 'bg-brand-600 border-brand-600 text-white' 
+                  ? 'bg-terracotta border-terracotta text-cream' 
                   : step === s.id 
-                    ? 'bg-white border-brand-600 text-brand-600 scale-110 shadow-lg' 
-                    : 'bg-white border-slate-200 text-slate-300'
+                    ? 'bg-cream border-terracotta text-terracotta scale-110 shadow-sm' 
+                    : 'bg-cream border-rule text-stone/50'
                 }
               `}
             >
               {step > s.id ? <Check className="w-4 h-4" /> : s.id}
             </div>
-            <span className={`text-[10px] font-medium uppercase tracking-wider transition-colors duration-300 ${step === s.id ? 'text-brand-600' : 'text-slate-300'}`}>
+            <span className={`text-[10px] font-medium uppercase tracking-wider transition-colors duration-300 ${step === s.id ? 'text-terracotta' : 'text-stone/50'}`}>
               {s.title}
             </span>
           </div>

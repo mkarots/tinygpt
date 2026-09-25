@@ -63,20 +63,20 @@ export default function ShareAgentPage() {
 
   if (!agentId || loading) {
     return (
-      <div className="min-h-full flex items-center justify-center bg-slate-50">
-        <Loader2 className="w-8 h-8 text-brand-600 animate-spin" />
+      <div className="min-h-full flex items-center justify-center bg-paper">
+        <Loader2 className="w-8 h-8 text-terracotta animate-spin" />
       </div>
     );
   }
 
   if (error || !agentId) {
     return (
-      <div className="min-h-full flex items-center justify-center bg-slate-50 p-6">
+      <div className="min-h-full flex items-center justify-center bg-paper p-6">
         <div className="max-w-md text-center">
           <AlertCircle className="w-8 h-8 text-red-600 mx-auto mb-3" />
           <Heading level={1}>Agent unavailable</Heading>
-          <p className="text-slate-500 mt-2">{error || 'This share link is not valid.'}</p>
-          <Link href="/admin" className="inline-block mt-6 text-sm font-medium text-brand-600">
+          <p className="text-stone mt-2 text-sm">{error || 'This share link is not valid.'}</p>
+          <Link href="/admin" className="inline-block mt-6 text-sm font-medium text-terracotta">
             Back to your agents
           </Link>
         </div>
@@ -87,25 +87,25 @@ export default function ShareAgentPage() {
   const links = origin ? agentShareLinks(origin, agentId) : null;
 
   return (
-    <div className="min-h-full bg-slate-50 px-6 py-12">
+    <div className="min-h-full bg-paper px-6 py-12 text-ink">
       <div className="max-w-3xl mx-auto space-y-8">
         <div>
-          <Link href="/admin" className="inline-block text-sm font-medium text-brand-600 mb-4">
+          <Link href="/admin" className="inline-block text-sm font-medium text-terracotta mb-4">
             Back to your agents
           </Link>
           <Heading level={1}>{name} is saved</Heading>
-          <p className="text-slate-500 mt-2">
+          <p className="text-stone mt-2 text-sm">
             Share the public chat link, or embed the widget on your site.
           </p>
         </div>
 
-        <section className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-4">
-          <h2 className="font-semibold text-slate-900 text-lg">Shareable link</h2>
-          <p className="text-sm text-slate-500">
+        <section className="bg-cream rounded-xl border border-rule p-6 space-y-4">
+          <h2 className="font-medium text-ink text-lg">Shareable link</h2>
+          <p className="text-sm text-stone">
             Anyone with this link can chat with the agent. They do not need an account.
           </p>
           <div className="flex gap-2">
-            <div className="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-sm font-mono text-slate-700 truncate">
+            <div className="flex-1 bg-paper border border-rule rounded-lg px-4 py-3 text-sm font-mono text-ink truncate">
               {links?.shareUrl ?? 'Preparing link…'}
             </div>
             <Button
@@ -119,7 +119,7 @@ export default function ShareAgentPage() {
             {links && (
               <a
                 href={links.shareUrl}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-rule text-sm font-medium text-ink hover:bg-paper"
               >
                 <ExternalLink className="w-4 h-4" /> Open
               </a>
@@ -127,10 +127,10 @@ export default function ShareAgentPage() {
           </div>
         </section>
 
-        <section className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-          <div className="p-6 border-b border-slate-100">
-            <h2 className="font-semibold text-slate-900 text-lg">Website embed</h2>
-            <p className="text-sm text-slate-500 mt-1">
+        <section className="bg-cream rounded-xl border border-rule overflow-hidden">
+          <div className="p-6 border-b border-rule">
+            <h2 className="font-medium text-ink text-lg">Website embed</h2>
+            <p className="text-sm text-stone mt-1">
               Paste this snippet before the closing body tag. It loads the same saved agent.
             </p>
           </div>
@@ -151,10 +151,10 @@ export default function ShareAgentPage() {
             </button>
           </div>
           {links && (
-            <div className="px-6 py-4 border-t border-slate-100">
+            <div className="px-6 py-4 border-t border-rule">
               <a
                 href={links.embedUrl}
-                className="text-sm font-medium text-brand-600 hover:text-brand-700"
+                className="text-sm font-medium text-terracotta hover:text-ink"
               >
                 Open embed preview
               </a>

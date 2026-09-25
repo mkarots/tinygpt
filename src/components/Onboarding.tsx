@@ -182,7 +182,7 @@ const Onboarding: React.FC<OnboardingProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-full bg-white">
+    <div className="flex flex-col h-full bg-cream">
       <OnboardingHeader step={step} steps={STEPS} />
 
       {/* Content Area */}
@@ -238,13 +238,13 @@ const Onboarding: React.FC<OnboardingProps> = ({
       </div>
 
       {/* Footer / Actions */}
-      <div className="p-6 border-t border-slate-100 flex justify-between items-center bg-white">
+      <div className="p-6 border-t border-rule flex justify-between items-center bg-cream">
         <Button 
           variant="ghost"
           onClick={handleBack}
           disabled={step === 1}
           leftIcon={<ChevronLeft className="w-5 h-5" />}
-          className={step === 1 ? 'text-slate-300' : 'text-slate-600'}
+          className={step === 1 ? 'text-stone/40' : 'text-stone'}
         >
           Back
         </Button>
@@ -255,7 +255,7 @@ const Onboarding: React.FC<OnboardingProps> = ({
           disabled={isSaving || (step === 2 && blocksKnowledgeStep(knowledge))}
           isLoading={isSaving}
           rightIcon={isSaving ? undefined : <ChevronRight className="w-5 h-5" />}
-          className="px-8 py-3 rounded-xl shadow-lg shadow-brand-500/30 transform hover:scale-105"
+          className="px-8 py-3 rounded-[10px]"
         >
           {step === 5 ? 'Save & Open Chat' : 'Next Step'}
         </Button>

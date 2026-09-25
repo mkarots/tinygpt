@@ -2,6 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Bot, RefreshCw, ChevronDown } from 'lucide-react';
 import { ChatMessage, AgentConfig, KnowledgeItem } from '../../types';
+import { PRODUCT_TERRACOTTA } from '../lib/productTheme';
 import { sendMessageStream, initializeChat, loadChatTranscript } from '../../services/geminiService';
 import { visibleThread } from '../lib/chatThread';
 import { MessageBubble } from './core/feedback/MessageBubble';
@@ -109,10 +110,10 @@ const WidgetChat: React.FC<WidgetChatProps> = ({ config, knowledge, agentId, onC
   };
 
   // Dynamic Styles
-  const primaryColor = config.primaryColor || '#7c3aed';
+  const primaryColor = config.primaryColor || PRODUCT_TERRACOTTA;
   
   return (
-    <div className="flex flex-col h-full bg-white rounded-2xl shadow-xl overflow-hidden border border-neutral-200 font-sans">
+    <div className="flex flex-col h-full bg-cream rounded-2xl shadow-xl overflow-hidden border border-rule font-sans">
       {/* Widget Header */}
       <div 
         className="px-4 py-4 flex items-center justify-between text-white shadow-md z-10"
@@ -123,7 +124,7 @@ const WidgetChat: React.FC<WidgetChatProps> = ({ config, knowledge, agentId, onC
             <Bot className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h3 className="font-semibold text-sm leading-tight">{config.name}</h3>
+            <h3 className="font-serif font-semibold text-sm leading-tight">{config.name}</h3>
             <p className="text-[10px] text-white/80 flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-green-400"></span>
               Online
@@ -156,7 +157,7 @@ const WidgetChat: React.FC<WidgetChatProps> = ({ config, knowledge, agentId, onC
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50 scrollbar-hide">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-paper scrollbar-hide">
         {messages.map((msg) => (
           <MessageBubble
             key={msg.id}
@@ -180,7 +181,7 @@ const WidgetChat: React.FC<WidgetChatProps> = ({ config, knowledge, agentId, onC
       </div>
 
       {/* Input */}
-      <div className="p-3 bg-white border-t border-neutral-100">
+      <div className="p-3 bg-cream border-t border-rule">
         <ChatInput
           value={inputValue}
           onChange={setInputValue}
@@ -189,7 +190,7 @@ const WidgetChat: React.FC<WidgetChatProps> = ({ config, knowledge, agentId, onC
           primaryColor={primaryColor}
         />
         <div className="text-center mt-2">
-           <span className="text-[10px] text-neutral-400 font-medium">
+           <span className="text-[10px] text-stone font-medium">
              Powered by TinyGPT
            </span>
         </div>

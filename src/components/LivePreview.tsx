@@ -16,7 +16,7 @@ const LivePreview: React.FC<LivePreviewProps> = ({ config, knowledge }) => {
   const [isWidgetOpen, setIsWidgetOpen] = useState(true);
 
   return (
-    <aside className="w-[450px] bg-slate-100 border-l border-slate-200 hidden xl:flex flex-col">
+    <aside className="w-[450px] bg-paper border-l border-rule hidden xl:flex flex-col">
       {/* Header with Toggles */}
       <div className="p-4 border-b border-slate-200 bg-white/50 backdrop-blur-sm flex justify-between items-center">
          <div className="flex bg-white rounded-lg p-1 border border-slate-200 shadow-sm">

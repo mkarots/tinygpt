@@ -1,9 +1,15 @@
 /** @type {import('tailwindcss').Config} */
 const config = {
-  content: ['./src/**/*.{js,ts,jsx,tsx}'],
+  content: ['./src/**/*.{js,ts,jsx,tsx}', './App.tsx'],
   theme: {
     extend: {
       colors: {
+        paper: '#F6F1E8',
+        ink: '#1F1B16',
+        stone: '#5E554A',
+        terracotta: '#B4532A',
+        cream: '#FFFDF8',
+        rule: '#D9CEBC',
         brand: {
           50: '#f5f3ff',
           100: '#ede9fe',
@@ -18,7 +24,8 @@ const config = {
         },
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-landing-sans)', 'Helvetica Neue', 'sans-serif'],
+        serif: ['var(--font-landing-serif)', 'Georgia', 'serif'],
         mono: ['Fira Code', 'monospace'],
       },
       animation: {
