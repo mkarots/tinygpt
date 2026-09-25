@@ -55,7 +55,7 @@ export const CustomizeStep: React.FC<CustomizeStepProps> = ({ config, onConfigCh
       <div>
         <Label className="mb-3">Brand Color</Label>
         <div className="flex gap-4">
-          {['#7c3aed', '#2563eb', '#059669', '#dc2626', '#09090b'].map(color => (
+          {['#B4532A', '#7c3aed', '#2563eb', '#059669', '#09090b'].map(color => (
             <button
               key={color}
               onClick={() => onConfigChange('primaryColor', color)}

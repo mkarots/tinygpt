@@ -39,26 +39,23 @@ export function SignedInShell() {
   };
 
   return (
-    <header className="shrink-0 border-b border-slate-200 bg-white">
+    <header className="shrink-0 border-b border-rule bg-cream">
       <div className="flex items-center justify-between gap-4 px-6 py-3">
         <div className="flex min-w-0 items-center gap-4">
           <Link
             href={PRODUCT_BUILDER_PATH}
-            className="flex items-center gap-2 text-brand-600 font-bold text-lg shrink-0"
+            className="font-serif text-xl font-semibold text-ink shrink-0 tracking-tight"
           >
-            <span className="w-8 h-8 rounded-lg bg-brand-600 text-white flex items-center justify-center font-mono text-sm">
-              T
-            </span>
             TinyGPT
           </Link>
-          <span className="text-slate-300" aria-hidden="true">
+          <span className="text-rule" aria-hidden="true">
             /
           </span>
-          <p className="text-sm font-medium text-slate-700 truncate">{section.label}</p>
+          <p className="text-sm font-medium text-stone truncate">{section.label}</p>
         </div>
         <div className="flex items-center gap-4 shrink-0">
           {section.showBackToAgents ? (
-            <Link href={PRODUCT_BUILDER_PATH} className="text-sm font-medium text-brand-600">
+            <Link href={PRODUCT_BUILDER_PATH} className="text-sm font-medium text-terracotta">
               Your agents
             </Link>
           ) : null}
@@ -66,7 +63,7 @@ export function SignedInShell() {
             type="button"
             onClick={handleSignOut}
             disabled={isSigningOut}
-            className="text-sm font-medium text-slate-600 hover:text-slate-900 disabled:opacity-60"
+            className="text-sm font-medium text-stone hover:text-ink disabled:opacity-60"
           >
             Sign out
           </button>

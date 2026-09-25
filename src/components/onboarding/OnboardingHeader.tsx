@@ -12,8 +12,8 @@ interface OnboardingHeaderProps {
 
 export const OnboardingHeader: React.FC<OnboardingHeaderProps> = ({ step, steps }) => {
   return (
-    <div className="px-8 py-6 border-b border-slate-100">
-      <Link href={PRODUCT_BUILDER_PATH} className="text-sm font-medium text-brand-600">
+    <div className="px-8 py-6 border-b border-rule">
+      <Link href={PRODUCT_BUILDER_PATH} className="text-sm font-medium text-terracotta">
         Your agents
       </Link>
       <HeaderTitle step={step} totalSteps={steps.length} />

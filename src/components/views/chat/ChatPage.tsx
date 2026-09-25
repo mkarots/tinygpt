@@ -40,21 +40,21 @@ export default function ChatPage() {
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-slate-50">
-        <Loader2 className="w-8 h-8 text-brand-600 animate-spin" />
+      <div className="flex h-screen items-center justify-center bg-paper">
+        <Loader2 className="w-8 h-8 text-terracotta animate-spin" />
       </div>
     );
   }
 
   if (error || !agentData) {
     return (
-      <div className="flex h-screen items-center justify-center bg-slate-50 p-4">
+      <div className="flex h-screen items-center justify-center bg-paper p-4">
          <div className="text-center max-w-md">
             <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                <AlertCircle className="w-6 h-6 text-red-600" />
             </div>
-            <h1 className="text-xl font-bold text-slate-900 mb-2">Agent Not Found</h1>
-            <p className="text-slate-500">
+            <h1 className="font-serif text-2xl font-semibold text-ink mb-2">Agent Not Found</h1>
+            <p className="text-stone text-sm">
                This chat link appears to be invalid or has expired. Please check the URL and try again.
             </p>
          </div>
@@ -63,30 +63,28 @@ export default function ChatPage() {
   }
 
   const { config, knowledge } = agentData;
-  const primaryColor = config.primaryColor || '#7c3aed';
 
   return (
-    <div className="min-h-screen bg-[#fafafa] font-sans text-slate-900 selection:bg-brand-100 selection:text-brand-900">
+    <div className="min-h-screen bg-paper font-sans text-ink">
       
       {/* --- HERO HEADER --- */}
-      <div className="bg-white border-b border-slate-200 pb-12 pt-16 px-6 relative overflow-hidden">
-         <div className="absolute top-0 left-0 w-full h-2" style={{ backgroundColor: primaryColor }}></div>
+      <div className="bg-cream border-b border-rule pb-12 pt-16 px-6 relative overflow-hidden">
+         <div className="absolute top-0 left-0 w-full h-2 bg-terracotta"></div>
          <div className="max-w-4xl mx-auto relative z-10">
             <div className="flex items-start gap-6">
-               <div className="w-20 h-20 rounded-2xl shadow-lg flex items-center justify-center text-3xl text-white font-bold shrink-0" style={{ backgroundColor: primaryColor }}>
+               <div className="w-20 h-20 rounded-2xl shadow-lg flex items-center justify-center text-3xl text-cream font-serif font-semibold shrink-0 bg-terracotta">
                   {config.name.charAt(0)}
                </div>
                <div className="flex-1">
-                  <h1 className="text-3xl font-bold text-slate-900 tracking-tight">{config.name}</h1>
-                  <p className="text-lg text-slate-500 mt-2 leading-relaxed max-w-2xl">
+                  <h1 className="font-serif text-3xl font-semibold text-ink tracking-tight">{config.name}</h1>
+                  <p className="text-lg text-stone mt-2 leading-relaxed max-w-2xl">
                     {config.description || "I'm an AI assistant trained to help you with specific knowledge."}
                   </p>
                   
                   <div className="flex gap-3 mt-6">
                      <button 
                        onClick={() => setActiveTab('chat')}
-                       className="px-5 py-2.5 rounded-xl text-white font-medium shadow-lg shadow-brand-500/20 hover:opacity-90 transition-all transform hover:-translate-y-0.5 flex items-center gap-2"
-                       style={{ backgroundColor: primaryColor }}
+                       className="px-5 py-2.5 rounded-[10px] bg-terracotta text-cream font-medium hover:bg-terracotta/90 transition-all flex items-center gap-2"
                        data-testid="start-chat-button"
                      >
                        <MessageSquare className="w-4 h-4" /> Start Chatting
@@ -108,10 +106,7 @@ export default function ChatPage() {
          </div>
          
          {/* Decorative Background blob */}
-         <div 
-           className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-transparent to-current opacity-5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"
-           style={{ color: primaryColor }}
-         ></div>
+         <div className="absolute top-0 right-0 w-96 h-96 bg-terracotta/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
       </div>
 
       <main className="max-w-4xl mx-auto px-6 py-12">
@@ -124,7 +119,7 @@ export default function ChatPage() {
                 
                 {/* Quick Actions / Topics */}
                 <section>
-                   <h2 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                   <h2 className="text-sm font-medium text-stone uppercase tracking-wider mb-4 flex items-center gap-2">
                      <Sparkles className="w-4 h-4" /> Suggested Topics
                    </h2>
                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -137,15 +132,15 @@ export default function ChatPage() {
                           <button 
                             key={i}
                             onClick={() => setActiveTab('chat')} // Ideally pass this question to chat
-                            className="p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:border-brand-300 hover:shadow-md transition-all text-left group"
+                            className="p-4 bg-cream rounded-xl border border-rule hover:border-terracotta/40 transition-all text-left group"
                           >
                              <div className="flex justify-between items-start mb-2">
-                                <div className="w-10 h-10 bg-slate-50 rounded-lg group-hover:bg-brand-50 transition-colors flex items-center justify-center text-xl">
+                                <div className="w-10 h-10 bg-paper rounded-lg group-hover:bg-paper transition-colors flex items-center justify-center text-xl">
                                   {emoji}
                                 </div>
-                                <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-brand-500 opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />
+                                <ArrowRight className="w-4 h-4 text-rule group-hover:text-terracotta opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />
                              </div>
-                             <p className="font-medium text-slate-700 group-hover:text-slate-900 line-clamp-2">{text}</p>
+                             <p className="font-medium text-ink line-clamp-2">{text}</p>
                           </button>
                         );
                       })}
@@ -154,20 +149,20 @@ export default function ChatPage() {
 
                 {/* Knowledge Source Catalog */}
                 <section>
-                   <h2 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                   <h2 className="text-sm font-medium text-stone uppercase tracking-wider mb-4 flex items-center gap-2">
                      <BookOpen className="w-4 h-4" /> Knowledge Base
                    </h2>
-                   <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                   <div className="bg-cream rounded-xl border border-rule overflow-hidden">
                       {knowledge.length > 0 ? (
                         <div className="divide-y divide-slate-100">
                            {knowledge.map((item) => (
-                             <div key={item.id} className="p-4 flex items-center gap-4 hover:bg-slate-50 transition-colors">
-                                <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+                             <div key={item.id} className="p-4 flex items-center gap-4 hover:bg-paper transition-colors">
+                                <div className="w-10 h-10 rounded-lg bg-paper flex items-center justify-center shrink-0">
                                    {item.type === 'url' ? <Globe className="w-5 h-5 text-blue-500" /> : <FileText className="w-5 h-5 text-orange-500" />}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                   <h3 className="font-medium text-slate-900 truncate">{item.name}</h3>
-                                   <p className="text-xs text-slate-500 truncate">
+                                   <h3 className="font-medium text-ink truncate">{item.name}</h3>
+                                   <p className="text-xs text-stone truncate">
                                      {item.type === 'url' ? 'External Website' : 'Uploaded Document'} • Added {new Date(item.dateAdded).toLocaleDateString()}
                                    </p>
                                 </div>
@@ -178,7 +173,7 @@ export default function ChatPage() {
                            ))}
                         </div>
                       ) : (
-                        <div className="p-8 text-center text-slate-400">
+                        <div className="p-8 text-center text-stone">
                            No public knowledge sources listed.
                         </div>
                       )}
@@ -190,22 +185,22 @@ export default function ChatPage() {
              {/* RIGHT COLUMN: Sticky Chat Teaser */}
              <div className="md:col-span-1">
                 <div className="sticky top-8">
-                   <div className="bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden flex flex-col h-[500px]">
-                      <div className="p-4 border-b border-slate-100 bg-slate-50/50">
-                         <h3 className="font-semibold text-slate-900">Live Preview</h3>
+                   <div className="bg-cream rounded-2xl shadow-xl border border-rule overflow-hidden flex flex-col h-[500px]">
+                      <div className="p-4 border-b border-rule bg-paper/50">
+                         <h3 className="font-medium text-ink">Live Preview</h3>
                       </div>
-                      <div className="flex-1 bg-slate-100 p-4 flex items-end justify-center pb-8 relative group cursor-pointer" onClick={() => setActiveTab('chat')}>
-                         <div className="absolute inset-0 bg-white/50 backdrop-blur-[1px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                            <span className="bg-slate-900 text-white px-4 py-2 rounded-lg font-medium shadow-xl transform translate-y-4 group-hover:translate-y-0 transition-transform">
+                      <div className="flex-1 bg-paper p-4 flex items-end justify-center pb-8 relative group cursor-pointer" onClick={() => setActiveTab('chat')}>
+                         <div className="absolute inset-0 bg-cream/50 backdrop-blur-[1px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                            <span className="bg-terracotta text-cream px-4 py-2 rounded-[10px] font-medium shadow-xl transform translate-y-4 group-hover:translate-y-0 transition-transform">
                                Open Chat
                             </span>
                          </div>
                          {/* Fake chat bubbles */}
                          <div className="w-full space-y-3 opacity-60 blur-[1px]">
-                            <div className="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm text-xs max-w-[80%]">
+                            <div className="bg-cream p-3 rounded-2xl rounded-tl-none shadow-sm text-xs max-w-[80%]">
                                Hello! How can I help you?
                             </div>
-                            <div className="bg-brand-100 p-3 rounded-2xl rounded-tr-none shadow-sm text-xs max-w-[80%] ml-auto">
+                            <div className="bg-terracotta/15 p-3 rounded-2xl rounded-tr-none shadow-sm text-xs max-w-[80%] ml-auto">
                                I have a question about...
                             </div>
                          </div>
@@ -217,7 +212,7 @@ export default function ChatPage() {
           </div>
         ) : (
           /* CHAT VIEW MODE */
-          <div className="max-w-2xl mx-auto h-[700px] shadow-2xl rounded-2xl overflow-hidden border border-slate-200 bg-white animate-fade-in">
+          <div className="max-w-2xl mx-auto h-[700px] shadow-2xl rounded-2xl overflow-hidden border border-rule bg-cream animate-fade-in">
              <WidgetChat 
                config={config} 
                knowledge={knowledge} 

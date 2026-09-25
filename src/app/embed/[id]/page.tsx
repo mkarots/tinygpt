@@ -41,25 +41,25 @@ export default function EmbedPage() {
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-white">
-        <Loader2 className="w-6 h-6 text-slate-400 animate-spin" />
+      <div className="flex h-screen items-center justify-center bg-paper">
+        <Loader2 className="w-6 h-6 text-terracotta animate-spin" />
       </div>
     );
   }
 
   if (error || !agentData) {
     return (
-      <div className="flex h-screen items-center justify-center bg-slate-50 p-4 text-center">
+      <div className="flex h-screen items-center justify-center bg-paper p-4 text-center">
          <div className="space-y-2">
             <AlertCircle className="w-8 h-8 text-red-500 mx-auto" />
-            <p className="text-xs text-slate-500">Agent Unavailable</p>
+            <p className="text-xs text-stone">Agent Unavailable</p>
          </div>
       </div>
     );
   }
 
   return (
-    <div className="h-screen w-screen bg-white">
+    <div className="h-screen w-screen bg-paper">
        <WidgetChat 
          config={agentData.config} 
          knowledge={agentData.knowledge}
