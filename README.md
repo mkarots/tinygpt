@@ -6,7 +6,7 @@ How the current app works is in [docs/how-it-works.md](docs/how-it-works.md). Th
 
 ## Deploy
 
-Deploy the Next.js app on a Node host such as Vercel. Do not install Chromium.
+Deploy the Next.js app on Vercel ([ADR 0001](docs/adr/0001-deploy-on-vercel.md)). Do not install Chromium.
 
 `POST /api/crawl` fetches the page (30 second timeout), extracts `main` / `article` / content with Cheerio, converts it to markdown, then asks Gemini to strip navigation and footers. An invalid URL returns `Invalid URL format`. A timeout returns `Timed out loading the page`. Pages that only render in a browser are not executed.
 

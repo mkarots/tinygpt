@@ -6,7 +6,7 @@ Read this only when you need to know what the current MVP is supposed to do.
 
 | URL | Who | Purpose |
 |---|---|---|
-| `/` | Anyone | Sign-in gate. Signed-in users go to `/admin`. |
+| `/` | Anyone | Landing page. Signed-in users go to `/admin`. Sign-in is `/login`. |
 | `/login` | Anyone | Google OAuth. Returns to `/admin` via `/auth/callback`. |
 | `/admin` | Signed-in | **Official** owner builder: onboarding, knowledge, appearance, deploy. |
 | `/internal/prospector` | Signed-in (founder) | Internal demo factory. Not a product path. `/admin/create` redirects here. |

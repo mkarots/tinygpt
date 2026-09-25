@@ -47,7 +47,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen bg-slate-50 font-sans overflow-hidden">
+    <div className="flex h-full bg-slate-50 font-sans overflow-hidden">
        <main className="flex-1 flex overflow-hidden">
           <div className="flex-1">
             <Onboarding 

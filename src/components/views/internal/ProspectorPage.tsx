@@ -82,7 +82,7 @@ export default function ProspectorPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6 font-sans">
+    <div className="min-h-full bg-slate-50 flex items-center justify-center p-6 font-sans">
       <div className="w-full max-w-lg bg-white rounded-xl shadow-xl border border-slate-200 overflow-hidden">
         <div className="p-6 border-b border-slate-100 bg-slate-900 text-white">
           <div className="flex items-center gap-2">

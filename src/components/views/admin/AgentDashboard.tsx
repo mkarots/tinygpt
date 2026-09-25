@@ -5,7 +5,7 @@ import { Heading } from '../../core/typography/Heading';
 
 export function AgentDashboard({ agents }: { agents: OwnedAgentSummary[] }) {
   return (
-    <div className="min-h-screen bg-slate-50 px-6 py-12">
+    <div className="min-h-full bg-slate-50 px-6 py-12">
       <div className="max-w-3xl mx-auto space-y-8">
         <div className="flex items-start justify-between gap-4">
           <div>

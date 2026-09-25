@@ -1,7 +1,12 @@
+import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { AgentDashboard } from '../../components/views/admin/AgentDashboard';
 import { SupabaseAgentRepository } from '../../infrastructure/repositories/SupabaseAgentRepository';
 import { createClient } from '../../lib/supabase-server';
+
+export const metadata: Metadata = {
+  title: 'Your agents',
+};
 
 export default async function AdminHomePage() {
   const supabase = await createClient();
