@@ -13,10 +13,12 @@ function read(relative: string) {
 describe('embed route param', () => {
   it('loads the agent from params.id and renders WidgetChat', () => {
     const page = read('src/app/embed/[id]/page.tsx');
-    assert.match(page, /singleRouteParam\(params\.id\)/);
-    assert.doesNotMatch(page, /params\.agentId/);
-    assert.match(page, /WidgetChat/);
-    assert.match(page, /\/api\/agent\/\$\{agentId\}/);
+    const publicChat = read('src/components/PublicAgentChat.tsx');
+    assert.match(page, /PublicAgentChat/);
+    assert.match(publicChat, /singleRouteParam\(params\.id\)/);
+    assert.doesNotMatch(publicChat, /params\.agentId/);
+    assert.match(publicChat, /WidgetChat/);
+    assert.match(publicChat, /\/api\/agent\/\$\{agentId\}/);
   });
 
   it('points the widget iframe at /embed/ plus the script data-id', () => {

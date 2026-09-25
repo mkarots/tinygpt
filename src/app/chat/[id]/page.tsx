@@ -1,7 +1,7 @@
 'use client';
 
-import ChatPage from '../../../components/views/chat/ChatPage';
+import PublicAgentChat from '../../../components/PublicAgentChat';
 
 export default function Page() {
-  return <ChatPage />;
+  return <PublicAgentChat />;
 }

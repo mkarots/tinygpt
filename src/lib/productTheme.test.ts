@@ -23,7 +23,7 @@ const PRODUCT_SURFACES = [
   'components/onboarding/HeaderTitle.tsx',
   'components/onboarding/ProgressBar.tsx',
   'components/onboarding/OnboardingHeader.tsx',
-  'components/views/chat/ChatPage.tsx',
+  'components/PublicAgentChat.tsx',
   'app/embed/[id]/page.tsx',
   'components/WidgetChat.tsx',
   'components/SignedInShell.tsx',
@@ -74,7 +74,6 @@ describe('product theme', () => {
   it('gives each product page a serif title', () => {
     assert.match(read('components/core/typography/Heading.tsx'), /font-serif/);
     assert.match(read('components/onboarding/HeaderTitle.tsx'), /font-serif/);
-    assert.match(read('components/views/chat/ChatPage.tsx'), /font-serif/);
     assert.match(read('components/WidgetChat.tsx'), /font-serif/);
   });
 });
