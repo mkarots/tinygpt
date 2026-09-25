@@ -63,7 +63,7 @@ export default function ShareAgentPage() {
 
   if (!agentId || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+      <div className="min-h-full flex items-center justify-center bg-slate-50">
         <Loader2 className="w-8 h-8 text-brand-600 animate-spin" />
       </div>
     );
@@ -71,7 +71,7 @@ export default function ShareAgentPage() {
 
   if (error || !agentId) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 p-6">
+      <div className="min-h-full flex items-center justify-center bg-slate-50 p-6">
         <div className="max-w-md text-center">
           <AlertCircle className="w-8 h-8 text-red-600 mx-auto mb-3" />
           <Heading level={1}>Agent unavailable</Heading>
@@ -87,9 +87,12 @@ export default function ShareAgentPage() {
   const links = origin ? agentShareLinks(origin, agentId) : null;
 
   return (
-    <div className="min-h-screen bg-slate-50 px-6 py-12">
+    <div className="min-h-full bg-slate-50 px-6 py-12">
       <div className="max-w-3xl mx-auto space-y-8">
         <div>
+          <Link href="/admin" className="inline-block text-sm font-medium text-brand-600 mb-4">
+            Back to your agents
+          </Link>
           <Heading level={1}>{name} is saved</Heading>
           <p className="text-slate-500 mt-2">
             Share the public chat link, or embed the widget on your site.
