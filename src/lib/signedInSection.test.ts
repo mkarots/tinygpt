@@ -16,6 +16,11 @@ describe('signedInSection', () => {
       title: 'New agent · TinyGPT',
       showBackToAgents: true,
     });
+    assert.deepEqual(signedInSection('/admin/new', 'agent=abc'), {
+      label: 'Edit agent',
+      title: 'Edit agent · TinyGPT',
+      showBackToAgents: true,
+    });
     assert.deepEqual(signedInSection('/admin/share/agent-1'), {
       label: 'Share',
       title: 'Share · TinyGPT',

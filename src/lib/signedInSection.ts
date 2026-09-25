@@ -5,11 +5,15 @@ export type SignedInSection = {
 };
 
 /** Labels and titles for the signed-in chrome. */
-export function signedInSection(pathname: string): SignedInSection {
+export function signedInSection(pathname: string, search = ''): SignedInSection {
   const path = pathname.replace(/\/$/, '') || '/';
+  const params = new URLSearchParams(search.startsWith('?') ? search.slice(1) : search);
 
   if (path === '/admin') {
     return { label: 'Your agents', title: 'Your agents · TinyGPT', showBackToAgents: false };
+  }
+  if (path.startsWith('/admin/new') && params.get('agent')) {
+    return { label: 'Edit agent', title: 'Edit agent · TinyGPT', showBackToAgents: true };
   }
   if (path.startsWith('/admin/new')) {
     return { label: 'New agent', title: 'New agent · TinyGPT', showBackToAgents: true };

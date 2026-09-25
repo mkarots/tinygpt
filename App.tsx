@@ -5,11 +5,12 @@ import React, { useState } from 'react';
 import { KnowledgeItem, AgentConfig, CompanyInfo } from './types';
 import type { Agent } from './src/domain/entities/Agent';
 import { DEFAULT_ASSISTANT_NAME } from './src/lib/assistantName';
-import { siteFromKnowledge, websiteFromSite } from './src/lib/agentList';
+import { companyInfoFromAgent } from './src/lib/agentCompany';
 import { PRODUCT_TERRACOTTA } from './src/lib/productTheme';
 import { questionsForIndustry } from './src/lib/quickQuestionDefaults';
 import LivePreview from './src/components/LivePreview';
 import Onboarding from './src/components/Onboarding';
+import { EditAgent } from './src/components/views/admin/EditAgent';
 
   // Default Configuration
 const DEFAULT_CONFIG: AgentConfig = {
@@ -34,15 +35,7 @@ function configFromAgent(agent: Agent): AgentConfig {
     greeting: agent.config.greeting,
     tone: agent.config.tone,
     quickQuestions: questions,
-  };
-}
-
-function companyInfoFromAgent(agent: Agent): CompanyInfo {
-  return {
-    name: '',
-    website: websiteFromSite(siteFromKnowledge(agent.knowledge)),
-    industry: '',
-    email: '',
+    company: agent.config.company,
   };
 }
 
@@ -82,8 +75,9 @@ const App: React.FC<{ initialAgent?: Agent | null }> = ({ initialAgent = null })
     <div className="flex h-full bg-paper font-sans overflow-hidden">
        <main className="flex-1 flex overflow-hidden">
           <div className="flex-1">
-            <Onboarding 
-              existingAgentId={initialAgent?.id}
+            {initialAgent ? (
+            <EditAgent
+              existingAgentId={initialAgent.id}
               config={config}
               onConfigChange={handleConfigChange}
               knowledge={knowledge}
@@ -92,6 +86,17 @@ const App: React.FC<{ initialAgent?: Agent | null }> = ({ initialAgent = null })
               companyInfo={companyInfo}
               onCompanyInfoChange={setCompanyInfo}
             />
+            ) : (
+            <Onboarding 
+              config={config}
+              onConfigChange={handleConfigChange}
+              knowledge={knowledge}
+              onAddKnowledge={handleAddKnowledgeItems}
+              onUpdateKnowledge={handleUpdateKnowledgeItem}
+              companyInfo={companyInfo}
+              onCompanyInfoChange={setCompanyInfo}
+            />
+            )}
           </div>
           <div className="hidden xl:flex w-[400px] border-l border-slate-200 bg-slate-50">
              <LivePreview config={config} knowledge={knowledge} />

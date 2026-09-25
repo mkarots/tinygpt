@@ -16,12 +16,10 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({ step, steps }) => {
 
   return (
     <div className="relative">
-      {/* Background Line */}
-      <div className="absolute top-1/2 left-0 w-full h-1 bg-rule -translate-y-1/2 rounded-full"></div>
-      
-      {/* Active Progress Line */}
+      {/* Rail sits at the center of the h-8 dots, not the midpoint of dots + labels. */}
+      <div className="absolute top-4 left-0 w-full h-1 bg-rule -translate-y-1/2 rounded-full"></div>
       <div 
-        className="absolute top-1/2 left-0 h-1 bg-terracotta -translate-y-1/2 rounded-full transition-all duration-500 ease-out"
+        className="absolute top-4 left-0 h-1 bg-terracotta -translate-y-1/2 rounded-full transition-all duration-500 ease-out"
         style={{ width: `${progressPercentage}%` }}
       ></div>
       
@@ -34,7 +32,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({ step, steps }) => {
                 ${step > s.id 
                   ? 'bg-terracotta border-terracotta text-cream' 
                   : step === s.id 
-                    ? 'bg-cream border-terracotta text-terracotta scale-110 shadow-sm' 
+                    ? 'bg-cream border-terracotta text-terracotta shadow-sm' 
                     : 'bg-cream border-rule text-stone/50'
                 }
               `}
