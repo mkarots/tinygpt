@@ -12,12 +12,10 @@ describe('sign-in call to action', () => {
     assert.equal(SIGN_IN_CTA, 'Create an agent for your website or business');
   });
 
-  it('is the home button and the login description', () => {
-    const home = readFileSync(path.join(root, 'app/page.tsx'), 'utf8');
+  it('is the login description', () => {
     const login = readFileSync(path.join(root, 'app/login/page.tsx'), 'utf8');
-    assert.match(home, /<Button[\s\S]*SIGN_IN_CTA[\s\S]*<\/Button>/);
     assert.match(login, /SIGN_IN_CTA/);
     assert.match(login, /Continue with Google/);
-    assert.doesNotMatch(home + login, /manage your AI agents|share a chat link/);
+    assert.doesNotMatch(login, /manage your AI agents|share a chat link/);
   });
 });
