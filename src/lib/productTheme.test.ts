@@ -4,6 +4,7 @@ import path from 'node:path';
 import { describe, it } from 'node:test';
 import { fileURLToPath } from 'node:url';
 import {
+  BRAND_COLOR_SWATCHES,
   PRODUCT_INK,
   PRODUCT_PAPER,
   PRODUCT_TERRACOTTA,
@@ -61,6 +62,13 @@ describe('product theme', () => {
         `${file} still has a purple filled control`
       );
     }
+  });
+
+  it('names each builder color swatch', () => {
+    assert.equal(BRAND_COLOR_SWATCHES[0]?.name, 'Terracotta');
+    const customize = read('components/onboarding/CustomizeStep.tsx');
+    assert.match(customize, /BRAND_COLOR_SWATCHES/);
+    assert.match(customize, /aria-label=\{name\}/);
   });
 
   it('gives each product page a serif title', () => {

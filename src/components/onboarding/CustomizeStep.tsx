@@ -1,5 +1,6 @@
 import React from 'react';
 import { AgentConfig } from '../../../types';
+import { BRAND_COLOR_SWATCHES } from '../../lib/productTheme';
 import { Heading } from '../core/typography/Heading';
 import { Text } from '../core/typography/Text';
 import { Input } from '../core/input/Input';
@@ -55,12 +56,15 @@ export const CustomizeStep: React.FC<CustomizeStepProps> = ({ config, onConfigCh
       <div>
         <Label className="mb-3">Brand Color</Label>
         <div className="flex gap-4">
-          {['#B4532A', '#7c3aed', '#2563eb', '#059669', '#09090b'].map(color => (
+          {BRAND_COLOR_SWATCHES.map(({ hex, name }) => (
             <button
-              key={color}
-              onClick={() => onConfigChange('primaryColor', color)}
-              className={`w-12 h-12 rounded-full transition-transform hover:scale-110 shadow-sm ${config.primaryColor === color ? 'ring-4 ring-slate-200 scale-110' : ''}`}
-              style={{ backgroundColor: color }}
+              key={hex}
+              type="button"
+              aria-label={name}
+              title={name}
+              onClick={() => onConfigChange('primaryColor', hex)}
+              className={`w-12 h-12 rounded-full transition-transform hover:scale-110 shadow-sm ${config.primaryColor === hex ? 'ring-4 ring-slate-200 scale-110' : ''}`}
+              style={{ backgroundColor: hex }}
             />
           ))}
         </div>

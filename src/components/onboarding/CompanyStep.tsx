@@ -1,7 +1,7 @@
 import React from 'react';
 import { CompanyInfo, AgentConfig } from '../../../types';
 import { assistantNameForCompany } from '../../lib/assistantName';
-import { quickQuestionsForIndustry } from '../../lib/quickQuestionDefaults';
+import { industrySelectOptions, quickQuestionsForIndustry } from '../../lib/quickQuestionDefaults';
 import { COMPANY_STEP_HELP } from '../../lib/builderCopy';
 import { Heading } from '../core/typography/Heading';
 import { Text } from '../core/typography/Text';
@@ -14,15 +14,6 @@ interface CompanyStepProps {
   config: AgentConfig;
   onConfigChange: (key: keyof AgentConfig, value: any) => void;
 }
-
-const INDUSTRY_OPTIONS = [
-  { label: 'Select an industry', value: '' },
-  { label: 'SaaS / Technology', value: 'saas' },
-  { label: 'E-commerce', value: 'ecommerce' },
-  { label: 'Education', value: 'education' },
-  { label: 'Agency / Services', value: 'agency' },
-  { label: 'Other', value: 'other' },
-];
 
 export const CompanyStep: React.FC<CompanyStepProps> = ({
   companyInfo,
@@ -77,7 +68,7 @@ export const CompanyStep: React.FC<CompanyStepProps> = ({
               onConfigChange('quickQuestions', nextQuestions);
             }
           }}
-          options={INDUSTRY_OPTIONS}
+          options={industrySelectOptions()}
         />
       </div>
     </div>

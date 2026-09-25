@@ -27,7 +27,7 @@ function configFromAgent(agent: Agent): AgentConfig {
     ? agent.config.quickQuestions.map((item) =>
         typeof item === 'string' ? { text: item, emoji: '' } : item
       )
-    : questionsForIndustry('');
+    : [];
   return {
     name: agent.config.name,
     description: agent.config.description,
