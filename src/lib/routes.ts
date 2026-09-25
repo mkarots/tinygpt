@@ -18,6 +18,11 @@ export function adminSharePath(agentId: string): string {
   return `/admin/share/${agentId}`;
 }
 
+/** Open the builder with that saved agent loaded. */
+export function adminEditPath(agentId: string): string {
+  return `${PRODUCT_CREATE_PATH}?agent=${encodeURIComponent(agentId)}`;
+}
+
 export function isAuthRequiredPath(pathname: string): boolean {
   return pathname.startsWith('/admin') || pathname.startsWith('/internal');
 }

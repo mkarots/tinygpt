@@ -18,6 +18,7 @@ import { blocksKnowledgeStep } from '../lib/importRecovery';
 import { adminSharePath } from '../lib/routes';
 
 interface OnboardingProps {
+  existingAgentId?: string;
   config: AgentConfig;
   onConfigChange: (key: keyof AgentConfig, value: any) => void;
   knowledge: KnowledgeItem[];
@@ -36,6 +37,7 @@ const STEPS = [
 ];
 
 const Onboarding: React.FC<OnboardingProps> = ({ 
+  existingAgentId,
   config, 
   onConfigChange,
   knowledge,
@@ -148,7 +150,7 @@ const Onboarding: React.FC<OnboardingProps> = ({
   };
 
   const handleNext = async () => {
-    if (step === 1 && companyInfo.website) {
+    if (step === 1 && companyInfo.website && !existingAgentId) {
        performCrawl(companyInfo.website);
     }
 
@@ -161,7 +163,7 @@ const Onboarding: React.FC<OnboardingProps> = ({
     setIsSaving(true);
     setSaveError(null);
     try {
-      const { agentId } = await saveAgent(config, knowledge);
+      const { agentId } = await saveAgent(config, knowledge, existingAgentId);
       triggerConfetti(true);
       router.push(adminSharePath(agentId));
     } catch (error) {

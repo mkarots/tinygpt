@@ -5,6 +5,7 @@ import {
   LEGACY_ADMIN_CREATE_PATH,
   PRODUCT_BUILDER_PATH,
   PRODUCT_CREATE_PATH,
+  adminEditPath,
   adminSharePath,
   isAuthRequiredPath,
 } from './routes';
@@ -35,5 +36,11 @@ describe('product vs internal routes', () => {
     assert.equal(path, '/admin/share/agent-1');
     assert.equal(isAuthRequiredPath(path), true);
     assert.equal(path.startsWith('/chat/'), false);
+  });
+
+  it('opens the builder with that agent id for edit', () => {
+    const path = adminEditPath('agent-1');
+    assert.equal(path, '/admin/new?agent=agent-1');
+    assert.equal(isAuthRequiredPath(path), true);
   });
 });

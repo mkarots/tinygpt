@@ -3,6 +3,7 @@ import { IAgentRepository, OwnedAgentSummary } from '../../domain/interfaces/IAg
 import { Agent, AgentConfig } from '../../domain/entities/Agent';
 import { KnowledgeItem } from '../../domain/entities/KnowledgeSource';
 import { profileFromAuthUser } from '../../lib/profileFromAuthUser';
+import { siteFromKnowledge } from '../../lib/agentList';
 
 export class SupabaseAgentRepository implements IAgentRepository {
   constructor(private supabase: SupabaseClient) {}
@@ -72,7 +73,7 @@ export class SupabaseAgentRepository implements IAgentRepository {
     // Owner policy is the only table read. Filter on the session user as well.
     const { data, error } = await this.supabase
       .from('agents')
-      .select('id, name, description')
+      .select('id, name, description, created_at, knowledge')
       .eq('user_id', authData.user.id)
       .order('updated_at', { ascending: false });
 
@@ -84,6 +85,8 @@ export class SupabaseAgentRepository implements IAgentRepository {
       id: String(row.id),
       name: typeof row.name === 'string' && row.name.length > 0 ? row.name : 'Untitled agent',
       description: typeof row.description === 'string' ? row.description : '',
+      createdAt: typeof row.created_at === 'string' ? new Date(row.created_at).getTime() : 0,
+      site: siteFromKnowledge(row.knowledge),
     }));
   }
 }
