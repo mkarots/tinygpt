@@ -53,9 +53,9 @@ export const WebsiteImport: React.FC<WebsiteImportProps> = ({
       
       {isCrawling && (
         <div className="mt-4 space-y-2">
-          <div className="w-full bg-slate-100 rounded-full h-1">
+          <div className="w-full bg-rule rounded-full h-1">
             <div 
-              className="bg-brand-600 h-1 rounded-full transition-all duration-500 ease-out"
+              className="bg-terracotta h-1 rounded-full transition-all duration-500 ease-out"
               style={{ width: `${crawlProgress}%` }}
             />
           </div>

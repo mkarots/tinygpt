@@ -4,6 +4,7 @@
 import React, { useState } from 'react';
 import { KnowledgeItem, AgentConfig, CompanyInfo } from './types';
 import { DEFAULT_ASSISTANT_NAME } from './src/lib/assistantName';
+import { PRODUCT_TERRACOTTA } from './src/lib/productTheme';
 import { questionsForIndustry } from './src/lib/quickQuestionDefaults';
 import LivePreview from './src/components/LivePreview';
 import Onboarding from './src/components/Onboarding';
@@ -12,7 +13,7 @@ import Onboarding from './src/components/Onboarding';
 const DEFAULT_CONFIG: AgentConfig = {
   name: DEFAULT_ASSISTANT_NAME,
   description: 'A helpful assistant for our customers.',
-  primaryColor: '#7c3aed', // brand-600
+  primaryColor: PRODUCT_TERRACOTTA,
   greeting: 'Hi there! How can I help you today?',
   tone: 'friendly',
   quickQuestions: questionsForIndustry(''),
@@ -47,7 +48,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="flex h-full bg-slate-50 font-sans overflow-hidden">
+    <div className="flex h-full bg-paper font-sans overflow-hidden">
        <main className="flex-1 flex overflow-hidden">
           <div className="flex-1">
             <Onboarding 

@@ -9,7 +9,9 @@ interface HeadingProps extends React.HTMLAttributes<HTMLHeadingElement> {
 export const Heading: React.FC<HeadingProps> = ({ level = 1, children, className = '', ...props }) => {
   const Tag = `h${level}` as React.ElementType;
   
-  const baseStyles = "font-bold text-slate-900";
+  const baseStyles = level === 1
+    ? "font-serif font-semibold text-ink"
+    : "font-sans font-medium text-ink";
   const sizeStyles = {
     1: "text-3xl tracking-tight",
     2: "text-2xl",
