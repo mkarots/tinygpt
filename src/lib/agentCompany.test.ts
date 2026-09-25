@@ -7,7 +7,7 @@ import {
   storedCompanyFromConfig,
 } from './agentCompany';
 import { PRODUCT_TERRACOTTA } from './productTheme';
-import type { AgentConfig } from '../../types';
+import type { AgentConfig, KnowledgeItem } from '../../types';
 
 const baseConfig: AgentConfig = {
   name: 'Support Bot',
@@ -17,6 +17,17 @@ const baseConfig: AgentConfig = {
   tone: 'friendly',
   quickQuestions: [],
 };
+
+function urlKnowledge(name: string): KnowledgeItem {
+  return {
+    id: `url-${name}`,
+    type: 'url',
+    name,
+    content: '',
+    status: 'active',
+    dateAdded: 1,
+  };
+}
 
 describe('companyNameFromAssistant', () => {
   it('unwraps a derived company assistant name', () => {
@@ -37,7 +48,7 @@ describe('companyInfoFromAgent', () => {
         name: 'Desk',
         company: { name: 'Hartwell', website: 'https://hartwell.example', industry: 'ecommerce' },
       },
-      knowledge: [{ type: 'url', name: 'other.example' }],
+      knowledge: [urlKnowledge('other.example')],
     });
     assert.deepEqual(info, {
       name: 'Hartwell',
@@ -49,7 +60,7 @@ describe('companyInfoFromAgent', () => {
   it('falls back to the assistant name and imported host', () => {
     const info = companyInfoFromAgent({
       config: { ...baseConfig, name: 'asafaf Assistant' },
-      knowledge: [{ type: 'url', name: 'gb.maxmara.com' }],
+      knowledge: [urlKnowledge('gb.maxmara.com')],
     });
     assert.equal(info.name, 'asafaf');
     assert.equal(info.website, 'https://gb.maxmara.com');
