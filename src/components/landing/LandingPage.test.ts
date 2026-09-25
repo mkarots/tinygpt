@@ -21,6 +21,16 @@ describe('landing page', () => {
     assert.match(page, /router\.replace\('\/admin'\)/);
   });
 
+  it('lets the intro and sample shop wrap on a narrow phone', () => {
+    const page = read('components/landing/LandingPage.tsx');
+    assert.match(page, /break-words/);
+    assert.match(page, /flex-col items-start/);
+    assert.match(page, /max-w-\[100vw\]/);
+    assert.match(page, /Hartwell Ceramics/);
+    assert.doesNotMatch(page, /shrink-0 gap-3 text-\[13px\]/);
+    assert.doesNotMatch(page, /w-\[min\(100%,360px\)\]/);
+  });
+
   it('does not promise store actions, prices, or fake quotes', () => {
     const page = read('components/landing/LandingPage.tsx');
     assert.doesNotMatch(page, /Shopify|Stripe|refund issued|\[£|STORE LOGO|shows its work/i);
