@@ -5,6 +5,8 @@ export interface OwnedAgentSummary {
   id: string;
   name: string;
   description: string;
+  createdAt: number;
+  site: string | null;
 }
 
 export interface IAgentRepository {

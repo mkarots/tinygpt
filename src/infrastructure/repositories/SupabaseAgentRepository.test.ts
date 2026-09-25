@@ -2,7 +2,13 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { SupabaseAgentRepository } from './SupabaseAgentRepository';
 
-type AgentRow = { id: string; name: string; description: string | null };
+type AgentRow = {
+  id: string;
+  name: string;
+  description: string | null;
+  created_at?: string;
+  knowledge?: unknown;
+};
 
 function listingClient(options: {
   authUserId: string | null;
@@ -51,7 +57,13 @@ describe('SupabaseAgentRepository.listByUser', () => {
     const client = listingClient({
       authUserId: 'user-1',
       rows: [
-        { id: 'agent-1', name: 'Support', description: 'Help' },
+        {
+          id: 'agent-1',
+          name: 'Support',
+          description: 'Help',
+          created_at: '2026-01-02T00:00:00.000Z',
+          knowledge: [{ type: 'url', name: 'acme.example' }],
+        },
         { id: 'agent-2', name: '', description: null },
       ],
     });
@@ -60,8 +72,14 @@ describe('SupabaseAgentRepository.listByUser', () => {
 
     assert.deepEqual(client.filters, [{ column: 'user_id', value: 'user-1' }]);
     assert.deepEqual(agents, [
-      { id: 'agent-1', name: 'Support', description: 'Help' },
-      { id: 'agent-2', name: 'Untitled agent', description: '' },
+      {
+        id: 'agent-1',
+        name: 'Support',
+        description: 'Help',
+        createdAt: Date.parse('2026-01-02T00:00:00.000Z'),
+        site: 'acme.example',
+      },
+      { id: 'agent-2', name: 'Untitled agent', description: '', createdAt: 0, site: null },
     ]);
   });
 
