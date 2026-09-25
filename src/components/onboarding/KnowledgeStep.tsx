@@ -7,6 +7,7 @@ import { WebsiteImport } from './WebsiteImport';
 import { KnowledgeList } from './KnowledgeList';
 import { PastedTextForm } from './PastedTextForm';
 import { needsImportRecovery } from '../../lib/importRecovery';
+import { KNOWLEDGE_STEP_HELP } from '../../lib/builderCopy';
 
 interface KnowledgeStepProps {
   knowledge: KnowledgeItem[];
@@ -39,7 +40,7 @@ export const KnowledgeStep: React.FC<KnowledgeStepProps> = ({
     <div className="space-y-6 animate-fade-in">
       <div className="text-center mb-8">
         <Heading level={2}>Add your knowledge</Heading>
-        <Text variant="muted" className="mt-2">Upload files, import a site, or paste text. The more you add, the smarter it gets.</Text>
+        <Text variant="muted" className="mt-2">{KNOWLEDGE_STEP_HELP}</Text>
       </div>
       
       <WebsiteImport 

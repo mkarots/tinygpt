@@ -2,6 +2,7 @@ import React from 'react';
 import { CompanyInfo, AgentConfig } from '../../../types';
 import { assistantNameForCompany } from '../../lib/assistantName';
 import { quickQuestionsForIndustry } from '../../lib/quickQuestionDefaults';
+import { COMPANY_STEP_HELP } from '../../lib/builderCopy';
 import { Heading } from '../core/typography/Heading';
 import { Text } from '../core/typography/Text';
 import { Input } from '../core/input/Input';
@@ -33,7 +34,7 @@ export const CompanyStep: React.FC<CompanyStepProps> = ({
     <div className="space-y-6 animate-fade-in">
       <div className="text-center mb-8">
         <Heading level={2}>Tell us about your company</Heading>
-        <Text variant="muted" className="mt-2">We'll use this to configure your assistant's base knowledge.</Text>
+        <Text variant="muted" className="mt-2">{COMPANY_STEP_HELP}</Text>
       </div>
       <div className="space-y-4">
         <Input 
@@ -77,14 +78,6 @@ export const CompanyStep: React.FC<CompanyStepProps> = ({
             }
           }}
           options={INDUSTRY_OPTIONS}
-        />
-
-        <Input 
-          label="Your Email (for crawl reports)"
-          placeholder="you@company.com"
-          type="email"
-          value={companyInfo.email}
-          onChange={(e) => onCompanyInfoChange({...companyInfo, email: e.target.value})}
         />
       </div>
     </div>

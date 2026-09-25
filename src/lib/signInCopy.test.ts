@@ -8,14 +8,21 @@ import { SIGN_IN_CTA } from './signInCopy';
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 describe('sign-in call to action', () => {
-  it('asks a first-time user to create an agent for their business', () => {
-    assert.equal(SIGN_IN_CTA, 'Create an agent for your website or business');
+  it('matches the landing page: sign in, add your site, chat stays there', () => {
+    assert.equal(
+      SIGN_IN_CTA,
+      'Sign in with Google, then add your site. The chat stays on your pages.'
+    );
+    const landing = readFileSync(path.join(root, 'components/landing/LandingPage.tsx'), 'utf8');
+    assert.match(landing, /Sign in with Google, then add your site/);
+    assert.match(landing, /stays on your pages/);
   });
 
-  it('is the login description', () => {
+  it('is the login description and links back home', () => {
     const login = readFileSync(path.join(root, 'app/login/page.tsx'), 'utf8');
     assert.match(login, /SIGN_IN_CTA/);
     assert.match(login, /Continue with Google/);
-    assert.doesNotMatch(login, /manage your AI agents|share a chat link/);
+    assert.match(login, /href="\/"/);
+    assert.doesNotMatch(login, /manage your AI agents|share a chat link|from your site or files/);
   });
 });
