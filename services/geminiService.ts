@@ -62,7 +62,11 @@ export const sendMessageStream = async (
 
   if (!response.ok) {
      const err = await response.json().catch(() => ({}));
-     throw new Error(err.error || "Failed to send message");
+     throw new Error(
+       typeof err.error === 'string' && err.error.trim()
+         ? err.error
+         : `Couldn't send that message (HTTP ${response.status}).`
+     );
   }
 
   if (!response.body) throw new Error("No response body");

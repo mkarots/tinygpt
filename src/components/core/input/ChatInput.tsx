@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef } from 'react';
 import { Send } from 'lucide-react';
 import { Button } from '../button/Button';
 import { Input } from './Input';
@@ -52,6 +52,8 @@ export const ChatInput: React.FC<ChatInputProps> = ({
       />
       <Button
         type="submit"
+        aria-label="Send"
+        title="Send"
         disabled={!value.trim() || isTyping || disabled}
         variant="ghost"
         size="icon"
@@ -62,7 +64,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         }`}
         style={primaryColor ? { color: primaryColor } : {}}
       >
-        <Send className="w-4 h-4" />
+        <Send className="w-4 h-4" aria-hidden="true" />
       </Button>
     </form>
   );

@@ -4,6 +4,7 @@ import { Bot, RefreshCw, ChevronDown } from 'lucide-react';
 import { ChatMessage, AgentConfig, KnowledgeItem } from '../../types';
 import { PRODUCT_TERRACOTTA } from '../lib/productTheme';
 import { sendMessageStream, initializeChat, loadChatTranscript } from '../../services/geminiService';
+import { chatSendErrorMessage } from '../lib/chatSendError';
 import { visibleThread } from '../lib/chatThread';
 import { MessageBubble } from './core/feedback/MessageBubble';
 import { ChatInput } from './core/input/ChatInput';
@@ -95,10 +96,10 @@ const WidgetChat: React.FC<WidgetChatProps> = ({ config, knowledge, agentId, onC
         ));
       }, messages, agentId ? sessionId : undefined);
       if (result.sessionId) setSessionId(result.sessionId);
-    } catch {
+    } catch (error) {
       setMessages(prev => prev.map(msg => 
         msg.id === botMessageId 
-          ? { ...msg, text: "I'm having trouble connecting right now. Please try again." }
+          ? { ...msg, text: chatSendErrorMessage(error) }
           : msg
       ));
     } finally {
@@ -171,7 +172,7 @@ const WidgetChat: React.FC<WidgetChatProps> = ({ config, knowledge, agentId, onC
         {/* Quick Questions (Show immediately or after bot messages) */}
         {showQuickQuestions && messages.length > 0 && !isTyping && (
            <SuggestionChips
-             items={config.quickQuestions}
+             items={config.quickQuestions ?? []}
              onSelect={handleSendMessage}
              primaryColor={primaryColor}
              className="mt-2 px-4"
