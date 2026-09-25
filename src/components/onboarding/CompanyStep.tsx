@@ -1,7 +1,6 @@
 import React from 'react';
 import { CompanyInfo, AgentConfig } from '../../../types';
 import { assistantNameForCompany } from '../../lib/assistantName';
-import { quickQuestionsForIndustry } from '../../lib/quickQuestionDefaults';
 import { COMPANY_STEP_HELP } from '../../lib/builderCopy';
 import { Heading } from '../core/typography/Heading';
 import { Text } from '../core/typography/Text';
@@ -66,16 +65,7 @@ export const CompanyStep: React.FC<CompanyStepProps> = ({
           label="Industry"
           value={companyInfo.industry}
           onChange={(e) => {
-            const nextIndustry = e.target.value;
-            const nextQuestions = quickQuestionsForIndustry(
-              nextIndustry,
-              config.quickQuestions,
-              companyInfo.industry
-            );
-            onCompanyInfoChange({...companyInfo, industry: nextIndustry});
-            if (nextQuestions !== config.quickQuestions) {
-              onConfigChange('quickQuestions', nextQuestions);
-            }
+            onCompanyInfoChange({...companyInfo, industry: e.target.value});
           }}
           options={INDUSTRY_OPTIONS}
         />
