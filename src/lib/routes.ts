@@ -10,7 +10,7 @@ export const PRODUCT_CREATE_PATH = '/admin/new';
  */
 export const INTERNAL_PROSPECTOR_PATH = '/internal/prospector';
 
-/** Old URL that looked like the official create path. */
+/** Old URL that looked like the official create path. Redirects to PRODUCT_CREATE_PATH. */
 export const LEGACY_ADMIN_CREATE_PATH = '/admin/create';
 
 /** Owner view with the public chat link and embed snippet for one saved agent. */

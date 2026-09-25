@@ -18,6 +18,13 @@ describe('admin home', () => {
     assert.doesNotMatch(page, /from ['"].*App['"]/);
   });
 
+  it('sends /admin/create to the product builder, not Prospector', () => {
+    const page = read('src/app/admin/create/page.tsx');
+    assert.match(page, /PRODUCT_CREATE_PATH/);
+    assert.match(page, /redirect\(PRODUCT_CREATE_PATH\)/);
+    assert.doesNotMatch(page, /INTERNAL_PROSPECTOR_PATH|\/internal\/prospector/);
+  });
+
   it('keeps the wizard on /admin/new and loads an owned agent for edit', () => {
     const page = read('src/app/admin/new/page.tsx');
     assert.match(page, /<App \/>/);

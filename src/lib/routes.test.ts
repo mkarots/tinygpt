@@ -21,6 +21,7 @@ describe('product vs internal routes', () => {
     assert.equal(INTERNAL_PROSPECTOR_PATH, '/internal/prospector');
     assert.equal(INTERNAL_PROSPECTOR_PATH.startsWith('/admin'), false);
     assert.equal(LEGACY_ADMIN_CREATE_PATH, '/admin/create');
+    assert.notEqual(LEGACY_ADMIN_CREATE_PATH, INTERNAL_PROSPECTOR_PATH);
   });
 
   it('requires auth for the builder and internal tools', () => {
