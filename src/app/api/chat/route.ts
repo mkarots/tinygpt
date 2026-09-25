@@ -8,6 +8,7 @@ import { SupabaseAgentRepository } from '../../../infrastructure/repositories/Su
 import { SupabaseChatRepository } from '../../../infrastructure/repositories/SupabaseChatRepository';
 import { GeminiLLMService } from '../../../infrastructure/services/GeminiLLMService';
 import { CHAT_SESSION_COOKIE, readChatSessionId, readCookieValue } from '../../../lib/chatSession';
+import { chatRateLimit, clientAddress } from '../../../lib/rateLimit';
 import { createClient as createServerSupabase } from '../../../lib/supabase-server';
 import { selectRecentChatTurns } from '../../../utils/chatHistory';
 
@@ -16,7 +17,15 @@ export type ChatRouteDeps = {
   llm: ILLMService;
   chats?: IChatRepository;
   createSessionId?: () => string;
+  rateLimit?: { allow(key: string): boolean };
 };
+
+function enforceChatRateLimit(request: Request, deps?: ChatRouteDeps): NextResponse | null {
+  const limiter = deps ? deps.rateLimit : chatRateLimit;
+  if (!limiter) return null;
+  if (limiter.allow(clientAddress(request))) return null;
+  return NextResponse.json({ error: 'Too many messages. Try again shortly.' }, { status: 429 });
+}
 
 function sessionFromRequest(request: Request, bodySessionId?: unknown): string | null {
   const url = new URL(request.url);
@@ -62,6 +71,9 @@ async function resolveDeps(deps?: ChatRouteDeps): Promise<{
 
 export async function handleChatHistory(request: Request, deps?: ChatRouteDeps) {
   try {
+    const limited = enforceChatRateLimit(request, deps);
+    if (limited) return limited;
+
     const agentId = new URL(request.url).searchParams.get('agentId');
     if (!agentId) {
       return NextResponse.json({ error: 'agentId is required' }, { status: 400 });
@@ -80,7 +92,7 @@ export async function handleChatHistory(request: Request, deps?: ChatRouteDeps) 
     }
 
     const chat = await chats.findByAgentAndSession(agentId, sessionId);
-    const messages = chat ? await chats.listMessages(chat.id) : [];
+    const messages = chat ? await chats.listMessages(chat.id, sessionId) : [];
     return NextResponse.json({ sessionId, messages });
   } catch (error: unknown) {
     console.error('Chat history error:', error);
@@ -91,6 +103,9 @@ export async function handleChatHistory(request: Request, deps?: ChatRouteDeps) 
 
 export async function handleChat(request: Request, deps?: ChatRouteDeps) {
   try {
+    const limited = enforceChatRateLimit(request, deps);
+    if (limited) return limited;
+
     const { agentId, message, config, knowledge, history, sessionId: bodySessionId } = await request.json();
 
     if (!message) {

@@ -38,13 +38,12 @@ export class SupabaseAgentRepository implements IAgentRepository {
   }
 
   async getById(id: string): Promise<Agent | null> {
-    const { data: agentData, error: agentError } = await this.supabase
-      .from('agents')
-      .select('*')
-      .eq('id', id)
-      .single();
+    const owned = await this.supabase.from('agents').select('*').eq('id', id).maybeSingle();
+    const agentData = !owned.error && owned.data
+      ? owned.data
+      : await this.publicAgent(id);
 
-    if (agentError || !agentData) return null;
+    if (!agentData) return null;
 
     const knowledge = Array.isArray(agentData.knowledge)
       ? (agentData.knowledge as KnowledgeItem[])
@@ -58,13 +57,19 @@ export class SupabaseAgentRepository implements IAgentRepository {
     };
   }
 
+  private async publicAgent(id: string) {
+    const { data, error } = await this.supabase.rpc('get_public_agent', { agent_id: id });
+    if (error) throw new Error(`Failed to load agent: ${error.message}`);
+    return (Array.isArray(data) ? data[0] : data) ?? null;
+  }
+
   async listByUser(userId: string): Promise<OwnedAgentSummary[]> {
     const { data: authData, error: authError } = await this.supabase.auth.getUser();
     if (authError || !authData.user || authData.user.id !== userId) {
       return [];
     }
 
-    // "Public can view agents" allows select of every row. Filter on the session user.
+    // Owner policy is the only table read. Filter on the session user as well.
     const { data, error } = await this.supabase
       .from('agents')
       .select('id, name, description')
