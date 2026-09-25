@@ -1,5 +1,5 @@
 import React from 'react';
-import { Globe, CheckCircle } from 'lucide-react';
+import { Globe } from 'lucide-react';
 import { Button } from '../core/button/Button';
 import { Input } from '../core/input/Input';
 import { CompanyInfo } from '../../../types';
@@ -59,13 +59,8 @@ export const WebsiteImport: React.FC<WebsiteImportProps> = ({
               style={{ width: `${crawlProgress}%` }}
             />
           </div>
-          <p className="text-xs text-slate-400 flex items-center justify-between">
-            <span>Analyzing content structure...</span>
-            {companyInfo.email && (
-              <span className="flex items-center gap-1">
-                <CheckCircle className="w-3 h-3" /> We'll email {companyInfo.email} when done.
-              </span>
-            )}
+          <p className="text-xs text-slate-400">
+            <span>Reading your pages…</span>
           </p>
         </div>
       )}

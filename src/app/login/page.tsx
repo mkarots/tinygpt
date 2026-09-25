@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { createClient } from '../../lib/supabase'
 import { isSupabaseConfigured } from '../../lib/supabase-config'
 import { Button } from '../../components/core/button/Button'
@@ -23,6 +24,9 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50">
       <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full text-center">
+        <Link href="/" className="inline-block mb-6 text-sm font-medium text-slate-600 hover:text-slate-900">
+          TinyGPT
+        </Link>
         <div className="w-16 h-16 bg-brand-600 rounded-xl text-white flex items-center justify-center mx-auto mb-6 shadow-lg shadow-brand-500/30">
           <span className="font-mono font-bold text-2xl">T</span>
         </div>

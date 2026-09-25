@@ -98,11 +98,6 @@ const Onboarding: React.FC<OnboardingProps> = ({
           content: data.content,
           name: data.title || new URL(url).hostname
         });
-        
-        // Simulate Email Trigger
-        if (companyInfo.email) {
-            console.log(`Email sent to ${companyInfo.email}`);
-        }
       }
     })
     .catch(() => {
