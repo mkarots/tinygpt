@@ -16,6 +16,7 @@ describe('signed-in shell', () => {
     assert.match(shell, /TinyGPT/);
     assert.match(shell, /section\.label/);
     assert.match(shell, /useSearchParams/);
+    assert.match(shell, /<Suspense/);
     assert.match(shell, /signedInSection\(pathname, searchParams\.toString\(\)\)/);
     assert.match(shell, /Sign out/);
     assert.match(shell, /signOutToLanding/);
