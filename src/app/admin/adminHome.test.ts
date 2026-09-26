@@ -25,6 +25,19 @@ describe('admin home', () => {
     assert.doesNotMatch(page, /INTERNAL_PROSPECTOR_PATH|\/internal\/prospector/);
   });
 
+  it('maps /admin/create to the official builder and keeps Prospector internal', () => {
+    const map = read('.cursor/skills/tinygpt-early-user/product-map.md');
+    assert.match(
+      map,
+      /\| `\/admin\/create` \| Signed-in \| Opens the official builder\. Redirects to `\/admin\/new`\. \|/
+    );
+    assert.match(
+      map,
+      /\| `\/internal\/prospector` \| Signed-in \(founder\) \| Internal demo factory\. Not a product path\. \|/
+    );
+    assert.doesNotMatch(map, /\/admin\/create` redirects/);
+  });
+
   it('keeps the wizard on /admin/new and loads an owned agent for edit', () => {
     const page = read('src/app/admin/new/page.tsx');
     assert.match(page, /<App \/>/);
