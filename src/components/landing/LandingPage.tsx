@@ -27,7 +27,7 @@ export function LandingPage() {
   }
 
   return (
-    <div className={`${sans} min-h-screen overflow-x-clip bg-[#F6F1E8] text-[#1F1B16]`}>
+    <div className={`${sans} min-h-screen w-full max-w-[100vw] overflow-x-hidden bg-[#F6F1E8] text-[#1F1B16]`}>
       <header className="flex items-center justify-between gap-3 px-6 py-6 md:px-10 lg:px-[120px] lg:py-7">
         <Link href="/" className={`${serif} shrink-0 text-2xl font-semibold tracking-tight`}>
           TinyGPT
@@ -48,15 +48,15 @@ export function LandingPage() {
         </nav>
       </header>
 
-      <section className="grid grid-cols-1 items-center gap-12 px-6 pb-20 pt-6 md:px-10 lg:grid-cols-2 lg:gap-16 lg:px-[120px] lg:pb-28 lg:pt-16">
+      <section className="grid w-full min-w-0 max-w-full grid-cols-1 items-center gap-12 px-6 pb-20 pt-6 md:px-10 lg:grid-cols-2 lg:gap-16 lg:px-[120px] lg:pb-28 lg:pt-16">
         <div className="flex min-w-0 max-w-xl flex-col gap-7">
-          <span className="w-fit rounded-full border border-[#D9CEBC] px-3.5 py-2 text-sm font-semibold text-[#5E554A]">
+          <span className="w-fit max-w-full text-balance rounded-full border border-[#D9CEBC] px-3.5 py-2 text-sm font-semibold text-[#5E554A]">
             Customer support, on your website
           </span>
           <h1 className={`${serif} text-balance text-[2.6rem] font-semibold leading-[1.02] tracking-tight sm:text-5xl md:text-6xl lg:text-[76px]`}>
             Support that <span className="text-[#B4532A]">lives on your site.</span>
           </h1>
-          <p className="max-w-[520px] text-lg leading-relaxed text-[#5E554A] md:text-[21px] text-pretty">
+          <p className="max-w-[520px] text-pretty break-words text-lg leading-relaxed text-[#5E554A] md:text-[21px]">
             Paste your site or a few text files. The chat answers from that, and stays on your pages.
           </p>
           <SiteForm />
@@ -195,11 +195,11 @@ function SiteForm({ dark = false }: { dark?: boolean }) {
 
 function Storefront() {
   return (
-    <div className="relative mx-auto w-full max-w-[640px] lg:h-[600px]">
-      <div className="overflow-hidden rounded-[20px] border border-[#E3DACB] bg-[#FFFDF8] lg:absolute lg:left-0 lg:top-0 lg:h-[540px] lg:w-[520px]">
-        <div className="flex items-center justify-between gap-3 border-b border-[#EDE5D8] px-5 py-4">
-          <span className={`${serif} min-w-0 text-xl font-semibold`}>Hartwell Ceramics</span>
-          <div className="flex shrink-0 gap-3 text-[13px] text-[#5E554A]">
+    <div className="relative mx-auto w-full min-w-0 max-w-[640px] lg:h-[600px]">
+      <div className="w-full min-w-0 overflow-hidden rounded-[20px] border border-[#E3DACB] bg-[#FFFDF8] lg:absolute lg:left-0 lg:top-0 lg:h-[540px] lg:w-[520px]">
+        <div className="flex min-w-0 flex-col items-start gap-1 border-b border-[#EDE5D8] px-5 py-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-x-3 sm:gap-y-1">
+          <span className={`${serif} min-w-0 max-w-full break-words text-xl font-semibold`}>Hartwell Ceramics</span>
+          <div className="flex min-w-0 flex-wrap gap-3 text-[13px] text-[#5E554A]">
             <span>Shop</span>
             <span className="hidden sm:inline">About</span>
             <span>Cart (1)</span>
@@ -213,9 +213,9 @@ function Storefront() {
         </div>
       </div>
 
-      <div className="relative z-10 -mt-8 ml-auto w-[min(100%,360px)] overflow-hidden rounded-[20px] border border-[#E3DACB] bg-[#FFFDF8] shadow-[0_24px_60px_rgba(31,27,22,0.18)] lg:absolute lg:bottom-0 lg:right-0 lg:mt-0">
-        <div className="flex items-center justify-between bg-[#1F1B16] px-4 py-4 text-[#FFFDF8]">
-          <span className="text-[15px] font-semibold">Ask Hartwell</span>
+      <div className="relative z-10 -mt-8 w-full min-w-0 max-w-full overflow-hidden rounded-[20px] border border-[#E3DACB] bg-[#FFFDF8] shadow-[0_24px_60px_rgba(31,27,22,0.18)] sm:ml-auto sm:max-w-[360px] lg:absolute lg:bottom-0 lg:right-0 lg:mt-0">
+        <div className="flex min-w-0 flex-col items-start gap-1 bg-[#1F1B16] px-4 py-4 text-[#FFFDF8] sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+          <span className="min-w-0 break-words text-[15px] font-semibold">Ask Hartwell</span>
           <span className="text-xs text-[#CFC6B8]">On this page</span>
         </div>
         <div className="flex flex-col gap-2.5 px-4 pb-3 pt-4">
@@ -245,7 +245,7 @@ function Product({ name, price, swatch }: { name: string; price: string; swatch:
   return (
     <div className="flex flex-col gap-2">
       <div className="h-24 rounded-xl sm:h-36" style={{ background: swatch }} />
-      <span className="text-sm font-semibold leading-snug">{name}</span>
+      <span className="break-words text-sm font-semibold leading-snug">{name}</span>
       <span className="text-[13px] text-[#5E554A]">{price}</span>
     </div>
   );
@@ -263,7 +263,7 @@ function Bubble({
   const customer = side === 'customer';
   return (
     <p
-      className={`max-w-[270px] leading-snug ${small ? 'px-3.5 py-2.5 text-sm' : 'max-w-[420px] px-4 py-3 text-base'} ${
+      className={`max-w-full break-words leading-snug ${small ? 'px-3.5 py-2.5 text-sm sm:max-w-[270px]' : 'px-4 py-3 text-base sm:max-w-[420px]'} ${
         customer
           ? 'self-end rounded-[14px] rounded-br-[4px] bg-[#1F1B16] text-[#FFFDF8]'
           : 'self-start rounded-[14px] rounded-bl-[4px] bg-[#F1E9DC] text-[#1F1B16]'
