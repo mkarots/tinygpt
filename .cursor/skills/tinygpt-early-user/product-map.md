@@ -9,7 +9,8 @@ Read this only when you need to know what the current MVP is supposed to do.
 | `/` | Anyone | Landing page. Signed-in users go to `/admin`. Sign-in is `/login`. |
 | `/login` | Anyone | Google OAuth. Returns to `/admin` via `/auth/callback`. |
 | `/admin` | Signed-in | **Official** owner builder: onboarding, knowledge, appearance, deploy. |
-| `/internal/prospector` | Signed-in (founder) | Internal demo factory. Not a product path. `/admin/create` redirects here. |
+| `/admin/create` | Signed-in | Opens the official builder. Redirects to `/admin/new`. |
+| `/internal/prospector` | Signed-in (founder) | Internal demo factory. Not a product path. |
 | `/chat/[id]` | Public | Hosted agent page + chat. |
 | `/embed/[id]` | Public | Widget-sized chat. |
 
