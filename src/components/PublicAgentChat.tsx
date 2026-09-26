@@ -3,13 +3,24 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import WidgetChat from './WidgetChat';
+import { OwnerBackToAgentsLink } from './OwnerBackToAgentsLink';
 import { AgentConfig, KnowledgeItem } from '../../types';
 import { singleRouteParam } from '../lib/routeParam';
 import { Loader2, AlertCircle } from 'lucide-react';
 
+function PublicChatFrame({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex h-screen w-screen flex-col bg-paper">
+      <OwnerBackToAgentsLink />
+      <div className="min-h-0 flex-1">{children}</div>
+    </div>
+  );
+}
+
 /**
  * Visitor chat used by /chat/[id] and /embed/[id].
  * Same greeting, agent questions, and message field on both routes.
+ * Signed-in owners get a way back to /admin; visitors do not.
  */
 export default function PublicAgentChat() {
   const params = useParams();
@@ -41,42 +52,48 @@ export default function PublicAgentChat() {
 
   if (!agentId) {
     return (
-      <div className="flex h-screen items-center justify-center bg-paper p-4 text-center">
-        <div className="space-y-2">
-          <AlertCircle className="w-8 h-8 text-red-500 mx-auto" />
-          <p className="text-xs text-stone">Agent not found</p>
+      <PublicChatFrame>
+        <div className="flex h-full items-center justify-center p-4 text-center">
+          <div className="space-y-2">
+            <AlertCircle className="w-8 h-8 text-red-500 mx-auto" />
+            <p className="text-xs text-stone">Agent not found</p>
+          </div>
         </div>
-      </div>
+      </PublicChatFrame>
     );
   }
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-paper">
-        <Loader2 className="w-6 h-6 text-terracotta animate-spin" />
-      </div>
+      <PublicChatFrame>
+        <div className="flex h-full items-center justify-center">
+          <Loader2 className="w-6 h-6 text-terracotta animate-spin" />
+        </div>
+      </PublicChatFrame>
     );
   }
 
   if (error || !agentData) {
     return (
-      <div className="flex h-screen items-center justify-center bg-paper p-4 text-center">
-        <div className="space-y-2">
-          <AlertCircle className="w-8 h-8 text-red-500 mx-auto" />
-          <p className="text-xs text-stone">{error || 'Agent Unavailable'}</p>
+      <PublicChatFrame>
+        <div className="flex h-full items-center justify-center p-4 text-center">
+          <div className="space-y-2">
+            <AlertCircle className="w-8 h-8 text-red-500 mx-auto" />
+            <p className="text-xs text-stone">{error || 'Agent Unavailable'}</p>
+          </div>
         </div>
-      </div>
+      </PublicChatFrame>
     );
   }
 
   return (
-    <div className="h-screen w-screen bg-paper">
+    <PublicChatFrame>
       <WidgetChat
         config={agentData.config}
         knowledge={agentData.knowledge}
         agentId={agentId}
         showQuickQuestions={true}
       />
-    </div>
+    </PublicChatFrame>
   );
 }
