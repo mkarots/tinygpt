@@ -9,9 +9,11 @@ import { companyInfoFromAgent } from './src/lib/agentCompany';
 import { PRODUCT_TERRACOTTA } from './src/lib/productTheme';
 import { isStockQuickQuestions } from './src/lib/resolveQuickQuestions';
 import { quickQuestionsFromKnowledge } from './src/lib/quickQuestionsFromKnowledge';
+import { settleAbandonedImports } from './src/lib/settleAbandonedImports';
 import LivePreview from './src/components/LivePreview';
 import Onboarding from './src/components/Onboarding';
 import { EditAgent } from './src/components/views/admin/EditAgent';
+
 
   // Default Configuration
 const DEFAULT_CONFIG: AgentConfig = {
@@ -41,7 +43,9 @@ function configFromAgent(agent: Agent): AgentConfig {
 }
 
 const App: React.FC<{ initialAgent?: Agent | null }> = ({ initialAgent = null }) => {
-  const [knowledge, setKnowledge] = useState<KnowledgeItem[]>(initialAgent?.knowledge ?? []);
+  const [knowledge, setKnowledge] = useState<KnowledgeItem[]>(() =>
+    settleAbandonedImports(initialAgent?.knowledge ?? [])
+  );
   const [config, setConfig] = useState<AgentConfig>(
     initialAgent ? configFromAgent(initialAgent) : DEFAULT_CONFIG
   );
@@ -83,6 +87,14 @@ const App: React.FC<{ initialAgent?: Agent | null }> = ({ initialAgent = null })
     });
   };
 
+  const handleRemoveKnowledgeItem = (id: string) => {
+    setKnowledge((prev) => {
+      const next = prev.filter((item) => item.id !== id);
+      syncQuestionsFromKnowledge(next);
+      return next;
+    });
+  };
+
   const handleConfigChange = (key: keyof AgentConfig, value: any) => {
     setConfig(prev => ({ ...prev, [key]: value }));
   };
@@ -99,6 +111,7 @@ const App: React.FC<{ initialAgent?: Agent | null }> = ({ initialAgent = null })
               knowledge={knowledge}
               onAddKnowledge={handleAddKnowledgeItems}
               onUpdateKnowledge={handleUpdateKnowledgeItem}
+              onRemoveKnowledge={handleRemoveKnowledgeItem}
               companyInfo={companyInfo}
               onCompanyInfoChange={setCompanyInfo}
             />
@@ -109,6 +122,7 @@ const App: React.FC<{ initialAgent?: Agent | null }> = ({ initialAgent = null })
               knowledge={knowledge}
               onAddKnowledge={handleAddKnowledgeItems}
               onUpdateKnowledge={handleUpdateKnowledgeItem}
+              onRemoveKnowledge={handleRemoveKnowledgeItem}
               companyInfo={companyInfo}
               onCompanyInfoChange={setCompanyInfo}
             />

@@ -1,4 +1,5 @@
 import { AgentConfig, KnowledgeItem } from '../../types';
+import { settleAbandonedImports } from './settleAbandonedImports';
 
 export async function saveAgent(
   config: AgentConfig,
@@ -8,8 +9,13 @@ export async function saveAgent(
   const response = await fetch('/api/agent', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ config, knowledge, agentId }),
+    body: JSON.stringify({
+      config,
+      knowledge: settleAbandonedImports(knowledge),
+      agentId,
+    }),
   });
+
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
     throw new Error(data.error || 'Failed to save agent');
