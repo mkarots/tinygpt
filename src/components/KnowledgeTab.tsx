@@ -4,6 +4,8 @@ import { Globe, Loader, FileText, Code, Trash2 } from 'lucide-react';
 import DropZone from './DropZone';
 import { KnowledgeItem } from '../../types';
 import { createTextKnowledgeItem } from '../lib/textKnowledge';
+import { crawlImportErrorMessage } from '../lib/crawlImportError';
+import { knowledgeStatusLabel } from '../lib/knowledgeStatusLabel';
 
 interface KnowledgeTabProps {
   knowledge: KnowledgeItem[];
@@ -46,17 +48,26 @@ const KnowledgeTab: React.FC<KnowledgeTabProps> = ({ knowledge, onAddItems, onUp
     .then(res => res.json())
     .then(data => {
       if (data.error) {
-        onUpdateItem(tempId, { status: 'error', name: `Error: ${hostname}` });
+        onUpdateItem(tempId, {
+          status: 'error',
+          name: hostname,
+          error: crawlImportErrorMessage(data.error),
+        });
       } else {
         onUpdateItem(tempId, { 
           status: 'active', 
           content: data.content,
-          name: data.title || hostname
+          name: data.title || hostname,
+          error: undefined,
         });
       }
     })
     .catch(() => {
-      onUpdateItem(tempId, { status: 'error' });
+      onUpdateItem(tempId, {
+        status: 'error',
+        name: hostname,
+        error: crawlImportErrorMessage(null),
+      });
     })
     .finally(() => {
       setUrlInput('');
@@ -152,12 +163,22 @@ const KnowledgeTab: React.FC<KnowledgeTabProps> = ({ knowledge, onAddItems, onUp
                   </div>
                   <div>
                     <p className="text-sm font-medium text-slate-900 truncate max-w-[200px]">{item.name}</p>
-                    <p className="text-xs text-slate-500">{new Date(item.dateAdded).toLocaleDateString()}</p>
+                    {item.status === 'error' && item.error ? (
+                      <p className="text-xs text-red-600 mt-0.5 max-w-[240px]">{item.error}</p>
+                    ) : (
+                      <p className="text-xs text-slate-500">{new Date(item.dateAdded).toLocaleDateString()}</p>
+                    )}
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                   <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
-                     Active
+                   <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                     item.status === 'error'
+                       ? 'bg-red-100 text-red-700'
+                       : item.status === 'pending'
+                         ? 'bg-slate-100 text-slate-600'
+                         : 'bg-green-100 text-green-800'
+                   }`}>
+                     {knowledgeStatusLabel(item.status)}
                    </span>
                    <button 
                      onClick={() => onRemoveItem(item.id)}

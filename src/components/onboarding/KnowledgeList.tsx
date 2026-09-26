@@ -1,6 +1,7 @@
 import React from 'react';
 import { AlignLeft, Globe, FileText } from 'lucide-react';
 import { KnowledgeItem } from '../../../types';
+import { knowledgeStatusLabel } from '../../lib/knowledgeStatusLabel';
 
 interface KnowledgeListProps {
   items: KnowledgeItem[];
@@ -16,21 +17,26 @@ export const KnowledgeList: React.FC<KnowledgeListProps> = ({ items }) => {
       </div>
       <ul className="divide-y divide-slate-100">
         {items.map(k => (
-          <li key={k.id} className="px-4 py-3 flex items-center justify-between">
-             <div className="flex items-center gap-3">
-                {k.type === 'file' && <FileText className="w-4 h-4 text-orange-500" />}
-                {k.type === 'url' && <Globe className="w-4 h-4 text-blue-500" />}
-                {k.type === 'text' && <AlignLeft className="w-4 h-4 text-emerald-500" />}
-                <span className="text-sm font-medium text-slate-700">{k.name}</span>
+          <li key={k.id} className="px-4 py-3 flex items-center justify-between gap-3">
+             <div className="flex items-center gap-3 min-w-0">
+                {k.type === 'file' && <FileText className="w-4 h-4 text-orange-500 shrink-0" />}
+                {k.type === 'url' && <Globe className="w-4 h-4 text-blue-500 shrink-0" />}
+                {k.type === 'text' && <AlignLeft className="w-4 h-4 text-emerald-500 shrink-0" />}
+                <div className="min-w-0">
+                  <span className="text-sm font-medium text-slate-700 block truncate">{k.name}</span>
+                  {k.status === 'error' && k.error ? (
+                    <p className="text-xs text-red-600 mt-0.5">{k.error}</p>
+                  ) : null}
+                </div>
              </div>
-             <span className={`text-xs px-2 py-0.5 rounded-full ${
+             <span className={`text-xs px-2 py-0.5 rounded-full shrink-0 ${
                k.status === 'error'
                  ? 'bg-red-100 text-red-700'
                  : k.status === 'pending'
                    ? 'bg-slate-100 text-slate-600'
                    : 'bg-green-100 text-green-700'
              }`}>
-               {k.status === 'error' ? 'Failed' : k.status === 'pending' ? 'Importing' : 'Ready'}
+               {knowledgeStatusLabel(k.status)}
              </span>
           </li>
         ))}
@@ -38,4 +44,3 @@ export const KnowledgeList: React.FC<KnowledgeListProps> = ({ items }) => {
     </div>
   );
 };
-

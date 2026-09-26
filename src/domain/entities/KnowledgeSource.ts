@@ -6,6 +6,8 @@ export interface KnowledgeItem {
   name: string;
   content: string;
   status: 'pending' | 'active' | 'error';
+  /** Shop-owner reason when status is error; never used as chat context. */
+  error?: string;
   size?: number;
   dateAdded: number;
 }
