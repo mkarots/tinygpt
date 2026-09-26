@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useId } from 'react';
 import { Label } from './Label';
 
 interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
@@ -8,15 +8,18 @@ interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
 }
 
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(
-  ({ label, error, options, className = '', ...props }, ref) => {
+  ({ label, error, options, className = '', id, ...props }, ref) => {
+    const generatedId = useId();
+    const selectId = id ?? generatedId;
     return (
       <div className="w-full">
         {label && (
-          <Label className="mb-1">{label}</Label>
+          <Label htmlFor={selectId} className="mb-1">{label}</Label>
         )}
         <div className="relative">
           <select
             ref={ref}
+            id={selectId}
             className={`
               w-full px-4 py-2 bg-white text-slate-900 placeholder:text-slate-400 
               border rounded-lg appearance-none

@@ -87,9 +87,11 @@ export const QuickQuestionsEditor: React.FC<QuickQuestionsEditorProps> = ({ ques
                 }}
                 className="flex-1 px-3 py-2 bg-white text-slate-900 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
                 placeholder="Question text..."
+                aria-label={`Question ${idx + 1} text`}
               />
               <button 
                 type="button"
+                aria-label={`Remove question ${idx + 1}`}
                 onClick={() => {
                   const newQuestions = questions.filter((_, i) => i !== idx);
                   onChange(newQuestions);
