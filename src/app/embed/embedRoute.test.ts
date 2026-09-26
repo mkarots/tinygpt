@@ -11,6 +11,15 @@ function read(relative: string) {
 }
 
 describe('embed route param', () => {
+  it('titles the tab from the public agent, same as hosted chat', () => {
+    const page = read('src/app/embed/[id]/page.tsx');
+    const title = read('src/lib/publicAgentTitle.ts');
+    assert.match(page, /generateMetadata/);
+    assert.match(page, /publicAgentMetadata/);
+    assert.match(title, /documentTitleForAgent/);
+    assert.match(title, /absolute: title/);
+  });
+
   it('loads the agent from params.id and renders WidgetChat', () => {
     const page = read('src/app/embed/[id]/page.tsx');
     const publicChat = read('src/components/PublicAgentChat.tsx');

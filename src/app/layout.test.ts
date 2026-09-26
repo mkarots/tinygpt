@@ -12,4 +12,16 @@ describe('root layout', () => {
     assert.doesNotMatch(source, /cdn\.tailwindcss\.com/);
     assert.doesNotMatch(source, /tailwind\.config\s*=/);
   });
+
+  it('titles the landing tab TinyGPT, not tinygpt', () => {
+    const source = readFileSync(layoutPath, 'utf8');
+    assert.match(source, /title: \{ absolute: documentTitle\(\) \}/);
+    assert.doesNotMatch(source, /title:\s*'tinygpt'/);
+  });
+
+  it('titles login in the owner-page pattern', () => {
+    const login = readFileSync(path.join(path.dirname(layoutPath), 'login/layout.tsx'), 'utf8');
+    assert.match(login, /documentTitle\('Log in'\)/);
+    assert.match(login, /absolute:/);
+  });
 });
