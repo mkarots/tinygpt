@@ -146,4 +146,38 @@ describe('hosted chat persistence', () => {
     );
     assert.deepEqual(await restored.json(), { sessionId: null, messages: [] });
   });
+
+  it('hides a schema-cache miss from the visitor on send and history', async () => {
+    const chats: IChatRepository = {
+      async findByAgentAndSession() {
+        throw new Error(
+          'Failed to load chat: Could not find the function public.find_visitor_chat(p_agent_id, p_session_id) in the schema cache'
+        );
+      },
+      async create() {
+        throw new Error('not used');
+      },
+      async appendMessage() {},
+      async listMessages() {
+        return [];
+      },
+    };
+    const deps = { repository: new MemoryRepo(), llm, chats, createSessionId: () => 'session-abc' };
+
+    const send = await handleChat(post({ agentId: agent.id, message: 'Hours?' }), deps);
+    assert.equal(send.status, 500);
+    const sendBody = await send.json();
+    assert.equal(sendBody.error, "I'm having trouble connecting right now. Please try again.");
+    assert.doesNotMatch(sendBody.error, /find_visitor_chat|schema cache/i);
+
+    const history = await handleChatHistory(
+      new Request(`http://localhost/api/chat?agentId=${agent.id}`, {
+        headers: { cookie: `${CHAT_SESSION_COOKIE}=session-abc` },
+      }),
+      deps
+    );
+    assert.equal(history.status, 500);
+    const historyBody = await history.json();
+    assert.equal(historyBody.error, "I'm having trouble connecting right now. Please try again.");
+  });
 });

@@ -8,9 +8,19 @@ import { SupabaseAgentRepository } from '../../../infrastructure/repositories/Su
 import { SupabaseChatRepository } from '../../../infrastructure/repositories/SupabaseChatRepository';
 import { GeminiLLMService } from '../../../infrastructure/services/GeminiLLMService';
 import { CHAT_SESSION_COOKIE, readChatSessionId, readCookieValue } from '../../../lib/chatSession';
+import {
+  VISITOR_CHAT_CONNECT_ERROR,
+  isVisitorChatInfrastructureError,
+} from '../../../lib/chatSendError';
 import { chatRateLimit, clientAddress } from '../../../lib/rateLimit';
 import { createClient as createServerSupabase } from '../../../lib/supabase-server';
 import { selectRecentChatTurns } from '../../../utils/chatHistory';
+
+function visitorSafeChatError(error: unknown): string {
+  const message = error instanceof Error ? error.message : 'Internal server error';
+  if (isVisitorChatInfrastructureError(message)) return VISITOR_CHAT_CONNECT_ERROR;
+  return message;
+}
 
 export type ChatRouteDeps = {
   repository: IAgentRepository;
@@ -96,8 +106,7 @@ export async function handleChatHistory(request: Request, deps?: ChatRouteDeps) 
     return NextResponse.json({ sessionId, messages });
   } catch (error: unknown) {
     console.error('Chat history error:', error);
-    const message = error instanceof Error ? error.message : 'Internal server error';
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: visitorSafeChatError(error) }, { status: 500 });
   }
 }
 
@@ -160,8 +169,7 @@ export async function handleChat(request: Request, deps?: ChatRouteDeps) {
 
   } catch (error: unknown) {
     console.error('Chat error:', error);
-    const message = error instanceof Error ? error.message : 'Internal server error';
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: visitorSafeChatError(error) }, { status: 500 });
   }
 }
 
