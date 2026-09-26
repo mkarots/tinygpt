@@ -19,11 +19,11 @@ describe('public chat route', () => {
     assert.doesNotMatch(chat, /Start Chatting|\+500 interactions|KNOWLEDGE BASE|No public knowledge/);
   });
 
-  it('shows only this agent\'s saved questions in the widget', () => {
+  it('shows only this agent\'s questions, taken from knowledge when stock defaults remain', () => {
     const publicChat = read('src/components/PublicAgentChat.tsx');
     const widget = read('src/components/WidgetChat.tsx');
     assert.match(publicChat, /showQuickQuestions=\{true\}/);
-    assert.match(widget, /items=\{config\.quickQuestions \?\? \[\]\}/);
+    assert.match(widget, /resolveQuickQuestions\(config\.quickQuestions, knowledge\)/);
     assert.doesNotMatch(publicChat, /Do you offer a free trial/);
     assert.doesNotMatch(widget, /Do you offer a free trial/);
   });

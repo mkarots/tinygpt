@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Bot, RefreshCw, ChevronDown } from 'lucide-react';
 import { ChatMessage, AgentConfig, KnowledgeItem } from '../../types';
 import { PRODUCT_TERRACOTTA } from '../lib/productTheme';
+import { resolveQuickQuestions } from '../lib/resolveQuickQuestions';
 import { sendMessageStream, initializeChat, loadChatTranscript } from '../../services/geminiService';
 import { chatSendErrorMessage } from '../lib/chatSendError';
 import { visibleThread } from '../lib/chatThread';
@@ -172,7 +173,7 @@ const WidgetChat: React.FC<WidgetChatProps> = ({ config, knowledge, agentId, onC
         {/* Quick Questions (Show immediately or after bot messages) */}
         {showQuickQuestions && messages.length > 0 && !isTyping && (
            <SuggestionChips
-             items={config.quickQuestions ?? []}
+             items={resolveQuickQuestions(config.quickQuestions, knowledge)}
              onSelect={handleSendMessage}
              primaryColor={primaryColor}
              className="mt-2 px-4"

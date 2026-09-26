@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { OwnedAgentSummary } from '../../../domain/interfaces/IAgentRepository';
+import { isBoilerplateAgentDescription } from '../../../lib/agentDescription';
 import { agentListSubtitle } from '../../../lib/agentList';
 import { PRODUCT_CREATE_PATH, adminEditPath, adminSharePath } from '../../../lib/routes';
 import { Heading } from '../../core/typography/Heading';
@@ -33,11 +34,14 @@ export function AgentDashboard({ agents }: { agents: OwnedAgentSummary[] }) {
           <ul className="space-y-3">
             {agents.map((agent) => {
               const subtitle = agentListSubtitle(agent, agents);
+              const description = isBoilerplateAgentDescription(agent.description)
+                ? null
+                : agent.description.trim();
               return (
               <li key={agent.id} className="bg-cream rounded-xl border border-rule p-5">
                 <p className="font-medium text-ink">{agent.name}</p>
                 {subtitle ? <p className="text-sm text-stone mt-1">{subtitle}</p> : null}
-                {agent.description ? <p className="text-sm text-stone mt-1">{agent.description}</p> : null}
+                {description ? <p className="text-sm text-stone mt-1">{description}</p> : null}
                 <div className="flex flex-wrap gap-4 mt-4 text-sm font-medium">
                   <Link href={`/chat/${agent.id}`} className="text-terracotta">Chat</Link>
                   <Link href={adminSharePath(agent.id)} className="text-terracotta">Embed snippet</Link>

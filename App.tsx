@@ -7,7 +7,8 @@ import type { Agent } from './src/domain/entities/Agent';
 import { DEFAULT_ASSISTANT_NAME } from './src/lib/assistantName';
 import { companyInfoFromAgent } from './src/lib/agentCompany';
 import { PRODUCT_TERRACOTTA } from './src/lib/productTheme';
-import { questionsForIndustry } from './src/lib/quickQuestionDefaults';
+import { isStockQuickQuestions } from './src/lib/resolveQuickQuestions';
+import { quickQuestionsFromKnowledge } from './src/lib/quickQuestionsFromKnowledge';
 import LivePreview from './src/components/LivePreview';
 import Onboarding from './src/components/Onboarding';
 import { EditAgent } from './src/components/views/admin/EditAgent';
@@ -15,11 +16,11 @@ import { EditAgent } from './src/components/views/admin/EditAgent';
   // Default Configuration
 const DEFAULT_CONFIG: AgentConfig = {
   name: DEFAULT_ASSISTANT_NAME,
-  description: 'A helpful assistant for our customers.',
+  description: '',
   primaryColor: PRODUCT_TERRACOTTA,
   greeting: 'Hi there! How can I help you today?',
   tone: 'friendly',
-  quickQuestions: questionsForIndustry(''),
+  quickQuestions: [],
 };
 
 function configFromAgent(agent: Agent): AgentConfig {
@@ -57,14 +58,29 @@ const App: React.FC<{ initialAgent?: Agent | null }> = ({ initialAgent = null })
 
   // --- Knowledge Handlers ---
 
+  const syncQuestionsFromKnowledge = (nextKnowledge: KnowledgeItem[]) => {
+    setConfig((prev) => {
+      if (!isStockQuickQuestions(prev.quickQuestions)) return prev;
+      const derived = quickQuestionsFromKnowledge(nextKnowledge);
+      if (derived.length === 0) return prev;
+      return { ...prev, quickQuestions: derived };
+    });
+  };
+
   const handleAddKnowledgeItems = (items: KnowledgeItem[]) => {
-    setKnowledge(prev => [...prev, ...items]);
+    setKnowledge((prev) => {
+      const next = [...prev, ...items];
+      syncQuestionsFromKnowledge(next);
+      return next;
+    });
   };
 
   const handleUpdateKnowledgeItem = (id: string, updates: Partial<KnowledgeItem>) => {
-    setKnowledge(prev => prev.map(item => 
-      item.id === id ? { ...item, ...updates } : item
-    ));
+    setKnowledge((prev) => {
+      const next = prev.map((item) => (item.id === id ? { ...item, ...updates } : item));
+      syncQuestionsFromKnowledge(next);
+      return next;
+    });
   };
 
   const handleConfigChange = (key: keyof AgentConfig, value: any) => {

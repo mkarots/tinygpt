@@ -41,6 +41,7 @@ describe('admin home', () => {
     assert.match(dashboard, />Edit</);
     assert.doesNotMatch(dashboard, /Recreate/);
     assert.match(dashboard, /agentListSubtitle/);
+    assert.match(dashboard, /isBoilerplateAgentDescription/);
     assert.match(dashboard, /PRODUCT_CREATE_PATH/);
     assert.match(dashboard, /No agents yet/);
     assert.match(dashboard, /Create your first agent/);

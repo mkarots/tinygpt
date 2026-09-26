@@ -1,7 +1,7 @@
-export interface QuickQuestion {
+export type QuickQuestion = {
   text: string;
   emoji: string;
-}
+};
 
 export type IndustryOption = {
   id: string;
@@ -16,8 +16,9 @@ const GENERIC_QUICK_QUESTIONS: QuickQuestion[] = [
 ];
 
 /**
- * One list drives the industry dropdown and the starter questions.
- * Add or edit a row here; do not copy labels into CompanyStep.
+ * One list drives the industry dropdown. Starter questions on that list are
+ * only used to recognize old stock packs; new agents start empty and fill from
+ * knowledge instead.
  */
 export const INDUSTRIES: IndustryOption[] = [
   {
