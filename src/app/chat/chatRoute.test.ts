@@ -32,4 +32,14 @@ describe('public chat route', () => {
     const input = read('src/components/core/input/ChatInput.tsx');
     assert.match(input, /aria-label="Send"/);
   });
+
+  it('gives signed-in owners a way back to Your agents without Sign out', () => {
+    const publicChat = read('src/components/PublicAgentChat.tsx');
+    const link = read('src/components/OwnerBackToAgentsLink.tsx');
+    assert.match(publicChat, /OwnerBackToAgentsLink/);
+    assert.match(link, /Your agents/);
+    assert.match(link, /PRODUCT_BUILDER_PATH/);
+    assert.doesNotMatch(link, />\s*Sign out\s*</);
+    assert.doesNotMatch(publicChat, /Start Chatting|\+500 interactions/);
+  });
 });
