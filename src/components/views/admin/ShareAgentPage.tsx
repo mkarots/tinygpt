@@ -134,21 +134,23 @@ export default function ShareAgentPage() {
               Paste this snippet before the closing body tag. It loads the same saved agent.
             </p>
           </div>
-          <div className="p-6 bg-slate-900 relative">
-            <code className="text-sm font-mono text-green-400 block break-all leading-relaxed">
+          <div className="bg-slate-900">
+            <div className="flex justify-end px-4 pt-4">
+              <button
+                type="button"
+                disabled={!links}
+                className={`px-3 py-1.5 rounded text-xs font-medium flex items-center gap-2 ${
+                  copied === 'code' ? 'bg-green-500/20 text-green-300' : 'bg-white/10 text-white hover:bg-white/20'
+                }`}
+                onClick={() => links && copy(links.snippet, 'code')}
+              >
+                {copied === 'code' ? <CheckCircle className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                {copied === 'code' ? 'Copied' : 'Copy code'}
+              </button>
+            </div>
+            <code className="text-sm font-mono text-green-400 block break-all leading-relaxed px-6 pb-6 pt-3">
               {links?.snippet ?? 'Preparing snippet…'}
             </code>
-            <button
-              type="button"
-              disabled={!links}
-              className={`absolute top-4 right-4 px-3 py-1.5 rounded text-xs font-medium flex items-center gap-2 ${
-                copied === 'code' ? 'bg-green-500/20 text-green-300' : 'bg-white/10 text-white hover:bg-white/20'
-              }`}
-              onClick={() => links && copy(links.snippet, 'code')}
-            >
-              {copied === 'code' ? <CheckCircle className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-              {copied === 'code' ? 'Copied' : 'Copy code'}
-            </button>
           </div>
           {links && (
             <div className="px-6 py-4 border-t border-rule">
