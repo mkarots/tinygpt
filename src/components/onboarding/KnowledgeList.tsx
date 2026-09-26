@@ -1,13 +1,22 @@
 import React from 'react';
-import { AlignLeft, Globe, FileText } from 'lucide-react';
+import { AlignLeft, Globe, FileText, Trash2 } from 'lucide-react';
 import { KnowledgeItem } from '../../../types';
 import { knowledgeStatusLabel } from '../../lib/knowledgeStatusLabel';
+import { websiteRetryUrl } from '../../lib/settleAbandonedImports';
 
 interface KnowledgeListProps {
   items: KnowledgeItem[];
+  onRemove?: (id: string) => void;
+  onRetry?: (id: string, url: string) => void;
+  retryDisabled?: boolean;
 }
 
-export const KnowledgeList: React.FC<KnowledgeListProps> = ({ items }) => {
+export const KnowledgeList: React.FC<KnowledgeListProps> = ({
+  items,
+  onRemove,
+  onRetry,
+  retryDisabled = false,
+}) => {
   if (items.length === 0) return null;
 
   return (
@@ -16,7 +25,11 @@ export const KnowledgeList: React.FC<KnowledgeListProps> = ({ items }) => {
         Imported ({items.length})
       </div>
       <ul className="divide-y divide-slate-100">
-        {items.map(k => (
+        {items.map(k => {
+          const retryUrl = k.status === 'error' ? websiteRetryUrl(k) : null;
+          const showActions = k.status === 'error' && (onRemove || (onRetry && retryUrl));
+
+          return (
           <li key={k.id} className="px-4 py-3 flex items-center justify-between gap-3">
              <div className="flex items-center gap-3 min-w-0">
                 {k.type === 'file' && <FileText className="w-4 h-4 text-orange-500 shrink-0" />}
@@ -29,17 +42,44 @@ export const KnowledgeList: React.FC<KnowledgeListProps> = ({ items }) => {
                   ) : null}
                 </div>
              </div>
-             <span className={`text-xs px-2 py-0.5 rounded-full shrink-0 ${
-               k.status === 'error'
-                 ? 'bg-red-100 text-red-700'
-                 : k.status === 'pending'
-                   ? 'bg-slate-100 text-slate-600'
-                   : 'bg-green-100 text-green-700'
-             }`}>
-               {knowledgeStatusLabel(k.status)}
-             </span>
+             <div className="flex items-center gap-2 shrink-0">
+               <span className={`text-xs px-2 py-0.5 rounded-full ${
+                 k.status === 'error'
+                   ? 'bg-red-100 text-red-700'
+                   : k.status === 'pending'
+                     ? 'bg-slate-100 text-slate-600'
+                     : 'bg-green-100 text-green-700'
+               }`}>
+                 {knowledgeStatusLabel(k.status)}
+               </span>
+               {showActions ? (
+                 <div className="flex items-center gap-1">
+                   {onRetry && retryUrl ? (
+                     <button
+                       type="button"
+                       onClick={() => onRetry(k.id, retryUrl)}
+                       disabled={retryDisabled}
+                       className="text-xs font-medium text-blue-600 hover:text-blue-800 px-1.5 py-0.5 rounded disabled:opacity-50"
+                     >
+                       Try again
+                     </button>
+                   ) : null}
+                   {onRemove ? (
+                     <button
+                       type="button"
+                       onClick={() => onRemove(k.id)}
+                       aria-label={`Remove ${k.name}`}
+                       className="p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded"
+                     >
+                       <Trash2 className="w-3.5 h-3.5" />
+                     </button>
+                   ) : null}
+                 </div>
+               ) : null}
+             </div>
           </li>
-        ))}
+          );
+        })}
       </ul>
     </div>
   );

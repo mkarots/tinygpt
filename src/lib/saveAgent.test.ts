@@ -39,6 +39,31 @@ describe('saveAgent', () => {
     assert.equal(body.config.name, 'Bot');
   });
 
+  it('settles abandoned pending knowledge before POST', async () => {
+    const calls: Array<{ init?: RequestInit }> = [];
+    globalThis.fetch = (async (_url: string | URL | Request, init?: RequestInit) => {
+      calls.push({ init });
+      return new Response(JSON.stringify({ agentId: 'abc', url: '/chat/abc' }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }) as typeof fetch;
+
+    await saveAgent(config, [
+      {
+        id: 'k1',
+        type: 'url',
+        name: 'gb.maxmara.com',
+        content: '',
+        status: 'pending',
+        dateAdded: 1,
+      },
+    ]);
+    const body = JSON.parse(String(calls[0]?.init?.body));
+    assert.equal(body.knowledge[0].status, 'error');
+    assert.match(body.knowledge[0].error, /didn't finish/i);
+  });
+
   it('throws the server error message on failure', async () => {
     globalThis.fetch = (async () =>
       new Response(JSON.stringify({ error: 'Sign in required to save an agent' }), {

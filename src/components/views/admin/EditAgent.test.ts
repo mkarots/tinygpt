@@ -32,4 +32,10 @@ describe('edit agent', () => {
     assert.match(app, /<EditAgent/);
     assert.match(app, /companyInfoFromAgent/);
   });
+
+  it('settles abandoned pending imports when opening edit', () => {
+    assert.match(app, /settleAbandonedImports/);
+    assert.match(app, /onRemoveKnowledge/);
+    assert.match(source, /onRemoveKnowledge/);
+  });
 });

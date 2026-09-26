@@ -21,6 +21,7 @@ interface EditAgentProps {
   knowledge: KnowledgeItem[];
   onAddKnowledge: (items: KnowledgeItem[]) => void;
   onUpdateKnowledge: (id: string, updates: Partial<KnowledgeItem>) => void;
+  onRemoveKnowledge: (id: string) => void;
   companyInfo: CompanyInfo;
   onCompanyInfoChange: (info: CompanyInfo) => void;
 }
@@ -32,6 +33,7 @@ export function EditAgent({
   knowledge,
   onAddKnowledge,
   onUpdateKnowledge,
+  onRemoveKnowledge,
   companyInfo,
   onCompanyInfoChange,
 }: EditAgentProps) {
@@ -79,6 +81,7 @@ export function EditAgent({
               knowledge={knowledge}
               onAddKnowledge={onAddKnowledge}
               onUpdateKnowledge={onUpdateKnowledge}
+              onRemoveKnowledge={onRemoveKnowledge}
               companyInfo={companyInfo}
               isCrawling={isCrawling}
               crawlProgress={crawlProgress}

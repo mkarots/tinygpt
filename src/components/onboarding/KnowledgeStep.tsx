@@ -13,6 +13,7 @@ interface KnowledgeStepProps {
   knowledge: KnowledgeItem[];
   onAddKnowledge: (items: KnowledgeItem[]) => void;
   onUpdateKnowledge: (id: string, updates: Partial<KnowledgeItem>) => void;
+  onRemoveKnowledge: (id: string) => void;
   companyInfo: CompanyInfo;
   isCrawling: boolean;
   crawlProgress: number;
@@ -22,6 +23,7 @@ interface KnowledgeStepProps {
 export const KnowledgeStep: React.FC<KnowledgeStepProps> = ({
   knowledge,
   onAddKnowledge,
+  onRemoveKnowledge,
   companyInfo,
   isCrawling,
   crawlProgress,
@@ -34,6 +36,11 @@ export const KnowledgeStep: React.FC<KnowledgeStepProps> = ({
     if (!urlInput) return;
     onPerformCrawl(urlInput);
     setUrlInput('');
+  };
+
+  const handleRetry = (id: string, url: string) => {
+    onRemoveKnowledge(id);
+    void onPerformCrawl(url);
   };
 
   return (
@@ -62,7 +69,12 @@ export const KnowledgeStep: React.FC<KnowledgeStepProps> = ({
 
       <PastedTextForm onAdd={(item) => onAddKnowledge([item])} />
 
-      <KnowledgeList items={knowledge} />
+      <KnowledgeList
+        items={knowledge}
+        onRemove={onRemoveKnowledge}
+        onRetry={handleRetry}
+        retryDisabled={isCrawling}
+      />
     </div>
   );
 };
