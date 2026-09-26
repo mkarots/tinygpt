@@ -61,4 +61,16 @@ describe('admin home', () => {
     const matches = share.match(/Back to your agents/g) ?? [];
     assert.ok(matches.length >= 2, 'error and success views both need the back link');
   });
+
+  it('keeps Copy code out of the embed snippet text', () => {
+    const share = read('src/components/views/admin/ShareAgentPage.tsx');
+    assert.match(share, /Copy code/);
+    assert.match(share, /Copied/);
+    assert.doesNotMatch(
+      share,
+      /absolute top-4 right-4[\s\S]*Copy code|Copy code[\s\S]*absolute top-4 right-4/,
+      'Copy code must not overlay the wrapping snippet'
+    );
+    assert.match(share, /flex justify-end/);
+  });
 });
