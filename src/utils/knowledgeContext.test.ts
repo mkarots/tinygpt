@@ -42,4 +42,19 @@ describe('buildKnowledgeContext', () => {
       ''
     );
   });
+
+  it('never includes the failed-import reason in chat context', () => {
+    const context = buildKnowledgeContext([
+      item({
+        name: 'en.wikipedia.org',
+        content: '',
+        status: 'error',
+        error: 'The site took too long to answer. Try again, or paste the text.',
+      }),
+      item({ id: 'k2', name: 'FAQ', content: 'Open daily', status: 'active' }),
+    ]);
+    assert.equal(context.includes('took too long'), false);
+    assert.equal(context.includes('en.wikipedia.org'), false);
+    assert.match(context, /Open daily/);
+  });
 });

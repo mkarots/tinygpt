@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { KnowledgeItem } from '../../../types';
+import { crawlImportErrorMessage } from '../../lib/crawlImportError';
 
 export function useWebsiteCrawl(
   onAddKnowledge: (items: KnowledgeItem[]) => void,
@@ -16,10 +17,11 @@ export function useWebsiteCrawl(
     }
 
     const tempId = Math.random().toString(36).substr(2, 9);
+    const hostname = new URL(url).hostname;
     const newItem: KnowledgeItem = {
       id: tempId,
       type: 'url',
-      name: new URL(url).hostname,
+      name: hostname,
       content: '',
       status: 'pending',
       dateAdded: Date.now(),
@@ -46,18 +48,27 @@ export function useWebsiteCrawl(
         clearInterval(progressInterval);
         setCrawlProgress(100);
         if (data.error) {
-          onUpdateKnowledge(tempId, { status: 'error', name: `Error: ${new URL(url).hostname}` });
+          onUpdateKnowledge(tempId, {
+            status: 'error',
+            name: hostname,
+            error: crawlImportErrorMessage(data.error),
+          });
         } else {
           onUpdateKnowledge(tempId, {
             status: 'active',
             content: data.content,
-            name: data.title || new URL(url).hostname,
+            name: data.title || hostname,
+            error: undefined,
           });
         }
       })
       .catch(() => {
         clearInterval(progressInterval);
-        onUpdateKnowledge(tempId, { status: 'error' });
+        onUpdateKnowledge(tempId, {
+          status: 'error',
+          name: hostname,
+          error: crawlImportErrorMessage(null),
+        });
       })
       .finally(() => {
         setTimeout(() => {
