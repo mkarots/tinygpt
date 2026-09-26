@@ -25,6 +25,7 @@ const PRODUCT_SURFACES = [
   'components/onboarding/OnboardingHeader.tsx',
   'components/PublicAgentChat.tsx',
   'app/embed/[id]/page.tsx',
+  'app/login/page.tsx',
   'components/WidgetChat.tsx',
   'components/SignedInShell.tsx',
   'components/core/button/Button.tsx',
@@ -75,5 +76,11 @@ describe('product theme', () => {
     assert.match(read('components/core/typography/Heading.tsx'), /font-serif/);
     assert.match(read('components/onboarding/HeaderTitle.tsx'), /font-serif/);
     assert.match(read('components/WidgetChat.tsx'), /font-serif/);
+    assert.match(read('app/login/page.tsx'), /font-serif/);
+  });
+
+  it('hides the Next.js dev badge so it does not cover controls', () => {
+    const config = readFileSync(path.join(root, '../next.config.mjs'), 'utf8');
+    assert.match(config, /devIndicators:\s*false/);
   });
 });

@@ -22,17 +22,19 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50">
-      <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full text-center">
-        <Link href="/" className="inline-block mb-6 text-sm font-medium text-slate-600 hover:text-slate-900">
+    <div className="min-h-screen flex items-center justify-center bg-paper px-6 text-ink">
+      <div className="bg-cream border border-rule p-8 rounded-[20px] max-w-md w-full text-center">
+        <Link
+          href="/"
+          className="inline-block mb-6 font-serif text-2xl font-semibold tracking-tight text-ink hover:text-terracotta"
+        >
           TinyGPT
         </Link>
-        <div className="w-16 h-16 bg-brand-600 rounded-xl text-white flex items-center justify-center mx-auto mb-6 shadow-lg shadow-brand-500/30">
-          <span className="font-mono font-bold text-2xl">T</span>
-        </div>
-        
-        <Heading level={1} className="mb-2">Welcome to TinyGPT</Heading>
-        <p className="text-slate-500 mb-8">{SIGN_IN_CTA}</p>
+
+        <Heading level={1} className="mb-2">
+          Welcome to TinyGPT
+        </Heading>
+        <p className="text-stone mb-8">{SIGN_IN_CTA}</p>
 
         {configured ? (
         <Button 
@@ -60,7 +62,7 @@ export default function LoginPage() {
           Continue with Google
         </Button>
         ) : (
-          <p className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-3">
+          <p className="text-sm text-amber-900 bg-[#EFE6D7] border border-rule rounded-lg p-3">
             Add NEXT_PUBLIC_SUPABASE_URL and a public key (NEXT_PUBLIC_SUPABASE_ANON_KEY or NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) to enable Google sign-in.
           </p>
         )}
@@ -68,5 +70,3 @@ export default function LoginPage() {
     </div>
   )
 }
-
-

@@ -23,6 +23,9 @@ describe('sign-in call to action', () => {
     assert.match(login, /SIGN_IN_CTA/);
     assert.match(login, /Continue with Google/);
     assert.match(login, /href="\/"/);
+    assert.match(login, /bg-paper/);
+    assert.match(login, /font-serif/);
+    assert.doesNotMatch(login, /bg-brand-600|bg-slate-50|shadow-xl/);
     assert.doesNotMatch(login, /manage your AI agents|share a chat link|from your site or files/);
   });
 });
