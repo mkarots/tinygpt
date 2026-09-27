@@ -55,8 +55,15 @@ describe('admin home', () => {
     assert.match(dashboard, />Edit</);
     assert.doesNotMatch(dashboard, /Recreate/);
     assert.match(dashboard, /showList/);
-    assert.match(dashboard, /entry\.siteLine/);
+    assert.match(dashboard, /entry\.siteStatus/);
+    assert.match(dashboard, /entry\.siteDot/);
+    assert.match(dashboard, /entry\.siteUrl/);
     assert.match(dashboard, /entry\.agentStanding/);
+    assert.match(dashboard, /entry\.standingDot/);
+    assert.match(dashboard, /bg-green-600/);
+    assert.match(dashboard, /bg-neutral-400/);
+    assert.match(dashboard, /bg-red-600/);
+    assert.match(dashboard, /bg-blue-600/);
     assert.doesNotMatch(dashboard, /agentListSubtitle/);
     assert.match(dashboard, /isBoilerplateAgentDescription/);
     assert.match(dashboard, /PRODUCT_CREATE_PATH/);

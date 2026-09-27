@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { OwnedAgentSummary } from '../../../domain/interfaces/IAgentRepository';
 import { isBoilerplateAgentDescription } from '../../../lib/agentDescription';
-import { showList } from '../../../lib/showList';
+import { showList, type StatusDot } from '../../../lib/showList';
 import { PRODUCT_CREATE_PATH, adminEditPath, adminSharePath } from '../../../lib/routes';
 import { Heading } from '../../core/typography/Heading';
 
@@ -18,6 +18,7 @@ export function AgentDashboard({
       id: agent.id,
       ownerId,
       website: agent.website,
+      websiteSourceStatus: agent.websiteSourceStatus,
       sourceStandings: agent.sourceStandings,
     }))
   );
@@ -56,8 +57,19 @@ export function AgentDashboard({
               return (
               <li key={agent.id} className="bg-cream rounded-xl border border-rule p-5">
                 <p className="font-medium text-ink">{agent.name}</p>
-                {entry ? <p className="text-sm text-stone mt-1">{entry.siteLine}</p> : null}
-                {entry ? <p className="text-sm text-stone mt-1">{entry.agentStanding}</p> : null}
+                {entry ? (
+                  <p className="text-sm text-stone mt-1 flex items-center gap-2">
+                    <StatusMark color={entry.siteDot} />
+                    <span className="text-ink">{entry.siteStatus}</span>
+                    {entry.siteUrl ? <span className="truncate">{entry.siteUrl}</span> : null}
+                  </p>
+                ) : null}
+                {entry ? (
+                  <p className="text-sm text-stone mt-1 flex items-center gap-2">
+                    <StatusMark color={entry.standingDot} />
+                    <span className="text-ink">{entry.agentStanding}</span>
+                  </p>
+                ) : null}
                 {description ? <p className="text-sm text-stone mt-1">{description}</p> : null}
                 <div className="flex flex-wrap gap-4 mt-4 text-sm font-medium">
                   <Link href={`/chat/${agent.id}`} className="text-terracotta">Chat</Link>
@@ -72,4 +84,16 @@ export function AgentDashboard({
       </div>
     </div>
   );
+}
+
+function StatusMark({ color }: { color: StatusDot }) {
+  const tone =
+    color === 'green'
+      ? 'bg-green-600'
+      : color === 'red'
+        ? 'bg-red-600'
+        : color === 'blue'
+          ? 'bg-blue-600'
+          : 'bg-neutral-400';
+  return <span className={`inline-block h-2 w-2 shrink-0 rounded-full ${tone}`} aria-hidden="true" />;
 }

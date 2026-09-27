@@ -5,6 +5,7 @@ import { KnowledgeItem } from '../../domain/entities/KnowledgeSource';
 import { profileFromAuthUser } from '../../lib/profileFromAuthUser';
 import { siteFromKnowledge } from '../../lib/agentList';
 import type { KnowledgeStatus } from '../../lib/knowledgeStatusLabel';
+import { settleAbandonedImports } from '../../lib/settleAbandonedImports';
 
 export class SupabaseAgentRepository implements IAgentRepository {
   constructor(private supabase: SupabaseClient) {}
@@ -89,6 +90,10 @@ export class SupabaseAgentRepository implements IAgentRepository {
       createdAt: typeof row.created_at === 'string' ? new Date(row.created_at).getTime() : 0,
       site: siteFromKnowledge(row.knowledge),
       website: websiteFromConfig(row.config),
+      websiteSourceStatus: websiteSourceStatusFromKnowledge(
+        websiteFromConfig(row.config),
+        row.knowledge
+      ),
       sourceStandings: sourceStandingsFromKnowledge(row.knowledge),
     }));
   }
@@ -103,14 +108,53 @@ function websiteFromConfig(config: unknown): string | null {
 }
 
 function sourceStandingsFromKnowledge(knowledge: unknown): KnowledgeStatus[] {
+  return settledKnowledge(knowledge).map((item) => item.status);
+}
+
+/** Status of the url row whose host is this website. A saved pending row counts as Failed. */
+function websiteSourceStatusFromKnowledge(
+  website: string | null,
+  knowledge: unknown
+): KnowledgeStatus | null {
+  const host = hostnameOf(website);
+  if (!host) return null;
+  const matches = settledKnowledge(knowledge).filter(
+    (item) => item.type === 'url' && hostnameOf(item.name) === host
+  );
+  if (matches.some((item) => item.status === 'error')) return 'error';
+  if (matches.some((item) => item.status === 'active')) return 'active';
+  return null;
+}
+
+function settledKnowledge(knowledge: unknown): KnowledgeItem[] {
   if (!Array.isArray(knowledge)) return [];
-  const standings: KnowledgeStatus[] = [];
+  const items: KnowledgeItem[] = [];
   for (const item of knowledge) {
     if (!item || typeof item !== 'object') continue;
-    const status = (item as { status?: unknown }).status;
-    if (status === 'pending' || status === 'active' || status === 'error') {
-      standings.push(status);
-    }
+    const row = item as Partial<KnowledgeItem>;
+    if (row.status !== 'pending' && row.status !== 'active' && row.status !== 'error') continue;
+    items.push({
+      id: typeof row.id === 'string' ? row.id : 'source',
+      type: row.type === 'file' || row.type === 'url' || row.type === 'text' ? row.type : 'text',
+      name: typeof row.name === 'string' ? row.name : '',
+      content: '',
+      status: row.status,
+      dateAdded: typeof row.dateAdded === 'number' ? row.dateAdded : 0,
+      error: typeof row.error === 'string' ? row.error : undefined,
+    });
   }
-  return standings;
+  // A saved pending row is not an in-flight import. Edit shows it as Failed.
+  return settleAbandonedImports(items);
+}
+
+function hostnameOf(value: string | null): string | null {
+  const trimmed = value?.trim() ?? '';
+  if (!trimmed) return null;
+  try {
+    const url = new URL(trimmed.includes('://') ? trimmed : `https://${trimmed}`);
+    const host = url.hostname.replace(/^www\./, '').toLowerCase();
+    return host || null;
+  } catch {
+    return null;
+  }
 }

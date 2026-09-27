@@ -10,6 +10,11 @@ export interface OwnedAgentSummary {
   site: string | null;
   /** Website URL set on Edit. Empty when the owner did not set one. */
   website: string | null;
+  /**
+   * Status of the imported page for this website, after abandoned imports
+   * are treated as failures. Null when there is no matching page.
+   */
+  websiteSourceStatus: 'pending' | 'active' | 'error' | null;
   sourceStandings: Array<'pending' | 'active' | 'error'>;
 }
 
