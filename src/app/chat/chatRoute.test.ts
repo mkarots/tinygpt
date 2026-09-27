@@ -45,15 +45,18 @@ describe('public chat route', () => {
   });
 
   it('tells the owner this hosted thread is this browser’s chat, and not on embed', () => {
+    const chat = read('src/app/chat/[id]/page.tsx');
     const publicChat = read('src/components/PublicAgentChat.tsx');
     const widget = read('src/components/WidgetChat.tsx');
     const embed = read('src/app/embed/[id]/page.tsx');
-    assert.match(publicChat, /pathname\.startsWith\('\/chat\/'\)/);
-    assert.match(publicChat, /viewerOwnsAgent/);
+    const publicAgentRoute = read('src/app/api/agent/[id]/route.ts');
+    assert.match(chat, /viewerOwnsAgent/);
+    assert.match(publicChat, /viewerOwnsAgent && user/);
     assert.match(publicChat, /ownChat=/);
     assert.match(widget, /openOwnChat/);
     assert.match(widget, /ownChatStatement/);
-    assert.doesNotMatch(embed, /openOwnChat|ownChatStatement/);
+    assert.doesNotMatch(embed, /viewerOwnsAgent|openOwnChat|ownChatStatement/);
+    assert.doesNotMatch(publicAgentRoute, /auth\.getUser\(\)/);
     assert.match(widget, /resolveQuickQuestions\(config\.quickQuestions, knowledge\)/);
   });
 

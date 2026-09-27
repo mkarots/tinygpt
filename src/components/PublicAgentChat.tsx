@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useParams, usePathname } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import WidgetChat from './WidgetChat';
 import { OwnerBackToAgentsLink } from './OwnerBackToAgentsLink';
 import { useAuth } from './AuthProvider';
@@ -23,16 +23,14 @@ function PublicChatFrame({ children }: { children: React.ReactNode }) {
  * Same greeting, agent questions, and message field on both routes.
  * Signed-in owners get a way back to /admin; visitors do not.
  */
-export default function PublicAgentChat() {
+export default function PublicAgentChat({ viewerOwnsAgent = false }: { viewerOwnsAgent?: boolean }) {
   const params = useParams();
-  const pathname = usePathname();
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [agentData, setAgentData] = useState<{
     config: AgentConfig;
     knowledge: KnowledgeItem[];
-    viewerOwnsAgent?: boolean;
   } | null>(null);
 
   const agentId = singleRouteParam(params.id);
@@ -98,9 +96,7 @@ export default function PublicAgentChat() {
         agentId={agentId}
         showQuickQuestions={true}
         ownChat={
-          pathname.startsWith('/chat/') && agentData.viewerOwnsAgent && user
-            ? { ownerId: user.id, agentOwnerId: user.id }
-            : null
+          viewerOwnsAgent && user ? { ownerId: user.id, agentOwnerId: user.id } : null
         }
       />
     </PublicChatFrame>
