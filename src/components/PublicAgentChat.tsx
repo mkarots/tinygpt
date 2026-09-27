@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import WidgetChat from './WidgetChat';
 import { OwnerBackToAgentsLink } from './OwnerBackToAgentsLink';
+import { useAuth } from './AuthProvider';
 import { AgentConfig, KnowledgeItem } from '../../types';
 import { singleRouteParam } from '../lib/routeParam';
 import { Loader2, AlertCircle } from 'lucide-react';
@@ -22,8 +23,9 @@ function PublicChatFrame({ children }: { children: React.ReactNode }) {
  * Same greeting, agent questions, and message field on both routes.
  * Signed-in owners get a way back to /admin; visitors do not.
  */
-export default function PublicAgentChat() {
+export default function PublicAgentChat({ viewerOwnsAgent = false }: { viewerOwnsAgent?: boolean }) {
   const params = useParams();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [agentData, setAgentData] = useState<{
@@ -93,6 +95,9 @@ export default function PublicAgentChat() {
         knowledge={agentData.knowledge}
         agentId={agentId}
         showQuickQuestions={true}
+        ownChat={
+          viewerOwnsAgent && user ? { ownerId: user.id, agentOwnerId: user.id } : null
+        }
       />
     </PublicChatFrame>
   );
