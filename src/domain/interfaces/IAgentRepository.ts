@@ -1,12 +1,21 @@
 import { Agent } from '../entities/Agent';
 
-/** Row shown on the signed-in dashboard. Knowledge stays off this list. */
+/** Row shown on the signed-in dashboard. Full knowledge text stays off this list. */
 export interface OwnedAgentSummary {
   id: string;
   name: string;
   description: string;
   createdAt: number;
+  /** Imported page used only to tell same-named rows apart. Not the Edit website. */
   site: string | null;
+  /** Website URL set on Edit. Empty when the owner did not set one. */
+  website: string | null;
+  /**
+   * Status of the imported page for this website, after abandoned imports
+   * are treated as failures. Null when there is no matching page.
+   */
+  websiteSourceStatus: 'pending' | 'active' | 'error' | null;
+  sourceStandings: Array<'pending' | 'active' | 'error'>;
 }
 
 export interface IAgentRepository {

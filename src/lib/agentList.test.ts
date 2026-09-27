@@ -13,6 +13,9 @@ function row(partial: Partial<OwnedAgentSummary> & Pick<OwnedAgentSummary, 'id' 
     description: 'A helpful assistant for our customers.',
     createdAt: Date.parse('2026-03-04T00:00:00.000Z'),
     site: null,
+    website: null,
+    websiteSourceStatus: null,
+    sourceStandings: [],
     ...partial,
   };
 }

@@ -8,6 +8,7 @@ type AgentRow = {
   description: string | null;
   created_at?: string;
   knowledge?: unknown;
+  config?: unknown;
 };
 
 function listingClient(options: {
@@ -62,7 +63,12 @@ describe('SupabaseAgentRepository.listByUser', () => {
           name: 'Support',
           description: 'Help',
           created_at: '2026-01-02T00:00:00.000Z',
-          knowledge: [{ type: 'url', name: 'acme.example' }],
+          knowledge: [
+            { type: 'url', name: 'Imported page title', status: 'active' },
+            { status: 'error' },
+            { status: 'pending' },
+          ],
+          config: { company: { website: ' https://shop.example ' } },
         },
         { id: 'agent-2', name: '', description: null },
       ],
@@ -77,9 +83,21 @@ describe('SupabaseAgentRepository.listByUser', () => {
         name: 'Support',
         description: 'Help',
         createdAt: Date.parse('2026-01-02T00:00:00.000Z'),
-        site: 'acme.example',
+        site: 'Imported page title',
+        website: 'https://shop.example',
+        websiteSourceStatus: null,
+        sourceStandings: ['active', 'error', 'error'],
       },
-      { id: 'agent-2', name: 'Untitled agent', description: '', createdAt: 0, site: null },
+      {
+        id: 'agent-2',
+        name: 'Untitled agent',
+        description: '',
+        createdAt: 0,
+        site: null,
+        website: null,
+        websiteSourceStatus: null,
+        sourceStandings: [],
+      },
     ]);
   });
 
@@ -107,6 +125,33 @@ describe('SupabaseAgentRepository.listByUser', () => {
     const repo = new SupabaseAgentRepository(client as never);
 
     await assert.rejects(() => repo.listByUser('user-1'), /Failed to list agents: db down/);
+  });
+
+  it('marks the website import failed when that host did not finish', async () => {
+    const client = listingClient({
+      authUserId: 'user-1',
+      rows: [
+        {
+          id: 'failed-site',
+          name: 'Shop',
+          description: '',
+          knowledge: [{ type: 'url', name: 'shop.example', status: 'pending' }],
+          config: { company: { website: 'https://www.shop.example' } },
+        },
+        {
+          id: 'other-page',
+          name: 'Notes',
+          description: '',
+          knowledge: [{ type: 'url', name: 'other.example', status: 'error' }],
+          config: { company: { website: 'https://shop.example' } },
+        },
+      ],
+    });
+    const repo = new SupabaseAgentRepository(client as never);
+    const agents = await repo.listByUser('user-1');
+
+    assert.equal(agents[0]?.websiteSourceStatus, 'error');
+    assert.equal(agents[1]?.websiteSourceStatus, null);
   });
 });
 
