@@ -34,6 +34,8 @@ describe('embed route param', () => {
     const widget = read('public/tinygpt.js');
     assert.match(widget, /getAttribute\('data-id'\)/);
     assert.match(widget, /\/embed\/\$\{agentId\}/);
+    assert.match(widget, /new URL\(script\.src\)\.origin/);
+    assert.doesNotMatch(widget, /tinygpt\.app/);
   });
 
   it('builds the install snippet from the saved agent id', () => {

@@ -10,7 +10,7 @@ TinyGPT is a Next.js app. Supabase holds auth, agent rows, and knowledge. Gemini
 
 `POST /api/crawl` fetches a page (30 second timeout), extracts content with Cheerio, and asks Gemini to strip navigation. It does not launch Chromium. That is what makes a normal serverless host viable. See [docs/how-it-works.md](../how-it-works.md).
 
-Issue #9 requires one documented deploy target that can run chat and persistence. The widget in `public/tinygpt.js` still switches between `http://localhost:3000` and a hardcoded `https://tinygpt.app`.
+Issue #9 requires one documented deploy target that can run chat and persistence. `public/tinygpt.js` sets the iframe host from `new URL(script.src).origin`, so the embed follows whichever deployment served the script.
 
 ## Decision
 
@@ -37,8 +37,8 @@ Google OAuth in Supabase must allow the production origin as a redirect URL.
 ## Consequences
 
 - Production origin is the Vercel deployment URL, or a custom domain attached to that project.
-- The crawl route must be allowed at least 30 seconds, plus time for Gemini cleanup. Set the function duration on that route so Vercel does not cut the request off at the platform default.
+- The crawl route sets `maxDuration` to 60 seconds: 30 seconds for the fetch, then Gemini cleanup. The Vercel plan must allow that duration. A lower cap kills website import while chat can still succeed.
 - JavaScript-only sites still come back thin or empty. Vercel does not change that.
-- `public/tinygpt.js` must take its base URL from the script origin (or env). A hardcoded `https://tinygpt.app` will point embeds at the wrong host.
+- `public/tinygpt.js` takes its base URL from the script origin. A shop that copies the file onto another host will embed that host, not this deployment.
 - Preview deployments are optional. If they should accept Google sign-in, add each preview origin to the Supabase redirect allowlist.
 - This ADR does not choose a custom domain, a Vercel plan, or how env vars are entered in the dashboard.

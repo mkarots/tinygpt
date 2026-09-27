@@ -4,6 +4,9 @@ import { FetchCrawlerService } from '../../../infrastructure/services/FetchCrawl
 import { GeminiLLMService } from '../../../infrastructure/services/GeminiLLMService';
 import { createClient as createServerSupabase } from '../../../lib/supabase-server';
 
+/** Fetch waits 30s, then Gemini cleans the page. The Vercel plan must allow this duration. */
+export const maxDuration = 60;
+
 export type CrawlDeps = {
   getUser: () => Promise<{ id: string } | null>;
 };
