@@ -16,7 +16,7 @@ const LivePreview: React.FC<LivePreviewProps> = ({ config, knowledge }) => {
   const [isWidgetOpen, setIsWidgetOpen] = useState(true);
 
   return (
-    <aside className="w-[450px] bg-paper border-l border-rule hidden xl:flex flex-col">
+    <aside className="flex min-h-[36rem] w-full flex-col bg-paper lg:h-full lg:min-h-0 lg:w-full">
       {/* Header with Toggles */}
       <div className="p-4 border-b border-slate-200 bg-white/50 backdrop-blur-sm flex justify-between items-center">
          <div className="flex bg-white rounded-lg p-1 border border-slate-200 shadow-sm">
@@ -86,7 +86,7 @@ const LivePreview: React.FC<LivePreviewProps> = ({ config, knowledge }) => {
                      }
                    `}
                  >
-                   <div className="w-[360px] h-[550px] shadow-2xl rounded-2xl overflow-hidden ring-1 ring-black/5">
+                   <div className="h-[min(550px,70vh)] w-full max-w-[360px] shadow-2xl rounded-2xl overflow-hidden ring-1 ring-black/5">
                       <WidgetChat config={config} knowledge={knowledge} onClose={() => setIsWidgetOpen(false)} />
                    </div>
                  </div>
@@ -107,7 +107,7 @@ const LivePreview: React.FC<LivePreviewProps> = ({ config, knowledge }) => {
            </div>
          ) : (
            /* MOBILE PHONE VIEW */
-           <div className="w-[340px] h-[640px] bg-slate-900 rounded-[3rem] shadow-2xl relative overflow-hidden ring-8 ring-slate-900">
+           <div className="relative h-[min(640px,80vh)] w-full max-w-[340px] overflow-hidden rounded-[3rem] bg-slate-900 shadow-2xl ring-8 ring-slate-900">
               {/* Notch */}
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-slate-900 z-30 rounded-b-xl"></div>
               
