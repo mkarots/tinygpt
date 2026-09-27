@@ -26,8 +26,20 @@ class MemoryRepo implements IAgentRepository {
     if (!this.agent || this.agent.id !== id) return null;
     return this.agent;
   }
-  async listByUser() {
-    return [];
+  async listByUser(userId: string) {
+    if (userId !== 'user-1' || !this.agent) return [];
+    return [
+      {
+        id: this.agent.id,
+        name: this.agent.config.name,
+        description: this.agent.config.description,
+        createdAt: this.agent.createdAt,
+        site: null,
+        website: null,
+        websiteSourceStatus: null,
+        sourceStandings: [],
+      },
+    ];
   }
 }
 
@@ -100,7 +112,23 @@ describe('ship loop routes', () => {
       { repository: repo },
     );
     assert.equal(found.status, 200);
-    assert.equal((await found.json()).id, saved.id);
+    const foundBody = await found.json();
+    assert.equal(foundBody.id, saved.id);
+    assert.equal(foundBody.viewerOwnsAgent, false);
+
+    const owned = await getAgent(
+      new Request('http://localhost/api/agent/11111111-1111-4111-8111-111111111111'),
+      { params: Promise.resolve({ id: saved.id }) },
+      { repository: repo, viewerId: 'user-1' },
+    );
+    assert.equal((await owned.json()).viewerOwnsAgent, true);
+
+    const stranger = await getAgent(
+      new Request('http://localhost/api/agent/11111111-1111-4111-8111-111111111111'),
+      { params: Promise.resolve({ id: saved.id }) },
+      { repository: repo, viewerId: 'user-2' },
+    );
+    assert.equal((await stranger.json()).viewerOwnsAgent, false);
 
     const missing = await getAgent(
       new Request('http://localhost/api/agent/missing'),

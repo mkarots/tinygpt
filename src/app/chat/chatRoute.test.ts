@@ -44,6 +44,19 @@ describe('public chat route', () => {
     assert.doesNotMatch(embed, /'use client'/);
   });
 
+  it('tells the owner this hosted thread is this browser’s chat, and not on embed', () => {
+    const publicChat = read('src/components/PublicAgentChat.tsx');
+    const widget = read('src/components/WidgetChat.tsx');
+    const embed = read('src/app/embed/[id]/page.tsx');
+    assert.match(publicChat, /pathname\.startsWith\('\/chat\/'\)/);
+    assert.match(publicChat, /viewerOwnsAgent/);
+    assert.match(publicChat, /ownChat=/);
+    assert.match(widget, /openOwnChat/);
+    assert.match(widget, /ownChatStatement/);
+    assert.doesNotMatch(embed, /openOwnChat|ownChatStatement/);
+    assert.match(widget, /resolveQuickQuestions\(config\.quickQuestions, knowledge\)/);
+  });
+
   it('gives signed-in owners a way back to Your agents without Sign out', () => {
     const publicChat = read('src/components/PublicAgentChat.tsx');
     const link = read('src/components/OwnerBackToAgentsLink.tsx');

@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, usePathname } from 'next/navigation';
 import WidgetChat from './WidgetChat';
 import { OwnerBackToAgentsLink } from './OwnerBackToAgentsLink';
+import { useAuth } from './AuthProvider';
 import { AgentConfig, KnowledgeItem } from '../../types';
 import { singleRouteParam } from '../lib/routeParam';
 import { Loader2, AlertCircle } from 'lucide-react';
@@ -24,11 +25,14 @@ function PublicChatFrame({ children }: { children: React.ReactNode }) {
  */
 export default function PublicAgentChat() {
   const params = useParams();
+  const pathname = usePathname();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [agentData, setAgentData] = useState<{
     config: AgentConfig;
     knowledge: KnowledgeItem[];
+    viewerOwnsAgent?: boolean;
   } | null>(null);
 
   const agentId = singleRouteParam(params.id);
@@ -93,6 +97,11 @@ export default function PublicAgentChat() {
         knowledge={agentData.knowledge}
         agentId={agentId}
         showQuickQuestions={true}
+        ownChat={
+          pathname.startsWith('/chat/') && agentData.viewerOwnsAgent && user
+            ? { ownerId: user.id, agentOwnerId: user.id }
+            : null
+        }
       />
     </PublicChatFrame>
   );

@@ -7,6 +7,7 @@ import { resolveQuickQuestions } from '../lib/resolveQuickQuestions';
 import { sendMessageStream, initializeChat, loadChatTranscript } from '../../services/geminiService';
 import { chatSendErrorMessage } from '../lib/chatSendError';
 import { visibleThread } from '../lib/chatThread';
+import { chatStateFromSession, openOwnChat } from '../lib/openOwnChat';
 import { MessageBubble } from './core/feedback/MessageBubble';
 import { ChatInput } from './core/input/ChatInput';
 import { SuggestionChips } from './core/input/SuggestionChips';
@@ -18,6 +19,8 @@ interface WidgetChatProps {
   isOpen?: boolean; // For future real widget toggle
   onClose?: () => void;
   showQuickQuestions?: boolean; // Control visibility of in-chat pills
+  /** Set only when the signed-in owner opens the hosted chat. Visitors omit it. */
+  ownChat?: { ownerId: string; agentOwnerId: string } | null;
 }
 
 function querySessionId(): string | undefined {
@@ -26,8 +29,18 @@ function querySessionId(): string | undefined {
   return session || undefined;
 }
 
-const WidgetChat: React.FC<WidgetChatProps> = ({ config, knowledge, agentId, onClose, showQuickQuestions = true }) => {
+const WidgetChat: React.FC<WidgetChatProps> = ({
+  config,
+  knowledge,
+  agentId,
+  onClose,
+  showQuickQuestions = true,
+  ownChat = null,
+}) => {
+  const ownChatOwnerId = ownChat?.ownerId ?? null;
+  const ownChatAgentOwnerId = ownChat?.agentOwnerId ?? null;
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [ownChatStatement, setOwnChatStatement] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<string | undefined>(querySessionId);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -40,16 +53,32 @@ const WidgetChat: React.FC<WidgetChatProps> = ({ config, knowledge, agentId, onC
 
     async function boot() {
       if (!agentId) {
-        if (!cancelled) setMessages(visibleThread(config.greeting, []));
+        if (!cancelled) {
+          setOwnChatStatement(null);
+          setMessages(visibleThread(config.greeting, []));
+        }
         return;
       }
       try {
         const restored = await loadChatTranscript(agentId, initialSession);
         if (cancelled) return;
         if (restored.sessionId) setSessionId(restored.sessionId);
-        setMessages(visibleThread(config.greeting, restored.messages));
+        const opened =
+          ownChatOwnerId && ownChatAgentOwnerId
+            ? openOwnChat(chatStateFromSession(agentId, restored.sessionId, restored.messages), {
+                ownerId: ownChatOwnerId,
+                agentOwnerId: ownChatAgentOwnerId,
+                agentId,
+                sessionId: restored.sessionId,
+              })
+            : null;
+        setOwnChatStatement(opened?.statement ?? null);
+        setMessages(visibleThread(config.greeting, opened ? [...opened.thread] : restored.messages));
       } catch {
-        if (!cancelled) setMessages(visibleThread(config.greeting, []));
+        if (!cancelled) {
+          setOwnChatStatement(null);
+          setMessages(visibleThread(config.greeting, []));
+        }
       }
     }
 
@@ -57,7 +86,7 @@ const WidgetChat: React.FC<WidgetChatProps> = ({ config, knowledge, agentId, onC
     return () => {
       cancelled = true;
     };
-  }, [config, knowledge, agentId]);
+  }, [config, knowledge, agentId, ownChatOwnerId, ownChatAgentOwnerId]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -157,6 +186,10 @@ const WidgetChat: React.FC<WidgetChatProps> = ({ config, knowledge, agentId, onC
           )}
         </div>
       </div>
+
+      {ownChatStatement ? (
+        <p className="px-4 py-2 text-xs text-stone bg-cream border-b border-rule">{ownChatStatement}</p>
+      ) : null}
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-paper scrollbar-hide">

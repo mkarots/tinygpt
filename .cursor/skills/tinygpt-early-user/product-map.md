@@ -24,8 +24,8 @@ link works; it is not a second product create flow.
 ## What chat does
 
 Hosted chat loads that agent and sends **all active knowledge** plus the
-**last 20 turns** (this tab only) to Gemini. Answers should stay inside
-the knowledge. Refresh clears the conversation.
+**last 20 turns** of this browser’s thread to Gemini. Answers should stay inside
+the knowledge. Opening the chat again keeps that thread.
 
 Preview chat in the builder can run without a saved id (sends knowledge
 from the browser).
