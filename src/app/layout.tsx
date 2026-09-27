@@ -2,13 +2,14 @@ import React from 'react';
 import type { Metadata } from 'next';
 import { Figtree, Fraunces } from 'next/font/google';
 import { AuthProvider } from '../components/AuthProvider';
+import { documentTitle } from '../lib/pageTitle';
 import './globals.css';
 
 const figtree = Figtree({ subsets: ['latin'], variable: '--font-landing-sans' });
 const fraunces = Fraunces({ subsets: ['latin'], variable: '--font-landing-serif' });
 
 export const metadata: Metadata = {
-  title: 'tinygpt',
+  title: { absolute: documentTitle() },
   description: 'TinyGPT',
 };
 

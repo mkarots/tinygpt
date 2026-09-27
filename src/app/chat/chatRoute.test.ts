@@ -33,6 +33,17 @@ describe('public chat route', () => {
     assert.match(input, /aria-label="Send"/);
   });
 
+  it('titles the tab with the agent name, then TinyGPT', () => {
+    const chat = read('src/app/chat/[id]/page.tsx');
+    const embed = read('src/app/embed/[id]/page.tsx');
+    assert.match(chat, /generateMetadata/);
+    assert.match(chat, /publicAgentMetadata/);
+    assert.match(embed, /generateMetadata/);
+    assert.match(embed, /publicAgentMetadata/);
+    assert.doesNotMatch(chat, /'use client'/);
+    assert.doesNotMatch(embed, /'use client'/);
+  });
+
   it('gives signed-in owners a way back to Your agents without Sign out', () => {
     const publicChat = read('src/components/PublicAgentChat.tsx');
     const link = read('src/components/OwnerBackToAgentsLink.tsx');
