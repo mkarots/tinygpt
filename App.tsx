@@ -100,9 +100,9 @@ const App: React.FC<{ initialAgent?: Agent | null }> = ({ initialAgent = null })
   };
 
   return (
-    <div className="flex h-full bg-paper font-sans overflow-hidden">
-       <main className="flex-1 flex overflow-hidden">
-          <div className="flex-1">
+    <div className="flex min-h-dvh bg-paper font-sans">
+       <main className="flex w-full flex-1 flex-col lg:flex-row">
+          <div className="min-w-0 flex-1">
             {initialAgent ? (
             <EditAgent
               existingAgentId={initialAgent.id}
@@ -128,7 +128,7 @@ const App: React.FC<{ initialAgent?: Agent | null }> = ({ initialAgent = null })
             />
             )}
           </div>
-          <div className="hidden xl:flex w-[400px] border-l border-slate-200 bg-slate-50">
+          <div className="flex w-full shrink-0 flex-col border-t border-rule bg-slate-50 lg:sticky lg:top-0 lg:h-[calc(100dvh-3.5rem)] lg:max-h-[calc(100dvh-3.5rem)] lg:w-[400px] lg:self-start lg:overflow-hidden lg:border-l lg:border-t-0">
              <LivePreview config={config} knowledge={knowledge} />
           </div>
        </main>
