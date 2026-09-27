@@ -15,6 +15,7 @@ describe('admin home', () => {
     const page = read('src/app/admin/page.tsx');
     assert.match(page, /listByUser\(user\.id\)/);
     assert.match(page, /AgentDashboard/);
+    assert.match(page, /ownerId=\{user\.id\}/);
     assert.doesNotMatch(page, /from ['"].*App['"]/);
   });
 
@@ -53,7 +54,10 @@ describe('admin home', () => {
     assert.match(dashboard, /adminEditPath\(agent\.id\)/);
     assert.match(dashboard, />Edit</);
     assert.doesNotMatch(dashboard, /Recreate/);
-    assert.match(dashboard, /agentListSubtitle/);
+    assert.match(dashboard, /showList/);
+    assert.match(dashboard, /entry\.siteLine/);
+    assert.match(dashboard, /entry\.agentStanding/);
+    assert.doesNotMatch(dashboard, /agentListSubtitle/);
     assert.match(dashboard, /isBoilerplateAgentDescription/);
     assert.match(dashboard, /PRODUCT_CREATE_PATH/);
     assert.match(dashboard, /No agents yet/);

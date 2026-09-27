@@ -1,11 +1,27 @@
 import Link from 'next/link';
 import { OwnedAgentSummary } from '../../../domain/interfaces/IAgentRepository';
 import { isBoilerplateAgentDescription } from '../../../lib/agentDescription';
-import { agentListSubtitle } from '../../../lib/agentList';
+import { showList } from '../../../lib/showList';
 import { PRODUCT_CREATE_PATH, adminEditPath, adminSharePath } from '../../../lib/routes';
 import { Heading } from '../../core/typography/Heading';
 
-export function AgentDashboard({ agents }: { agents: OwnedAgentSummary[] }) {
+export function AgentDashboard({
+  ownerId,
+  agents,
+}: {
+  ownerId: string;
+  agents: OwnedAgentSummary[];
+}) {
+  const listed = showList(
+    ownerId,
+    agents.map((agent) => ({
+      id: agent.id,
+      ownerId,
+      website: agent.website,
+      sourceStandings: agent.sourceStandings,
+    }))
+  );
+  const listedById = new Map((listed ?? []).map((entry) => [entry.id, entry]));
   return (
     <div className="min-h-full bg-paper px-6 py-12 text-ink">
       <div className="max-w-3xl mx-auto space-y-8">
@@ -22,7 +38,7 @@ export function AgentDashboard({ agents }: { agents: OwnedAgentSummary[] }) {
           </Link>
         </div>
 
-        {agents.length === 0 ? (
+        {listed === null ? null : agents.length === 0 ? (
           <div className="bg-cream rounded-xl border border-rule p-8 text-center space-y-3">
             <p className="text-ink font-medium">No agents yet</p>
             <p className="text-stone text-sm">Create one from your site or files, then come back here to find it.</p>
@@ -33,14 +49,15 @@ export function AgentDashboard({ agents }: { agents: OwnedAgentSummary[] }) {
         ) : (
           <ul className="space-y-3">
             {agents.map((agent) => {
-              const subtitle = agentListSubtitle(agent, agents);
+              const entry = listedById.get(agent.id);
               const description = isBoilerplateAgentDescription(agent.description)
                 ? null
                 : agent.description.trim();
               return (
               <li key={agent.id} className="bg-cream rounded-xl border border-rule p-5">
                 <p className="font-medium text-ink">{agent.name}</p>
-                {subtitle ? <p className="text-sm text-stone mt-1">{subtitle}</p> : null}
+                {entry ? <p className="text-sm text-stone mt-1">{entry.siteLine}</p> : null}
+                {entry ? <p className="text-sm text-stone mt-1">{entry.agentStanding}</p> : null}
                 {description ? <p className="text-sm text-stone mt-1">{description}</p> : null}
                 <div className="flex flex-wrap gap-4 mt-4 text-sm font-medium">
                   <Link href={`/chat/${agent.id}`} className="text-terracotta">Chat</Link>

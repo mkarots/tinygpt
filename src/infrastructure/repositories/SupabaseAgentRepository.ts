@@ -4,6 +4,7 @@ import { Agent, AgentConfig } from '../../domain/entities/Agent';
 import { KnowledgeItem } from '../../domain/entities/KnowledgeSource';
 import { profileFromAuthUser } from '../../lib/profileFromAuthUser';
 import { siteFromKnowledge } from '../../lib/agentList';
+import type { KnowledgeStatus } from '../../lib/knowledgeStatusLabel';
 
 export class SupabaseAgentRepository implements IAgentRepository {
   constructor(private supabase: SupabaseClient) {}
@@ -73,7 +74,7 @@ export class SupabaseAgentRepository implements IAgentRepository {
     // Owner policy is the only table read. Filter on the session user as well.
     const { data, error } = await this.supabase
       .from('agents')
-      .select('id, name, description, created_at, knowledge')
+      .select('id, name, description, created_at, knowledge, config')
       .eq('user_id', authData.user.id)
       .order('updated_at', { ascending: false });
 
@@ -87,6 +88,29 @@ export class SupabaseAgentRepository implements IAgentRepository {
       description: typeof row.description === 'string' ? row.description : '',
       createdAt: typeof row.created_at === 'string' ? new Date(row.created_at).getTime() : 0,
       site: siteFromKnowledge(row.knowledge),
+      website: websiteFromConfig(row.config),
+      sourceStandings: sourceStandingsFromKnowledge(row.knowledge),
     }));
   }
+}
+
+function websiteFromConfig(config: unknown): string | null {
+  if (!config || typeof config !== 'object') return null;
+  const company = (config as { company?: { website?: unknown } }).company;
+  if (!company || typeof company.website !== 'string') return null;
+  const website = company.website.trim();
+  return website.length > 0 ? website : null;
+}
+
+function sourceStandingsFromKnowledge(knowledge: unknown): KnowledgeStatus[] {
+  if (!Array.isArray(knowledge)) return [];
+  const standings: KnowledgeStatus[] = [];
+  for (const item of knowledge) {
+    if (!item || typeof item !== 'object') continue;
+    const status = (item as { status?: unknown }).status;
+    if (status === 'pending' || status === 'active' || status === 'error') {
+      standings.push(status);
+    }
+  }
+  return standings;
 }

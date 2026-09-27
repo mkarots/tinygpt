@@ -22,7 +22,7 @@ describe('ownedAgentForEdit', () => {
     const loaded = await ownedAgentForEdit(
       {
         listByUser: async () => [
-          { id: 'owned-1', name: 'Support Bot', description: '', createdAt: 1, site: null },
+          { id: 'owned-1', name: 'Support Bot', description: '', createdAt: 1, site: null, website: null, sourceStandings: [] },
         ],
         getById: async (id) => (id === 'owned-1' ? agent : null),
       },
@@ -35,7 +35,7 @@ describe('ownedAgentForEdit', () => {
   it('returns null when the id is missing, foreign, or unknown', async () => {
     const repo = {
       listByUser: async () => [
-        { id: 'owned-1', name: 'Support Bot', description: '', createdAt: 1, site: null },
+        { id: 'owned-1', name: 'Support Bot', description: '', createdAt: 1, site: null, website: null, sourceStandings: [] },
       ],
       getById: async () => agent,
     };

@@ -8,6 +8,7 @@ type AgentRow = {
   description: string | null;
   created_at?: string;
   knowledge?: unknown;
+  config?: unknown;
 };
 
 function listingClient(options: {
@@ -62,7 +63,8 @@ describe('SupabaseAgentRepository.listByUser', () => {
           name: 'Support',
           description: 'Help',
           created_at: '2026-01-02T00:00:00.000Z',
-          knowledge: [{ type: 'url', name: 'acme.example' }],
+          knowledge: [{ type: 'url', name: 'Imported page title', status: 'active' }, { status: 'error' }],
+          config: { company: { website: ' https://shop.example ' } },
         },
         { id: 'agent-2', name: '', description: null },
       ],
@@ -77,9 +79,19 @@ describe('SupabaseAgentRepository.listByUser', () => {
         name: 'Support',
         description: 'Help',
         createdAt: Date.parse('2026-01-02T00:00:00.000Z'),
-        site: 'acme.example',
+        site: 'Imported page title',
+        website: 'https://shop.example',
+        sourceStandings: ['active', 'error'],
       },
-      { id: 'agent-2', name: 'Untitled agent', description: '', createdAt: 0, site: null },
+      {
+        id: 'agent-2',
+        name: 'Untitled agent',
+        description: '',
+        createdAt: 0,
+        site: null,
+        website: null,
+        sourceStandings: [],
+      },
     ]);
   });
 

@@ -16,5 +16,5 @@ export default async function AdminHomePage() {
   }
 
   const agents = await new SupabaseAgentRepository(supabase).listByUser(user.id);
-  return <AgentDashboard agents={agents} />;
+  return <AgentDashboard ownerId={user.id} agents={agents} />;
 }
