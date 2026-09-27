@@ -2,7 +2,7 @@
   // Get configuration
   const script = document.currentScript;
   const agentId = script.getAttribute('data-id');
-  const baseUrl = script.src.includes('localhost') ? 'http://localhost:3000' : 'https://tinygpt.app'; // Auto-detect env
+  const baseUrl = new URL(script.src).origin;
 
   if (!agentId) {
     console.error('TinyGPT: No data-id attribute found on script tag.');

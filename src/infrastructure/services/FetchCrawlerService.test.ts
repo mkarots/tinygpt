@@ -48,6 +48,7 @@ describe('FetchCrawlerService', () => {
     const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '../../..');
     const route = readFileSync(path.join(root, 'src/app/api/crawl/route.ts'), 'utf8');
     const useCase = readFileSync(path.join(root, 'src/application/use-cases/ProcessKnowledgeUseCase.ts'), 'utf8');
+    assert.match(route, /export const maxDuration = 60/);
     assert.match(route, /new FetchCrawlerService\(\)/);
     assert.match(route, /ProcessKnowledgeUseCase/);
     assert.doesNotMatch(route, /puppeteer/i);
